@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Search, Plus, CheckCircle2, ChevronRight } from "lucide-react";
 import PhantomSidebar from "./PhantomSidebar";
+import PhantomInstallPrompt from "./PhantomInstallPrompt";
 
 const TRENDING_TOKENS = [
   {
@@ -253,6 +254,9 @@ export default function PhantomHome() {
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />
+
+      {/* ── STANDALONE PWA INSTALL PROMPT ── */}
+      <PhantomInstallPrompt />
 
     </div>
   );
