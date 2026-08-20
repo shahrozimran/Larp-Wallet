@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Wallet,
   Check,
@@ -18,24 +19,30 @@ import {
 } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
+import LoginModal from "@/components/LoginModal";
+import CryptoPaymentModal, { SelectedPlan } from "@/components/CryptoPaymentModal";
+import { loginUser } from "@/lib/auth";
 
 export default function PricingPage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<SelectedPlan | null>(null);
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-[#08061a] text-white flex flex-col font-sans relative selection:bg-[#7c5ce8] selection:text-white pt-14">
       
       {/* Background Ambient Spotlights */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[#7c5ce8]/14 rounded-full blur-[160px] pointer-events-none" />
-      <div className="fixed bottom-0 right-0 w-[600px] h-[600px] bg-[#4a2db8]/08 rounded-full blur-[180px] pointer-events-none" />
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[550px] bg-[#7c5ce8]/14 rounded-full blur-[180px] pointer-events-none" />
+      <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-[#5b3fc4]/06 rounded-full blur-[160px] pointer-events-none" />
+      <div className="fixed bottom-0 left-0 w-[600px] h-[600px] bg-[#4a2db8]/06 rounded-full blur-[200px] pointer-events-none" />
 
-      {/* CENTRALIZED NAVBAR */}
+      {/* NAVBAR */}
       <Navbar onOpenLogin={() => setIsLoginOpen(true)} />
 
-      {/* HERO HEADER */}
-      <section className="relative pt-10 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center flex flex-col items-center">
+      {/* ── HEADER ── */}
+      <section className="pt-16 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center flex flex-col items-center">
         
-        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full badge-pitch-purple text-xs font-mono font-bold tracking-widest uppercase mb-6">
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#7c5ce8]/15 border border-[#7c5ce8]/30 text-xs font-mono font-semibold text-[#a78bfa] mb-6">
           <Sparkles className="w-3.5 h-3.5 text-[#a78bfa]" />
           <span>PRICING</span>
         </div>
@@ -66,7 +73,7 @@ export default function PricingPage() {
                   <span className="text-gray-500 font-mono text-xl line-through">$30</span>
                   <span className="text-4xl font-extrabold text-white font-mono">$15</span>
                 </div>
-                <div className="text-xs text-gray-400 font-mono mt-1">7 days access</div>
+                <div className="text-xs text-[#a78bfa] font-mono font-bold mt-1">7 days access</div>
               </div>
 
               {/* Features Checklist */}
@@ -100,7 +107,7 @@ export default function PricingPage() {
 
             {/* Action Button */}
             <button
-              onClick={() => setIsLoginOpen(true)}
+              onClick={() => setSelectedPlan({ name: "Starter Plan", price: "$15", duration: "7 days access" })}
               className="w-full py-3.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs tracking-wide flex items-center justify-center space-x-2 transition-all cursor-pointer"
             >
               <span>Buy</span>
@@ -157,7 +164,7 @@ export default function PricingPage() {
 
             {/* Action Button */}
             <button
-              onClick={() => setIsLoginOpen(true)}
+              onClick={() => setSelectedPlan({ name: "Pro Creator Plan", price: "$45", duration: "1 month access" })}
               className="w-full py-4 px-4 rounded-xl btn-hero-primary font-bold text-xs tracking-wide flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-lg"
             >
               <span>Buy</span>
@@ -204,14 +211,14 @@ export default function PricingPage() {
                 </div>
                 <div className="flex items-start space-x-3">
                   <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
-                  <span className="text-gray-200 font-semibold text-[#a78bfa]">Early access to new features</span>
+                  <span className="text-[#c4b5fd] font-semibold">Early access to new features</span>
                 </div>
               </div>
             </div>
 
             {/* Action Button */}
             <button
-              onClick={() => setIsLoginOpen(true)}
+              onClick={() => setSelectedPlan({ name: "Lifetime Access Plan", price: "$200", duration: "Lifetime access" })}
               className="w-full py-3.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs tracking-wide flex items-center justify-center space-x-2 transition-all cursor-pointer"
             >
               <span>Buy</span>
@@ -222,34 +229,10 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* BOTTOM CALL TO ACTION BANNER */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
-        <div className="rounded-3xl glass-card-dark border border-[#7c5ce8]/40 p-8 sm:p-12 text-center space-y-6 relative overflow-hidden shadow-[0_0_40px_rgba(124,92,232,0.2)]">
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#7c5ce8]/15 rounded-full blur-3xl pointer-events-none" />
-
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
-            Ready to Experience Larp Wallet?
-          </h2>
-          <p className="text-sm text-gray-300 max-w-xl mx-auto">
-            Experience uncompromised elegance and pixel-perfect wallet simulation across all your mobile devices.
-          </p>
-
-          <div className="pt-2 flex justify-center">
-            <button
-              onClick={() => setIsLoginOpen(true)}
-              className="py-4 px-8 rounded-full btn-hero-primary font-bold text-sm tracking-wide cursor-pointer flex items-center space-x-2"
-            >
-              <span>Get Larp Wallet</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="border-t border-white/10 glass-card-dark py-10 text-xs text-gray-400 mt-auto">
+      {/* ── FOOTER ── */}
+      <footer className="border-t border-white/8 bg-[#05040f]/80 py-10 text-xs text-gray-400 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <Link href="/" className="flex items-center space-x-3 group">
+          <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-8 h-8 rounded-xl overflow-hidden border border-[#7c5ce8]/50 shadow-[0_0_12px_rgba(124,92,232,0.4)] group-hover:shadow-[0_0_20px_rgba(124,92,232,0.7)] transition-all">
               <img
                 src="/img.jpeg"
@@ -275,61 +258,13 @@ export default function PricingPage() {
       </footer>
 
       {/* LOGIN & AUTHENTICATION MODAL */}
-      {isLoginOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-          <div className="relative w-full max-w-md rounded-3xl glass-card-dark p-6 sm:p-8 border border-[#7c5ce8]/30 shadow-2xl space-y-6">
-            <button
-              onClick={() => setIsLoginOpen(false)}
-              className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
 
-            <div className="flex items-center space-x-3">
-              <div className="p-3 rounded-2xl bg-[#7c5ce8]/15 border border-[#7c5ce8]/30 text-[#a78bfa]">
-                <Lock className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white">Access Larp Wallet</h3>
-                <p className="text-xs text-gray-400">Enter access key to unlock features</p>
-              </div>
-            </div>
-
-            <form onSubmit={(e) => { e.preventDefault(); setIsLoginOpen(false); }} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-                  Access Key / Email
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="LRP-9814-XXXX-XXXX"
-                  className="w-full px-4 py-3 rounded-xl bg-[#0d0a24] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#7c5ce8]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-                  Password / PIN
-                </label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl bg-[#0d0a24] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#7c5ce8]"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-3.5 px-4 rounded-xl btn-hero-primary font-bold text-sm tracking-wide cursor-pointer"
-              >
-                Launch Larp Wallet
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* CRYPTO PAYMENT CHECKOUT MODAL */}
+      <CryptoPaymentModal
+        plan={selectedPlan}
+        onClose={() => setSelectedPlan(null)}
+      />
 
     </div>
   );

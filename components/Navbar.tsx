@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Wallet, ChevronRight, Menu, X } from "lucide-react";
+import { getAuthSession } from "@/lib/auth";
 
 interface NavbarProps {
   onOpenLogin: () => void;
@@ -11,7 +12,14 @@ interface NavbarProps {
 
 export default function Navbar({ onOpenLogin }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    const session = getAuthSession();
+    setIsLoggedIn(session.isLoggedIn);
+  }, [pathname]);
 
   const navItems = [
     { label: "Features",     href: "/features" },
@@ -65,12 +73,21 @@ export default function Navbar({ onOpenLogin }: NavbarProps) {
 
           {/* Right: Login CTA + Mobile Toggle */}
           <div className="flex items-center space-x-3 shrink-0">
-            <button
-              onClick={onOpenLogin}
-              className="px-5 py-1.5 rounded-full btn-nav-login text-xs font-bold tracking-wide flex items-center space-x-1.5 cursor-pointer"
-            >
-              <span>Login</span>
-            </button>
+            {isLoggedIn ? (
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="px-5 py-1.5 rounded-full btn-hero-primary text-xs font-bold tracking-wide flex items-center space-x-1.5 cursor-pointer shadow-md"
+              >
+                <span>Dashboard</span>
+              </button>
+            ) : (
+              <button
+                onClick={onOpenLogin}
+                className="px-5 py-1.5 rounded-full btn-nav-login text-xs font-bold tracking-wide flex items-center space-x-1.5 cursor-pointer"
+              >
+                <span>Login</span>
+              </button>
+            )}
 
             {/* Mobile hamburger */}
             <button

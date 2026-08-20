@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Wallet,
   Star,
@@ -19,6 +20,9 @@ import {
   MessageSquare,
   Users,
 } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import LoginModal from "@/components/LoginModal";
+import { loginUser } from "@/lib/auth";
 
 const reviewsData = [
   {
@@ -239,11 +243,17 @@ const reviewsData = [
   },
 ];
 
-import Navbar from "@/components/Navbar";
-
 export default function ReviewsPage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"all" | "creators" | "streamers" | "meme" | "editors">("all");
+  const router = useRouter();
+
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    loginUser("demo@larpzwallet.app");
+    setIsLoginOpen(false);
+    router.push("/dashboard");
+  };
 
   const filteredReviews = activeTab === "all"
     ? reviewsData
@@ -422,61 +432,7 @@ export default function ReviewsPage() {
       </footer>
 
       {/* LOGIN & AUTHENTICATION MODAL */}
-      {isLoginOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-          <div className="relative w-full max-w-md rounded-3xl glass-card-dark p-6 sm:p-8 border border-[#7c5ce8]/30 shadow-2xl space-y-6">
-            <button
-              onClick={() => setIsLoginOpen(false)}
-              className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="flex items-center space-x-3">
-              <div className="p-3 rounded-2xl bg-[#7c5ce8]/15 border border-[#7c5ce8]/30 text-[#a78bfa]">
-                <Lock className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-white">Access Larp Wallet</h3>
-                <p className="text-xs text-gray-400">Enter access key to unlock features</p>
-              </div>
-            </div>
-
-            <form onSubmit={(e) => { e.preventDefault(); setIsLoginOpen(false); }} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-                  Access Key / Email
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="LRP-9814-XXXX-XXXX"
-                  className="w-full px-4 py-3 rounded-xl bg-[#0d0a24] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#7c5ce8]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-                  Password / PIN
-                </label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl bg-[#0d0a24] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#7c5ce8]"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-3.5 px-4 rounded-xl btn-hero-primary font-bold text-sm tracking-wide cursor-pointer"
-              >
-                Launch Larp Wallet
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
 
     </div>
   );
