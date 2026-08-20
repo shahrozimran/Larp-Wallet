@@ -1,17 +1,5 @@
 import { NextResponse } from "next/server";
 
-// CoinGecko coin IDs for tokens shown in the Phantom trending list
-const COIN_IDS = [
-  "fartcoin",
-  "popcat",
-  "spx6900",
-  "peanut-the-squirrel",
-  "bonk",
-  "solana",
-  "bitcoin",
-  "ethereum",
-];
-
 const BASE_URL = "https://api.coingecko.com/api/v3";
 
 export async function GET() {
@@ -22,31 +10,43 @@ export async function GET() {
   }
 
   try {
-    const res = await fetch(
-      `${BASE_URL}/coins/markets?vs_currency=usd&ids=${COIN_IDS.join(",")}&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=24h`,
-      {
-        headers: {
-          "x-cg-demo-api-key": apiKey,
-          Accept: "application/json",
-        },
-        // Revalidate every 60 seconds
-        next: { revalidate: 60 },
-      }
-    );
+    // Fetch top 50 coins by market cap for rich search coverage
+    const [marketsRes, gbpRes] = await Promise.all([
+      fetch(
+        `${BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=false&price_change_percentage=24h`,
+        {
+          headers: { "x-cg-demo-api-key": apiKey, Accept: "application/json" },
+          next: { revalidate: 60 },
+        }
+      ),
+      fetch(
+        `${BASE_URL}/simple/price?ids=bitcoin&vs_currencies=usd,gbp`,
+        {
+          headers: { "x-cg-demo-api-key": apiKey, Accept: "application/json" },
+          next: { revalidate: 300 },
+        }
+      ),
+    ]);
 
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error("CoinGecko API error:", res.status, errorText);
+    if (!marketsRes.ok) {
       return NextResponse.json(
-        { error: `CoinGecko API returned ${res.status}` },
-        { status: res.status }
+        { error: `CoinGecko API returned ${marketsRes.status}` },
+        { status: marketsRes.status }
       );
     }
 
-    const data = await res.json();
+    const marketsData = await marketsRes.json();
 
-    // Map to a simpler format for the Phantom UI
-    const coins = data.map((coin: {
+    // Calculate USD → GBP rate from Bitcoin prices
+    let usdToGbp = 0.79; // fallback
+    if (gbpRes.ok) {
+      const gbpData = await gbpRes.json();
+      if (gbpData?.bitcoin?.gbp && gbpData?.bitcoin?.usd) {
+        usdToGbp = gbpData.bitcoin.gbp / gbpData.bitcoin.usd;
+      }
+    }
+
+    const coins = marketsData.map((coin: {
       id: string;
       symbol: string;
       name: string;
@@ -61,10 +61,10 @@ export async function GET() {
       image: coin.image,
       price: coin.current_price,
       marketCap: coin.market_cap,
-      change24h: coin.price_change_percentage_24h,
+      change24h: coin.price_change_percentage_24h ?? 0,
     }));
 
-    return NextResponse.json({ coins, updatedAt: Date.now() });
+    return NextResponse.json({ coins, usdToGbp, updatedAt: Date.now() });
   } catch (err) {
     console.error("Failed to fetch from CoinGecko:", err);
     return NextResponse.json({ error: "Failed to fetch market data" }, { status: 500 });

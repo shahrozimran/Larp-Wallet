@@ -16,6 +16,8 @@ import PhantomSidebar from "./PhantomSidebar";
 import PhantomInstallPrompt from "./PhantomInstallPrompt";
 import PhantomSettingsModal from "./PhantomSettingsModal";
 import PhantomProfileModal from "./PhantomProfileModal";
+import PhantomAddCashModal from "./PhantomAddCashModal";
+import PhantomPortfolioView, { Holding } from "./PhantomPortfolioView";
 
 interface CoinToken {
   id: string;
@@ -46,12 +48,18 @@ export default function PhantomHome() {
   const [isPlusMenuOpen, setIsPlusMenuOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isAddCashOpen, setIsAddCashOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Live market data
   const [coins, setCoins] = useState<CoinToken[]>([]);
+  const [usdToGbp, setUsdToGbp] = useState(0.79);
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  // Holdings portfolio
+  const [holdings, setHoldings] = useState<Holding[]>([]);
+  const [currency, setCurrency] = useState<"usd" | "gbp">("usd");
 
   // Persistent user handle & account name
   const [handle, setHandle] = useState("@GuidedMutt3528");
@@ -60,8 +68,14 @@ export default function PhantomHome() {
   useEffect(() => {
     const savedHandle = localStorage.getItem("phantom_user_handle");
     const savedAccountName = localStorage.getItem("phantom_account_name");
+    const savedHoldings = localStorage.getItem("phantom_holdings");
+    const savedCurrency = localStorage.getItem("phantom_currency") as "usd" | "gbp" | null;
     if (savedHandle) setHandle(savedHandle);
     if (savedAccountName) setAccountName(savedAccountName);
+    if (savedHoldings) {
+      try { setHoldings(JSON.parse(savedHoldings)); } catch {}
+    }
+    if (savedCurrency) setCurrency(savedCurrency);
   }, []);
 
   // Fetch live prices from our API route
@@ -74,6 +88,7 @@ export default function PhantomHome() {
           setCoins(data.coins);
           setLastUpdated(new Date());
         }
+        if (data.usdToGbp) setUsdToGbp(data.usdToGbp);
       }
     } catch (e) {
       console.error("Failed to fetch prices:", e);
@@ -96,14 +111,51 @@ export default function PhantomHome() {
     localStorage.setItem("phantom_account_name", newAccountName);
   };
 
+  const handleAddHolding = (coinId: string, qty: number) => {
+    const coin = coins.find((c) => c.id === coinId);
+    if (!coin) return;
+    setHoldings((prev) => {
+      const existing = prev.find((h) => h.coinId === coinId);
+      let next: Holding[];
+      if (existing) {
+        // Weighted average buy price
+        const totalQty = existing.qty + qty;
+        const avgPrice = (existing.qty * existing.avgBuyPrice + qty * coin.price) / totalQty;
+        next = prev.map((h) => h.coinId === coinId ? { ...h, qty: totalQty, avgBuyPrice: avgPrice } : h);
+      } else {
+        next = [...prev, { coinId, qty, avgBuyPrice: coin.price }];
+      }
+      localStorage.setItem("phantom_holdings", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const handleRemoveHolding = (coinId: string) => {
+    setHoldings((prev) => {
+      const next = prev.filter((h) => h.coinId !== coinId);
+      localStorage.setItem("phantom_holdings", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const handleCurrencyToggle = () => {
+    setCurrency((prev) => {
+      const next = prev === "usd" ? "gbp" : "usd";
+      localStorage.setItem("phantom_currency", next);
+      return next;
+    });
+  };
+
   const tabs = ["Home", "Trade", "Predict", "Explore"];
 
   const speedDialItems = [
-    { id: "send", label: "Send", icon: Send },
-    { id: "receive", label: "Receive", icon: QrCode },
-    { id: "add_cash", label: "Add Cash", icon: CircleDollarSign },
-    { id: "trade", label: "Trade", icon: ArrowLeftRight },
+    { id: "send", label: "Send", icon: Send, onClick: () => {} },
+    { id: "receive", label: "Receive", icon: QrCode, onClick: () => {} },
+    { id: "add_cash", label: "Add Cash", icon: CircleDollarSign, onClick: () => { setIsPlusMenuOpen(false); setIsAddCashOpen(true); } },
+    { id: "trade", label: "Trade", icon: ArrowLeftRight, onClick: () => {} },
   ];
+
+  const hasHoldings = holdings.length > 0;
 
   const filteredCoins = coins.filter(
     (c) =>
@@ -154,8 +206,19 @@ export default function PhantomHome() {
       {/* ── MAIN CONTENT AREA ── */}
       <main className="flex-1 px-4 py-6 max-w-lg mx-auto w-full space-y-8 pb-28">
 
-        {/* ── HERO BANNER & WELCOME TO PHANTOM (Screenshot 2) ── */}
-        <div className="flex flex-col items-center text-center space-y-4 pt-4">
+        {/* ── PORTFOLIO VIEW (when holdings exist) ── */}
+        {hasHoldings ? (
+          <PhantomPortfolioView
+            holdings={holdings}
+            coins={coins}
+            currency={currency}
+            usdToGbp={usdToGbp}
+            onCurrencyToggle={handleCurrencyToggle}
+            onRemoveHolding={handleRemoveHolding}
+          />
+        ) : (
+          /* ── HERO BANNER & WELCOME TO PHANTOM ── */
+          <div className="flex flex-col items-center text-center space-y-4 pt-4">
           
           {/* Custom 3D Wallet Graphic Illustration */}
           <div className="relative w-44 h-36 flex items-center justify-center my-2">
@@ -206,7 +269,8 @@ export default function PhantomHome() {
           >
             Add Funds
           </button>
-        </div>
+          </div>
+        )}
 
         {/* ── TRENDING TOKENS SECTION (Live CoinGecko Data) ── */}
         <div className="space-y-4 pt-2">
@@ -323,12 +387,11 @@ export default function PhantomHome() {
                   key={item.id}
                   type="button"
                   onClick={() => {
-                    setIsPlusMenuOpen(false);
+                    item.onClick?.();
+                    if (!item.onClick || item.id !== "add_cash") setIsPlusMenuOpen(false);
                   }}
                   className="flex items-center space-x-4 group cursor-pointer active:scale-95 transition-transform"
-                  style={{
-                    animationDelay: `${index * 50}ms`,
-                  }}
+                  style={{ animationDelay: `${index * 50}ms` }}
                 >
                   {/* Option Label */}
                   <span className="text-xl sm:text-2xl font-extrabold text-white tracking-tight group-hover:text-[#a594fd] transition-colors">
@@ -405,6 +468,14 @@ export default function PhantomHome() {
         handle={handle}
         accountName={accountName}
         onSave={handleSaveProfile}
+      />
+
+      {/* ── ADD CASH MODAL ── */}
+      <PhantomAddCashModal
+        isOpen={isAddCashOpen}
+        onClose={() => setIsAddCashOpen(false)}
+        coins={coins}
+        onAddHolding={handleAddHolding}
       />
 
       {/* ── STANDALONE PWA INSTALL PROMPT ── */}
