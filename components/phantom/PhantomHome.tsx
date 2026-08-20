@@ -1,0 +1,259 @@
+"use client";
+
+import React, { useState } from "react";
+import { Search, Plus, CheckCircle2, ChevronRight } from "lucide-react";
+import PhantomSidebar from "./PhantomSidebar";
+
+const TRENDING_TOKENS = [
+  {
+    id: "fartcoin",
+    name: "Fartcoin",
+    symbol: "FART",
+    mc: "$160M MC",
+    price: "$0.16007",
+    change: "+7.07%",
+    isPositive: true,
+    img: "/img.jpeg",
+  },
+  {
+    id: "popcat",
+    name: "POPCAT",
+    symbol: "POPCAT",
+    mc: "$46M MC",
+    price: "$0.04676",
+    change: "+10.72%",
+    isPositive: true,
+    img: "/img.jpeg",
+  },
+  {
+    id: "spx",
+    name: "SPX",
+    symbol: "SPX",
+    mc: "$33M MC",
+    price: "$0.39126",
+    change: "+14.68%",
+    isPositive: true,
+    img: "/img.jpeg",
+  },
+  {
+    id: "pnut",
+    name: "PNUT",
+    symbol: "PNUT",
+    mc: "$1.2B MC",
+    price: "$1.18240",
+    change: "+5.42%",
+    isPositive: true,
+    img: "/img.jpeg",
+  },
+  {
+    id: "bonk",
+    name: "BONK",
+    symbol: "BONK",
+    mc: "$2.4B MC",
+    price: "$0.00003",
+    change: "+8.15%",
+    isPositive: true,
+    img: "/img.jpeg",
+  },
+];
+
+export default function PhantomHome() {
+  const [activeTab, setActiveTab] = useState("Home");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const tabs = ["Home", "Trade", "Predict", "Explore"];
+
+  const filteredTokens = TRENDING_TOKENS.filter(
+    (t) =>
+      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div className="relative min-h-screen bg-[#000000] text-white font-sans flex flex-col justify-between selection:bg-[#a594fd] selection:text-black">
+      
+      {/* ── TOP HEADER (Matching Screenshot 2) ── */}
+      <header className="sticky top-0 z-40 bg-[#000000]/95 backdrop-blur-md px-4 py-3 flex items-center space-x-3 border-b border-white/5">
+        
+        {/* Profile Avatar Button (Opens Left Drawer) */}
+        <button
+          type="button"
+          onClick={() => setIsSidebarOpen(true)}
+          className="w-10 h-10 rounded-full bg-[#8fa1ff] flex items-center justify-center shrink-0 border border-white/10 hover:scale-105 transition-transform cursor-pointer"
+        >
+          <div className="w-6.5 h-6.5 rounded-full bg-[#fce886] flex items-center justify-center relative">
+            <div className="w-2.5 h-1 bg-[#432c7a] rounded-full absolute top-2 left-1" />
+            <div className="w-2.5 h-1 bg-[#432c7a] rounded-full absolute top-2 right-1" />
+          </div>
+        </button>
+
+        {/* Horizontal Navigation Pills */}
+        <nav className="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab;
+            return (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={`px-5 py-2 rounded-full text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
+                  isActive
+                    ? "bg-[#a594fd] text-[#000000] shadow-[0_0_12px_rgba(165,148,253,0.4)]"
+                    : "bg-[#1c1c1e] text-gray-300 hover:bg-[#2c2c2e] hover:text-white"
+                }`}
+              >
+                {tab}
+              </button>
+            );
+          })}
+        </nav>
+      </header>
+
+      {/* ── MAIN CONTENT AREA ── */}
+      <main className="flex-1 px-4 py-6 max-w-lg mx-auto w-full space-y-8 pb-28">
+
+        {/* ── HERO BANNER & WELCOME TO PHANTOM (Screenshot 2) ── */}
+        <div className="flex flex-col items-center text-center space-y-4 pt-4">
+          
+          {/* Custom 3D Wallet Graphic Illustration */}
+          <div className="relative w-44 h-36 flex items-center justify-center my-2">
+            
+            {/* Background Purple Wallet Body */}
+            <div className="absolute inset-x-2 bottom-0 h-24 bg-[#392e66] rounded-3xl border border-[#584898] shadow-2xl flex flex-col justify-end p-3">
+              <div className="w-5 h-5 rounded-full bg-[#a594fd]/30 mx-auto mb-2" />
+            </div>
+
+            {/* Floating Items coming out of wallet */}
+            {/* Solana Token Badge */}
+            <div className="absolute top-1 right-2 w-11 h-11 rounded-full bg-[#000000] border-2 border-[#9945FF] flex items-center justify-center shadow-lg -rotate-12">
+              <span className="text-[10px] font-extrabold text-[#14F195]">SOL</span>
+            </div>
+
+            {/* GPay Green Badge */}
+            <div className="absolute top-4 left-6 px-3 py-1 rounded-xl bg-[#61cca6] text-[#083827] text-xs font-black shadow-md rotate-6">
+              GPay
+            </div>
+
+            {/* Credit Card Graphic */}
+            <div className="absolute top-0 left-2 w-12 h-14 rounded-xl bg-gradient-to-tr from-[#f3d060] to-[#f8e59e] shadow-md -rotate-45 border border-white/20" />
+
+            {/* Phantom Ghost Icon */}
+            <div className="absolute top-6 left-14 w-10 h-11 rounded-t-full bg-white flex items-center justify-center shadow-md">
+              <div className="flex space-x-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#1c1c1e]" />
+                <div className="w-1.5 h-1.5 rounded-full bg-[#1c1c1e]" />
+              </div>
+            </div>
+
+          </div>
+
+          {/* Welcome Text */}
+          <div className="space-y-1">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+              Welcome to Phantom
+            </h1>
+            <p className="text-sm text-gray-400 font-medium">
+              Add cash or crypto to start trading
+            </p>
+          </div>
+
+          {/* Add Funds Button (Exact soft purple color match) */}
+          <button
+            type="button"
+            className="w-full py-4 px-6 rounded-full bg-[#a594fd] hover:bg-[#b6a7ff] text-[#000000] font-extrabold text-base transition-all cursor-pointer shadow-[0_4px_20px_rgba(165,148,253,0.3)] active:scale-[0.99]"
+          >
+            Add Funds
+          </button>
+        </div>
+
+        {/* ── TRENDING TOKENS SECTION (Screenshot 2) ── */}
+        <div className="space-y-4 pt-2">
+          
+          <button
+            type="button"
+            className="flex items-center space-x-1 text-xl font-extrabold text-white hover:text-[#a594fd] transition-colors cursor-pointer"
+          >
+            <span>Trending</span>
+            <ChevronRight className="w-5 h-5 text-gray-400" />
+          </button>
+
+          {/* Token List */}
+          <div className="space-y-3">
+            {filteredTokens.map((token) => (
+              <div
+                key={token.id}
+                className="flex items-center justify-between p-3.5 rounded-2xl bg-[#09090b] hover:bg-[#121215] border border-white/5 transition-all cursor-pointer group"
+              >
+                {/* Token Icon & Name */}
+                <div className="flex items-center space-x-3.5">
+                  <div className="relative w-11 h-11 rounded-full overflow-hidden bg-[#1c1c1e] border border-white/10 shrink-0">
+                    <img src={token.img} alt={token.name} className="w-full h-full object-cover" />
+                  </div>
+                  
+                  <div>
+                    <div className="flex items-center space-x-1.5">
+                      <span className="font-extrabold text-base text-white group-hover:text-[#a594fd] transition-colors">
+                        {token.name}
+                      </span>
+                      <CheckCircle2 className="w-4 h-4 text-[#8b79f6] fill-[#8b79f6]/20" />
+                    </div>
+                    <div className="text-xs font-semibold text-gray-400">
+                      {token.mc}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Price & Change */}
+                <div className="text-right">
+                  <div className="font-extrabold text-base text-white font-mono">
+                    {token.price}
+                  </div>
+                  <div className="text-xs font-bold text-emerald-400 font-mono">
+                    {token.change}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+
+      </main>
+
+      {/* ── FIXED BOTTOM SEARCH & ACTION BAR (Screenshot 2) ── */}
+      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[#000000]/95 backdrop-blur-xl border-t border-white/8 px-4 py-3">
+        <div className="max-w-lg mx-auto flex items-center justify-between gap-3">
+          
+          {/* Pill Search Input Bar */}
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-gray-400 absolute left-4 top-3.5" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search Phantom"
+              className="w-full pl-10 pr-4 py-2.5 rounded-full bg-[#1c1c1e] text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#a594fd] transition-all font-medium"
+            />
+          </div>
+
+          {/* Floating Circle Action Button (+) */}
+          <button
+            type="button"
+            className="w-11 h-11 rounded-full bg-[#a594fd] hover:bg-[#b6a7ff] text-[#000000] flex items-center justify-center shrink-0 cursor-pointer shadow-[0_0_15px_rgba(165,148,253,0.4)] active:scale-95 transition-transform"
+          >
+            <Plus className="w-6 h-6 stroke-[3]" />
+          </button>
+
+        </div>
+      </footer>
+
+      {/* ── LEFT PROFILE SIDEBAR DRAWER ── */}
+      <PhantomSidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
+
+    </div>
+  );
+}

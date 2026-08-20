@@ -56,6 +56,9 @@ export default function DashboardPage() {
   const handleSelectWallet = (wallet: "phantom" | "trust" | "ledger") => {
     setSelectedWallet(wallet);
     setActiveWalletType(wallet);
+    if (wallet === "phantom") {
+      router.push("/phantom");
+    }
   };
 
   if (!session) {
