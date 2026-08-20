@@ -21,12 +21,27 @@ import {
 import Navbar from "@/components/Navbar";
 import LoginModal from "@/components/LoginModal";
 import CryptoPaymentModal, { SelectedPlan } from "@/components/CryptoPaymentModal";
-import { loginUser } from "@/lib/auth";
+import { getAuthSession, loginUser } from "@/lib/auth";
 
 export default function PricingPage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<SelectedPlan | null>(null);
+  const [pendingPlan, setPendingPlan] = useState<SelectedPlan | null>(null);
   const router = useRouter();
+
+  const handleBuyClick = (plan: SelectedPlan) => {
+    const session = getAuthSession();
+    if (!session.isLoggedIn) {
+      setIsLoginOpen(true);
+    } else {
+      router.push("/plans");
+    }
+  };
+
+  const handleLoginSuccess = () => {
+    setIsLoginOpen(false);
+    router.push("/plans");
+  };
 
   return (
     <div className="min-h-screen bg-[#08061a] text-white flex flex-col font-sans relative selection:bg-[#7c5ce8] selection:text-white pt-14">
@@ -107,7 +122,7 @@ export default function PricingPage() {
 
             {/* Action Button */}
             <button
-              onClick={() => setSelectedPlan({ name: "Starter Plan", price: "$15", duration: "7 days access" })}
+              onClick={() => handleBuyClick({ name: "Starter Plan", price: "$15", duration: "7 days access" })}
               className="w-full py-3.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs tracking-wide flex items-center justify-center space-x-2 transition-all cursor-pointer"
             >
               <span>Buy</span>
@@ -164,7 +179,7 @@ export default function PricingPage() {
 
             {/* Action Button */}
             <button
-              onClick={() => setSelectedPlan({ name: "Pro Creator Plan", price: "$45", duration: "1 month access" })}
+              onClick={() => handleBuyClick({ name: "Pro Creator Plan", price: "$45", duration: "1 month access" })}
               className="w-full py-4 px-4 rounded-xl btn-hero-primary font-bold text-xs tracking-wide flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-lg"
             >
               <span>Buy</span>
@@ -218,7 +233,7 @@ export default function PricingPage() {
 
             {/* Action Button */}
             <button
-              onClick={() => setSelectedPlan({ name: "Lifetime Access Plan", price: "$200", duration: "Lifetime access" })}
+              onClick={() => handleBuyClick({ name: "Lifetime Access Plan", price: "$200", duration: "Lifetime access" })}
               className="w-full py-3.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs tracking-wide flex items-center justify-center space-x-2 transition-all cursor-pointer"
             >
               <span>Buy</span>
@@ -258,7 +273,11 @@ export default function PricingPage() {
       </footer>
 
       {/* LOGIN & AUTHENTICATION MODAL */}
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
 
       {/* CRYPTO PAYMENT CHECKOUT MODAL */}
       <CryptoPaymentModal

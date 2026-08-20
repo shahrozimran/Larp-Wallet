@@ -4,30 +4,41 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogOut, Key, ArrowRight, ShieldCheck, RefreshCw, Sparkles } from "lucide-react";
-import { getAuthSession, logoutUser, activateLicenseKey, UserSession } from "@/lib/auth";
+import LoginModal from "@/components/LoginModal";
 import CryptoPaymentModal, { SelectedPlan } from "@/components/CryptoPaymentModal";
+import { getAuthSession, logoutUser, activateLicenseKey, UserSession } from "@/lib/auth";
 
 export default function PlansPage() {
   const router = useRouter();
   const [session, setSession] = useState<UserSession | null>(null);
   const [licenseKey, setLicenseKey] = useState("");
   const [selectedPlan, setSelectedPlan] = useState<SelectedPlan | null>(null);
+  const [pendingPlan, setPendingPlan] = useState<SelectedPlan | null>(null);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   useEffect(() => {
     const s = getAuthSession();
-    // Default to logged-in session for smooth access
-    if (!s.isLoggedIn) {
-      setSession({
-        email: "user@larpzwallet.app",
-        isLoggedIn: true,
-        licenseKey: null,
-        isLicenseActive: false,
-        activeWallet: "phantom",
-      });
-    } else {
-      setSession(s);
-    }
+    setSession(s);
   }, []);
+
+  const handleBuyClick = (plan: SelectedPlan) => {
+    const currentSession = getAuthSession();
+    if (!currentSession.isLoggedIn) {
+      setPendingPlan(plan);
+      setIsLoginOpen(true);
+    } else {
+      setSelectedPlan(plan);
+    }
+  };
+
+  const handleLoginSuccess = () => {
+    setIsLoginOpen(false);
+    if (pendingPlan) {
+      setSelectedPlan(pendingPlan);
+      setPendingPlan(null);
+    }
+    setSession(getAuthSession());
+  };
 
   const handleLogout = () => {
     logoutUser();
@@ -125,7 +136,7 @@ export default function PlansPage() {
               </div>
 
               <button
-                onClick={() => setSelectedPlan({ name: "Starter Plan", price: "$15", duration: "7 days access" })}
+                onClick={() => handleBuyClick({ name: "Starter Plan", price: "$15", duration: "7 days access" })}
                 className="w-full py-3 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
               >
                 <span>Buy Starter</span>
@@ -154,7 +165,7 @@ export default function PlansPage() {
               </div>
 
               <button
-                onClick={() => setSelectedPlan({ name: "Pro Creator Plan", price: "$45", duration: "1 month access" })}
+                onClick={() => handleBuyClick({ name: "Pro Creator Plan", price: "$45", duration: "1 month access" })}
                 className="w-full py-3 px-4 rounded-xl btn-hero-primary font-bold text-xs flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-lg"
               >
                 <span>Buy Pro Creator</span>
@@ -179,7 +190,7 @@ export default function PlansPage() {
               </div>
 
               <button
-                onClick={() => setSelectedPlan({ name: "Lifetime Access Plan", price: "$200", duration: "Unlimited lifetime access" })}
+                onClick={() => handleBuyClick({ name: "Lifetime Access Plan", price: "$200", duration: "Unlimited lifetime access" })}
                 className="w-full py-3 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs flex items-center justify-center space-x-2 transition-all cursor-pointer"
               >
                 <span>Buy Lifetime</span>
@@ -243,6 +254,13 @@ export default function PlansPage() {
           </div>
         </div>
       </footer>
+
+      {/* LOGIN MODAL */}
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
 
       {/* CRYPTO PAYMENT CHECKOUT MODAL */}
       <CryptoPaymentModal

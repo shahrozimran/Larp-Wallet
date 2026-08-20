@@ -8,9 +8,10 @@ import { loginUser } from "@/lib/auth";
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onLoginSuccess?: () => void;
 }
 
-export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
@@ -21,7 +22,11 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     e.preventDefault();
     loginUser(email.trim() || "user@larpzwallet.app");
     onClose();
-    router.push("/plans");
+    if (onLoginSuccess) {
+      onLoginSuccess();
+    } else {
+      router.push("/plans");
+    }
   };
 
   return (
