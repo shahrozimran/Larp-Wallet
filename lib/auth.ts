@@ -1,9 +1,13 @@
+import { Profile } from "@/types/database";
+
 export interface UserSession {
   email: string;
   isLoggedIn: boolean;
   licenseKey: string | null;
   isLicenseActive: boolean;
   activeWallet: "phantom" | "trust" | "ledger";
+  role?: "user" | "admin";
+  planType?: "none" | "starter" | "pro" | "lifetime";
 }
 
 const STORAGE_KEY = "larp_wallet_auth_session";
@@ -11,7 +15,7 @@ const STORAGE_KEY = "larp_wallet_auth_session";
 export const getAuthSession = (): UserSession => {
   if (typeof window === "undefined") {
     return {
-      email: "demo@larpzwallet.app",
+      email: "",
       isLoggedIn: false,
       licenseKey: null,
       isLicenseActive: false,
@@ -22,7 +26,7 @@ export const getAuthSession = (): UserSession => {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (!stored) {
     return {
-      email: "demo@larpzwallet.app",
+      email: "",
       isLoggedIn: false,
       licenseKey: null,
       isLicenseActive: false,
@@ -34,7 +38,7 @@ export const getAuthSession = (): UserSession => {
     return JSON.parse(stored);
   } catch {
     return {
-      email: "demo@larpzwallet.app",
+      email: "",
       isLoggedIn: false,
       licenseKey: null,
       isLicenseActive: false,
@@ -52,7 +56,7 @@ export const setAuthSession = (session: Partial<UserSession>): UserSession => {
   return updated;
 };
 
-export const loginUser = (email = "demo@larpzwallet.app"): UserSession => {
+export const loginUser = (email = "user@larpzwallet.app"): UserSession => {
   return setAuthSession({
     email,
     isLoggedIn: true,
@@ -60,12 +64,12 @@ export const loginUser = (email = "demo@larpzwallet.app"): UserSession => {
 };
 
 export const logoutUser = (): UserSession => {
-  const reset = {
-    email: "demo@larpzwallet.app",
+  const reset: UserSession = {
+    email: "",
     isLoggedIn: false,
     licenseKey: null,
     isLicenseActive: false,
-    activeWallet: "phantom" as const,
+    activeWallet: "phantom",
   };
   if (typeof window !== "undefined") {
     localStorage.removeItem(STORAGE_KEY);
@@ -75,7 +79,7 @@ export const logoutUser = (): UserSession => {
 
 export const activateLicenseKey = (key: string): UserSession => {
   return setAuthSession({
-    licenseKey: key || "LRP-9814-DEMO-2026",
+    licenseKey: key || "LRP-9814-PRO-2026",
     isLicenseActive: true,
   });
 };

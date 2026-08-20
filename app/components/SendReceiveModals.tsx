@@ -13,6 +13,9 @@ import {
   ChevronDown,
 } from "lucide-react";
 
+import { useAuth } from "@/context/AuthContext";
+import { createClient } from "@/lib/supabase/client";
+
 interface ModalsProps {
   isSendOpen: boolean;
   isReceiveOpen: boolean;
@@ -26,6 +29,9 @@ export default function SendReceiveModals({
   onCloseSend,
   onCloseReceive,
 }: ModalsProps) {
+  const { user, profile } = useAuth();
+  const [supabase] = useState(() => createClient());
+
   // Send state
   const [sendAsset, setSendAsset] = useState("ETH");
   const [recipient, setRecipient] = useState("");
@@ -44,10 +50,29 @@ export default function SendReceiveModals({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSendSubmit = (e: React.FormEvent) => {
+  const handleSendSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!recipient || !amount) return;
     setIsSending(true);
+
+    try {
+      if (user) {
+        const randomHash = "0x" + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+        await (supabase.from("user_transactions") as any).insert({
+          user_id: user.id,
+          wallet_type: profile?.active_wallet || "phantom",
+          type: "send",
+          token_symbol: sendAsset,
+          amount: parseFloat(amount) || 0,
+          recipient_or_sender: recipient,
+          status: "confirmed",
+          tx_hash: randomHash,
+        });
+      }
+    } catch (err) {
+      console.error("Failed to save transaction:", err);
+    }
+
     setTimeout(() => {
       setIsSending(false);
       setSendSuccess(true);
@@ -57,7 +82,7 @@ export default function SendReceiveModals({
         setAmount("");
         onCloseSend();
       }, 1800);
-    }, 1500);
+    }, 1200);
   };
 
   return (

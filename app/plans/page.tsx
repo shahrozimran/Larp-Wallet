@@ -3,27 +3,44 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOut, Key, ArrowRight, ShieldCheck, RefreshCw, Sparkles } from "lucide-react";
+import {
+  LogOut,
+  Key,
+  ArrowRight,
+  ShieldCheck,
+  RefreshCw,
+  Sparkles,
+  AlertCircle,
+  CheckCircle2,
+  Check,
+  UserCheck,
+} from "lucide-react";
 import LoginModal from "@/components/LoginModal";
 import CryptoPaymentModal, { SelectedPlan } from "@/components/CryptoPaymentModal";
-import { getAuthSession, logoutUser, activateLicenseKey, UserSession } from "@/lib/auth";
+import { useAuth } from "@/context/AuthContext";
 
 export default function PlansPage() {
   const router = useRouter();
-  const [session, setSession] = useState<UserSession | null>(null);
+  const {
+    user,
+    profile,
+    isLoggedIn,
+    isLicenseActive,
+    loading,
+    activateLicense,
+    signOut,
+  } = useAuth();
+
   const [licenseKey, setLicenseKey] = useState("");
   const [selectedPlan, setSelectedPlan] = useState<SelectedPlan | null>(null);
   const [pendingPlan, setPendingPlan] = useState<SelectedPlan | null>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-
-  useEffect(() => {
-    const s = getAuthSession();
-    setSession(s);
-  }, []);
+  const [isActivating, setIsActivating] = useState(false);
+  const [activationError, setActivationError] = useState<string | null>(null);
+  const [activationSuccess, setActivationSuccess] = useState<string | null>(null);
 
   const handleBuyClick = (plan: SelectedPlan) => {
-    const currentSession = getAuthSession();
-    if (!currentSession.isLoggedIn) {
+    if (!isLoggedIn) {
       setPendingPlan(plan);
       setIsLoginOpen(true);
     } else {
@@ -37,27 +54,45 @@ export default function PlansPage() {
       setSelectedPlan(pendingPlan);
       setPendingPlan(null);
     }
-    setSession(getAuthSession());
   };
 
-  const handleLogout = () => {
-    logoutUser();
+  const handleLogout = async () => {
+    await signOut();
     router.push("/");
   };
 
-  const handleActivateKey = (e: React.FormEvent) => {
+  const handleActivateKey = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isLoggedIn) {
+      setIsLoginOpen(true);
+      return;
+    }
+
+    setActivationError(null);
+    setActivationSuccess(null);
+    setIsActivating(true);
+
     const keyToUse = licenseKey.trim() || "LRP-9814-PRO-2026";
-    activateLicenseKey(keyToUse);
-    router.push("/dashboard");
+    const result = await activateLicense(keyToUse);
+
+    setIsActivating(false);
+
+    if (result.success) {
+      setActivationSuccess("License activated successfully! Redirecting to Dashboard...");
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000);
+    } else {
+      setActivationError(result.message || "Failed to activate license key.");
+    }
   };
 
-  if (!session) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-[#08061a] text-white flex items-center justify-center font-sans">
         <div className="flex items-center space-x-3 text-[#a78bfa]">
           <RefreshCw className="w-6 h-6 animate-spin" />
-          <span className="font-mono text-sm font-semibold">Loading...</span>
+          <span className="font-mono text-sm font-semibold">Loading membership data...</span>
         </div>
       </div>
     );
@@ -82,18 +117,70 @@ export default function PlansPage() {
             </span>
           </Link>
 
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Logout</span>
-          </button>
+          <div className="flex items-center space-x-3">
+            {isLoggedIn ? (
+              <div className="flex items-center space-x-3">
+                <div className="hidden sm:flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-gray-300">
+                  <UserCheck className="w-3.5 h-3.5 text-[#a78bfa]" />
+                  <span className="max-w-[140px] truncate">{user?.email}</span>
+                </div>
+
+                {isLicenseActive && (
+                  <Link
+                    href="/dashboard"
+                    className="px-4 py-1.5 rounded-full btn-hero-primary text-xs font-bold tracking-wide transition-all shadow-md"
+                  >
+                    Go to Dashboard
+                  </Link>
+                )}
+
+                <button
+                  onClick={handleLogout}
+                  className="px-3.5 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Logout</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsLoginOpen(true)}
+                className="px-4 py-1.5 rounded-full btn-nav-login text-xs font-bold tracking-wide flex items-center space-x-1.5 cursor-pointer"
+              >
+                <span>Sign In</span>
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
       {/* MAIN CONTENT */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center space-y-10">
+
+        {/* Active License Banner if already active */}
+        {isLicenseActive && (
+          <div className="w-full p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-emerald-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <Check className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="font-bold text-white">Active License Detected</span> (
+                <span className="capitalize text-emerald-300">{profile?.plan_type || "Pro"}</span> Plan)
+                <p className="text-xs text-gray-300">
+                  Key: <span className="font-mono text-emerald-300">{profile?.license_key}</span>
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/dashboard"
+              className="px-4 py-2 rounded-xl btn-hero-primary text-xs font-bold inline-flex items-center space-x-1.5 shrink-0"
+            >
+              <span>Open Dashboard</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
 
         {/* Header Title */}
         <div className="text-center space-y-2 max-w-xl">
@@ -114,7 +201,7 @@ export default function PlansPage() {
             <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
               Select a Plan to Buy
             </h2>
-            <span className="text-xs text-[#a78bfa] font-mono font-bold">50% Discount Applied</span>
+            <span className="text-xs text-[#a78bfa] font-mono font-bold">50% Regional Discount Applied</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -210,8 +297,23 @@ export default function PlansPage() {
           <div className="border-t border-white/10 w-full" />
         </div>
 
-        {/* ── SECTION 2: LICENSE KEY FORM ── */}
+        {/* ── SECTION 2: LICENSE KEY ACTIVATION FORM ── */}
         <form onSubmit={handleActivateKey} className="w-full max-w-lg p-6 sm:p-8 rounded-3xl glass-card-dark border border-white/10 space-y-5">
+          
+          {activationError && (
+            <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/25 flex items-start space-x-2.5 text-xs text-red-300 animate-fadeIn">
+              <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+              <span>{activationError}</span>
+            </div>
+          )}
+
+          {activationSuccess && (
+            <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-start space-x-2.5 text-xs text-emerald-300 animate-fadeIn">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <span>{activationSuccess}</span>
+            </div>
+          )}
+
           <div>
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
               Enter License Key
@@ -222,19 +324,32 @@ export default function PlansPage() {
                 required
                 value={licenseKey}
                 onChange={(e) => setLicenseKey(e.target.value)}
-                placeholder="LRP-XXXX-XXXX-XXXX"
-                className="w-full px-4 py-3.5 rounded-xl bg-[#0d0a24] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#7c5ce8] transition-colors"
+                placeholder="LRP-9814-PRO-2026"
+                className="w-full px-4 py-3.5 rounded-xl bg-[#0d0a24] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#7c5ce8] transition-colors uppercase"
               />
               <Key className="w-4 h-4 text-gray-500 absolute right-4 top-4" />
             </div>
+            <p className="text-[11px] text-gray-500 mt-1.5 font-mono">
+              Tip: You can use <span className="text-[#a78bfa]">LRP-9814-PRO-2026</span> or <span className="text-[#a78bfa]">LRP-STARTER-2026</span>
+            </p>
           </div>
 
           <button
             type="submit"
-            className="w-full py-3.5 px-4 rounded-xl btn-hero-primary font-bold text-sm tracking-wide cursor-pointer flex items-center justify-center space-x-2"
+            disabled={isActivating}
+            className="w-full py-3.5 px-4 rounded-xl btn-hero-primary font-bold text-sm tracking-wide cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-60"
           >
-            <ShieldCheck className="w-4 h-4" />
-            <span>Activate Key &amp; Open Wallets</span>
+            {isActivating ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                <span>Verifying with Supabase...</span>
+              </>
+            ) : (
+              <>
+                <ShieldCheck className="w-4 h-4" />
+                <span>Activate Key &amp; Open Wallets</span>
+              </>
+            )}
           </button>
         </form>
 
@@ -266,6 +381,10 @@ export default function PlansPage() {
       <CryptoPaymentModal
         plan={selectedPlan}
         onClose={() => setSelectedPlan(null)}
+        onSuccess={() => {
+          setSelectedPlan(null);
+          router.push("/dashboard");
+        }}
       />
 
     </div>
