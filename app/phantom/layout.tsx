@@ -10,13 +10,13 @@ export const metadata: Metadata = {
     title: "Phantom",
   },
   icons: {
-    icon: "/Phantom 2.png",
-    apple: "/Phantom 2.png",
+    icon: "/phantom-icon-512.png",
+    apple: "/apple-touch-icon.png",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#ab9ff1",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -36,7 +36,7 @@ export default function PhantomLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Phantom" />
-        <link rel="apple-touch-icon" href="/Phantom 2.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <div className="min-h-screen bg-[#000000] text-white">
         {children}
