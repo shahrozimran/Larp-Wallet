@@ -109,7 +109,7 @@ export default function PricingPage() {
           </div>
 
           {/* TIER 2: MOST POPULAR (HIGHLIGHTED CARD) */}
-          <div className="p-8 rounded-3xl bg-[#0c130e] border-2 border-[#8a9a5b] shadow-[0_0_40px_rgba(138,154,91,0.25)] flex flex-col justify-between space-y-8 relative scale-105 z-10">
+          <div className="p-8 rounded-3xl bg-[#0c130e] border-2 border-[#8a9a5b] shadow-[0_0_40px_rgba(138,154,91,0.25)] flex flex-col justify-between space-y-8 relative md:scale-105 z-10">
             
             {/* Highlighted Ribbon Glow */}
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#8a9a5b] text-white text-[10px] font-mono font-extrabold uppercase tracking-widest shadow-lg">

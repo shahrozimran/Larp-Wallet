@@ -309,7 +309,7 @@ export default function ReviewsPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-4 py-2 rounded-full transition-all cursor-pointer ${
+              className={`px-3.5 sm:px-4 py-2 rounded-full transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 activeTab === tab.id
                   ? "bg-[#8a9a5b] text-white shadow-[0_0_15px_rgba(138,154,91,0.4)]"
                   : "bg-white/5 text-gray-400 border border-white/5 hover:text-white hover:bg-white/10"
