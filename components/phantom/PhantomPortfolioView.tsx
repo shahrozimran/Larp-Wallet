@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ChevronDown, ChevronRight, Banknote } from "lucide-react";
+import { ChevronDown, ChevronRight, Banknote, ArrowUpRight } from "lucide-react";
 
 export interface Holding {
   coinId: string;
@@ -108,8 +108,12 @@ export default function PhantomPortfolioView({
   // Perps market data dynamically fetched from live coins or default top futures
   const btcCoin = coins.find((c) => c.id === "bitcoin");
   const ethCoin = coins.find((c) => c.id === "ethereum");
+  const solCoin = coins.find((c) => c.id === "solana") || { id: "solana", symbol: "SOL", name: "Solana", image: "", price: 87.41, change24h: 6.1 };
+  
   const btcChange = btcCoin ? btcCoin.change24h : 6.28;
   const ethChange = ethCoin ? ethCoin.change24h : 10.93;
+
+  const featuredCoin = solCoin;
 
   return (
     <div className="flex flex-col w-full px-4 pt-3 space-y-6">
@@ -121,7 +125,7 @@ export default function PhantomPortfolioView({
           type="button"
           className="flex items-center space-x-1 text-sm font-semibold text-gray-300 hover:text-white transition-colors cursor-pointer"
         >
-          <span>{accountName || "Konto 1"}</span>
+          <span>{accountName || "Account 1"}</span>
           <ChevronDown className="w-4 h-4 text-gray-300 stroke-[2.5]" />
         </button>
 
@@ -273,7 +277,7 @@ export default function PhantomPortfolioView({
         </button>
 
         {/* Perps Horizontal Scroll Carousel */}
-        <div className="flex space-x-3 overflow-x-auto no-scrollbar pb-3">
+        <div className="flex space-x-3 overflow-x-auto no-scrollbar pb-1">
           
           {/* BTC Card */}
           <div
@@ -339,6 +343,95 @@ export default function PhantomPortfolioView({
           </div>
 
         </div>
+      </div>
+
+      {/* ── UP OR DOWN > (LIVE PREDICTION GAME SECTION BELOW PERPS) ── */}
+      <div className="space-y-3 pt-1">
+        <button
+          type="button"
+          className="flex items-center space-x-1 text-xl font-extrabold text-white hover:text-[#beacff] transition-colors cursor-pointer"
+        >
+          <span>Up or Down</span>
+          <ChevronRight className="w-5 h-5 text-gray-300 stroke-[2.5]" />
+        </button>
+
+        <div className="bg-[#18181b] rounded-3xl p-4 border border-white/5 space-y-4">
+          {/* Target & Timer Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="w-6 h-6 rounded-full overflow-hidden bg-[#27272a] shrink-0 flex items-center justify-center">
+                {featuredCoin.image ? (
+                  <img src={featuredCoin.image} alt={featuredCoin.name} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="font-black text-[9px] text-white">SOL</span>
+                )}
+              </div>
+              <div>
+                <div className="font-extrabold text-base text-white font-mono">${featuredCoin.price ? featuredCoin.price.toFixed(2) : "87.39"}</div>
+                <div className="text-xs font-semibold text-gray-400">Target ${(featuredCoin.price ? featuredCoin.price * 0.9995 : 87.35).toFixed(2)}</div>
+              </div>
+            </div>
+            <div className="bg-[#202024] px-3 py-1 rounded-full text-xs font-extrabold text-white font-mono border border-white/5">
+              00:43
+            </div>
+          </div>
+
+          {/* Live Dynamic Trend Graph SVG */}
+          <div className="h-24 w-full relative pt-2">
+            <svg viewBox="0 0 300 80" className="w-full h-full overflow-visible">
+              {/* Dashed Target line */}
+              <line x1="0" y1="50" x2="300" y2="50" stroke="#52525b" strokeDasharray="4 4" strokeWidth="1.5" />
+              {/* Target pill badge label */}
+              <rect x="235" y="41" width="55" height="18" rx="9" fill="#52525b" />
+              <text x="262" y="53" fill="#ffffff" fontSize="10" fontWeight="bold" textAnchor="middle">${(featuredCoin.price ? featuredCoin.price * 0.9995 : 87.35).toFixed(2)}</text>
+              
+              {/* Live Green Path */}
+              <path
+                d="M 0,45 L 30,45 L 40,65 L 70,65 L 90,30 L 110,40 L 125,25 L 140,40 L 160,15 L 210,15 Z"
+                fill="none"
+                stroke="#10b981"
+                strokeWidth="3"
+                strokeLinecap="round"
+              />
+              {/* Glowing end point */}
+              <circle cx="210" cy="15" r="4" fill="#10b981" />
+              <circle cx="210" cy="15" r="8" fill="#10b981" opacity="0.4" className="animate-ping" />
+            </svg>
+          </div>
+
+          {/* Up / Down Choice Buttons */}
+          <div className="flex items-center space-x-3">
+            <button type="button" className="flex-1 py-3 bg-[#202024] hover:bg-[#2c2c32] rounded-xl text-center transition-colors cursor-pointer border border-white/5">
+              <span className="font-extrabold text-sm text-[#10b981]">▲ Up · 0%</span>
+            </button>
+            <button type="button" className="flex-1 py-3 bg-[#202024] hover:bg-[#2c2c32] rounded-xl text-center transition-colors cursor-pointer border border-white/5">
+              <span className="font-extrabold text-sm text-[#ef4444]">▼ Down · 100%</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── EXPLORE (STAKING / YIELD SECTION BELOW PERPS) ── */}
+      <div className="space-y-3 pt-1">
+        <h3 className="text-xl font-extrabold text-white">Explore</h3>
+        <div className="flex items-center space-x-3.5 p-4 bg-[#18181b] rounded-2xl border border-white/5 cursor-pointer hover:bg-[#202024] transition-all">
+          <div className="w-10 h-10 rounded-full bg-[#beacff]/20 text-[#beacff] flex items-center justify-center shrink-0">
+            <ArrowUpRight className="w-5 h-5 stroke-[2.5]" />
+          </div>
+          <div>
+            <div className="font-extrabold text-base text-white">Stake PSOL</div>
+            <div className="text-sm font-semibold text-[#beacff]">Earn 6.03% APY</div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── RELATED NEWS SECTION BELOW PERPS ── */}
+      <div className="space-y-2 pt-1 pb-4">
+        <h3 className="text-xl font-extrabold text-white">Related News</h3>
+        <div className="text-xs font-extrabold text-[#10b981]">2 sources · Bullish</div>
+        <p className="text-sm font-medium text-gray-300 leading-relaxed">
+          Solana&apos;s Agave 4.2 upgrade goes live with 90% rent cut, 3.3x larger transactions, and path to enhanced throughput...
+        </p>
       </div>
 
     </div>
