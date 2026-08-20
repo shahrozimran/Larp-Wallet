@@ -8,18 +8,8 @@ import {
   Check,
   Search,
 } from "lucide-react";
-import { Holding } from "./PhantomPortfolioView";
+import { Holding, CoinToken } from "./PhantomPortfolioView";
 import PhantomTokenPickerModal from "./PhantomTokenPickerModal";
-
-interface CoinToken {
-  id: string;
-  symbol: string;
-  name: string;
-  image: string;
-  price: number;
-  marketCap: number;
-  change24h: number;
-}
 
 interface PhantomTradeViewProps {
   coins: CoinToken[];
@@ -38,7 +28,7 @@ function formatPrice(price: number): string {
   return `$${price.toFixed(8)}`;
 }
 
-function formatMarketCap(mc: number): string {
+function formatMarketCap(mc: number = 0): string {
   if (mc >= 1e9) return `$${(mc / 1e9).toFixed(1)}B MC`;
   if (mc >= 1e6) return `$${(mc / 1e6).toFixed(0)}M MC`;
   return `$${(mc / 1e3).toFixed(0)}K MC`;

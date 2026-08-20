@@ -9,27 +9,16 @@ import {
   CircleDollarSign,
   ArrowLeftRight,
   X,
-  Wifi,
-  Battery,
 } from "lucide-react";
 import PhantomSidebar from "./PhantomSidebar";
 import PhantomInstallPrompt from "./PhantomInstallPrompt";
 import PhantomSettingsModal from "./PhantomSettingsModal";
 import PhantomProfileModal from "./PhantomProfileModal";
 import PhantomAddCashModal from "./PhantomAddCashModal";
-import PhantomPortfolioView, { Holding } from "./PhantomPortfolioView";
+import PhantomPortfolioView, { Holding, CoinToken } from "./PhantomPortfolioView";
 import PhantomTradeView from "./PhantomTradeView";
 import PhantomExploreView from "./PhantomExploreView";
-
-interface CoinToken {
-  id: string;
-  symbol: string;
-  name: string;
-  image: string;
-  price: number;
-  marketCap: number;
-  change24h: number;
-}
+import PhantomCoinDetailModal from "./PhantomCoinDetailModal";
 
 export default function PhantomHome() {
   const [activeTab, setActiveTab] = useState("Start");
@@ -39,6 +28,7 @@ export default function PhantomHome() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAddCashOpen, setIsAddCashOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCoinForDetail, setSelectedCoinForDetail] = useState<CoinToken | null>(null);
 
   // Live market data
   const [coins, setCoins] = useState<CoinToken[]>([]);
@@ -51,7 +41,7 @@ export default function PhantomHome() {
 
   // Persistent user handle & account name
   const [handle, setHandle] = useState("@GuidedMutt3528");
-  const [accountName, setAccountName] = useState("Konto 1");
+  const [accountName, setAccountName] = useState("Account 1");
 
   useEffect(() => {
     const savedHandle = localStorage.getItem("phantom_user_handle");
@@ -122,12 +112,12 @@ export default function PhantomHome() {
     localStorage.setItem("phantom_holdings", JSON.stringify(newHoldings));
   };
 
-  // Tabs matching reference screenshot (German: Start, Handel, Vorhersage, Erkunden)
+  // English Nav Tabs: Home, Trade, Predictions, Explore
   const navTabs = [
-    { key: "Start", label: "Start" },
-    { key: "Handel", label: "Handel" },
-    { key: "Vorhersage", label: "Vorhersage" },
-    { key: "Erkunden", label: "Erk..." },
+    { key: "Start", label: "Home" },
+    { key: "Handel", label: "Trade" },
+    { key: "Vorhersage", label: "Predictions" },
+    { key: "Erkunden", label: "Explore" },
   ];
 
   const speedDialItems = [
@@ -143,13 +133,12 @@ export default function PhantomHome() {
       {/* ── HEADER NAV BAR (Avatar + Pill Tabs) ── */}
       <header className="sticky top-0 z-40 bg-[#000000]/95 backdrop-blur-md px-4 py-2.5 flex items-center space-x-2.5 border-b border-white/5">
         
-        {/* Profile Avatar Button (Yellow Blob Avatar in Purple Frame matching Screenshot) */}
+        {/* Profile Avatar Button */}
         <button
           type="button"
           onClick={() => setIsSidebarOpen(true)}
           className="w-10 h-10 rounded-full bg-[#a594fd] flex items-center justify-center shrink-0 border border-white/10 hover:scale-105 transition-transform cursor-pointer shadow-sm"
         >
-          {/* Yellow character icon face */}
           <div className="w-6.5 h-6.5 rounded-full bg-[#fde047] flex items-center justify-center relative shadow-inner">
             <div className="w-1.5 h-1.5 bg-[#3b0764] rounded-full absolute top-2 left-1.5" />
             <div className="w-1.5 h-1.5 bg-[#3b0764] rounded-full absolute top-2 right-1.5" />
@@ -157,7 +146,7 @@ export default function PhantomHome() {
           </div>
         </button>
 
-        {/* Horizontal Navigation Pills (Start, Handel, Vorhersage, Erk...) */}
+        {/* Horizontal Navigation Pills (Home, Trade, Predictions, Explore) */}
         <nav className="flex items-center space-x-2 overflow-x-auto no-scrollbar py-0.5">
           {navTabs.map((tab) => {
             const isActive = activeTab === tab.key;
@@ -204,6 +193,7 @@ export default function PhantomHome() {
             currency={currency}
             usdToGbp={usdToGbp}
             accountName={accountName}
+            onSelectCoin={(coin) => setSelectedCoinForDetail(coin)}
           />
         )}
       </main>
@@ -216,7 +206,7 @@ export default function PhantomHome() {
         />
       )}
 
-      {/* ── FIXED BOTTOM SEARCH & ACTION BAR (Phantom durchsuchen + (+) Button) ── */}
+      {/* ── FIXED BOTTOM SEARCH & ACTION BAR ── */}
       <footer className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-[#000000] via-[#000000]/95 to-transparent pt-3 pb-5 px-4">
         
         {/* Speed Dial Menu Items */}
@@ -249,14 +239,14 @@ export default function PhantomHome() {
 
         <div className="max-w-lg mx-auto flex items-center justify-between gap-3">
           
-          {/* Pill Search Input Bar ("Phantom durchsuchen") */}
+          {/* Search Input Bar ("Search Phantom") */}
           <div className="relative flex-1">
             <Search className="w-5 h-5 text-gray-400 absolute left-4 top-3.5" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Phantom durchsuchen"
+              placeholder="Search Phantom"
               className="w-full pl-11 pr-4 py-3 rounded-full bg-[#202024] border border-white/5 text-white text-base placeholder-gray-400 focus:outline-none focus:border-[#beacff]/60 transition-all font-medium"
             />
           </div>
@@ -280,6 +270,17 @@ export default function PhantomHome() {
 
         </div>
       </footer>
+
+      {/* ── TOKEN DETAIL MODAL SHEET ── */}
+      <PhantomCoinDetailModal
+        isOpen={selectedCoinForDetail !== null}
+        onClose={() => setSelectedCoinForDetail(null)}
+        coin={selectedCoinForDetail}
+        onTrade={() => {
+          setSelectedCoinForDetail(null);
+          setActiveTab("Handel");
+        }}
+      />
 
       {/* ── LEFT PROFILE SIDEBAR DRAWER ── */}
       <PhantomSidebar

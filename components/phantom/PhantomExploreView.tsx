@@ -3,16 +3,7 @@
 import React, { useState } from "react";
 import { Search, X, CheckCircle2, TrendingUp, TrendingDown } from "lucide-react";
 import PhantomCoinDetailModal from "./PhantomCoinDetailModal";
-
-interface CoinToken {
-  id: string;
-  symbol: string;
-  name: string;
-  image: string;
-  price: number;
-  marketCap: number;
-  change24h: number;
-}
+import { CoinToken } from "./PhantomPortfolioView";
 
 interface PhantomExploreViewProps {
   coins: CoinToken[];
@@ -28,7 +19,7 @@ function formatPrice(price: number): string {
   return `$${price.toFixed(8)}`;
 }
 
-function formatMarketCap(mc: number): string {
+function formatMarketCap(mc: number = 0): string {
   if (mc >= 1e9) return `$${(mc / 1e9).toFixed(1)}B MC`;
   if (mc >= 1e6) return `$${(mc / 1e6).toFixed(0)}M MC`;
   return `$${(mc / 1e3).toFixed(0)}K MC`;

@@ -9,12 +9,13 @@ export interface Holding {
   avgBuyPrice: number;
 }
 
-interface CoinToken {
+export interface CoinToken {
   id: string;
   symbol: string;
   name: string;
   image: string;
   price: number;
+  marketCap?: number;
   change24h: number;
 }
 
@@ -24,6 +25,7 @@ interface PhantomPortfolioViewProps {
   currency: "usd" | "gbp";
   usdToGbp: number;
   accountName: string;
+  onSelectCoin?: (coin: CoinToken) => void;
 }
 
 type EnrichedHolding = {
@@ -62,7 +64,8 @@ export default function PhantomPortfolioView({
   coins,
   currency,
   usdToGbp,
-  accountName = "Konto 1",
+  accountName = "Account 1",
+  onSelectCoin,
 }: PhantomPortfolioViewProps) {
 
   // Enrich user holdings dynamically with live coin prices
@@ -180,6 +183,7 @@ export default function PhantomPortfolioView({
             return (
               <div
                 key={item.coinId}
+                onClick={() => onSelectCoin?.(item.coin)}
                 className="flex items-center justify-between p-4 bg-[#18181b] hover:bg-[#202024] rounded-2xl border border-white/5 transition-all cursor-pointer group"
               >
                 <div className="flex items-center space-x-3.5">
@@ -226,6 +230,7 @@ export default function PhantomPortfolioView({
             defaultRows.map((row) => (
               <div
                 key={row.coinId}
+                onClick={() => onSelectCoin?.(row.coin)}
                 className="flex items-center justify-between p-4 bg-[#18181b] hover:bg-[#202024] rounded-2xl border border-white/5 transition-all cursor-pointer opacity-80"
               >
                 <div className="flex items-center space-x-3.5">
@@ -271,7 +276,13 @@ export default function PhantomPortfolioView({
         <div className="flex space-x-3 overflow-x-auto no-scrollbar pb-3">
           
           {/* BTC Card */}
-          <div className="w-36 h-36 rounded-2xl bg-[#18181b] hover:bg-[#202024] p-4 border border-white/5 flex flex-col justify-between shrink-0 transition-all cursor-pointer group">
+          <div
+            onClick={() => {
+              const btc = coins.find((c) => c.id === "bitcoin") || { id: "bitcoin", symbol: "BTC", name: "Bitcoin", image: "", price: 92000, change24h: 6.28 };
+              onSelectCoin?.(btc);
+            }}
+            className="w-36 h-36 rounded-2xl bg-[#18181b] hover:bg-[#202024] p-4 border border-white/5 flex flex-col justify-between shrink-0 transition-all cursor-pointer group"
+          >
             <div className="w-10 h-10 rounded-full bg-[#f7931a] flex items-center justify-center text-white font-black text-lg shadow-md shrink-0">
               ₿
             </div>
@@ -287,7 +298,13 @@ export default function PhantomPortfolioView({
           </div>
 
           {/* ETH Card */}
-          <div className="w-36 h-36 rounded-2xl bg-[#18181b] hover:bg-[#202024] p-4 border border-white/5 flex flex-col justify-between shrink-0 transition-all cursor-pointer group">
+          <div
+            onClick={() => {
+              const eth = coins.find((c) => c.id === "ethereum") || { id: "ethereum", symbol: "ETH", name: "Ethereum", image: "", price: 3400, change24h: 10.93 };
+              onSelectCoin?.(eth);
+            }}
+            className="w-36 h-36 rounded-2xl bg-[#18181b] hover:bg-[#202024] p-4 border border-white/5 flex flex-col justify-between shrink-0 transition-all cursor-pointer group"
+          >
             <div className="w-10 h-10 rounded-full bg-[#282a36] border border-white/10 flex items-center justify-center text-teal-300 font-extrabold text-base shadow-md shrink-0">
               ◆
             </div>
@@ -303,7 +320,13 @@ export default function PhantomPortfolioView({
           </div>
 
           {/* HY Card */}
-          <div className="w-36 h-36 rounded-2xl bg-[#18181b] hover:bg-[#202024] p-4 border border-white/5 flex flex-col justify-between shrink-0 transition-all cursor-pointer group">
+          <div
+            onClick={() => {
+              const hy = coins.find((c) => c.id === "hyperliquid") || { id: "hyperliquid", symbol: "HYPE", name: "Hyperliquid", image: "", price: 24.5, change24h: 3.5 };
+              onSelectCoin?.(hy);
+            }}
+            className="w-36 h-36 rounded-2xl bg-[#18181b] hover:bg-[#202024] p-4 border border-white/5 flex flex-col justify-between shrink-0 transition-all cursor-pointer group"
+          >
             <div className="w-10 h-10 rounded-full bg-[#14262b] border border-[#20ded3]/30 flex items-center justify-center text-[#20ded3] font-black text-sm shadow-md shrink-0">
               HY
             </div>

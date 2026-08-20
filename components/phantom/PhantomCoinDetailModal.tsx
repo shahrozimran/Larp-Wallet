@@ -2,267 +2,295 @@
 
 import React, { useState } from "react";
 import {
-  ArrowLeft,
+  X,
+  Heart,
+  MoreHorizontal,
+  ChevronRight,
+  Sparkles,
   CheckCircle2,
   TrendingUp,
   TrendingDown,
-  ArrowLeftRight,
-  Plus,
-  Send,
-  ExternalLink,
+  ArrowUpRight,
+  Flame,
 } from "lucide-react";
-
-interface CoinToken {
-  id: string;
-  symbol: string;
-  name: string;
-  image: string;
-  price: number;
-  marketCap: number;
-  change24h: number;
-}
+import { CoinToken } from "./PhantomPortfolioView";
 
 interface PhantomCoinDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   coin: CoinToken | null;
-  onSwap: (coin: CoinToken) => void;
-  onBuy: (coin: CoinToken) => void;
+  onTrade?: (coin: CoinToken) => void;
+  onSwap?: (coin: CoinToken) => void;
+  onBuy?: (coin: CoinToken) => void;
 }
 
 function formatPrice(price: number): string {
-  if (price >= 1000)
-    return `$${price.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
-  if (price >= 1) return `$${price.toFixed(4)}`;
-  if (price >= 0.01) return `$${price.toFixed(5)}`;
+  if (price >= 1000) return `$${price.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+  if (price >= 1) return `$${price.toFixed(2)}`;
+  if (price >= 0.01) return `$${price.toFixed(4)}`;
   return `$${price.toFixed(8)}`;
 }
 
 function formatLargeNum(num: number): string {
-  if (num >= 1e12) return `$${(num / 1e12).toFixed(2)}T`;
-  if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`;
-  if (num >= 1e6) return `$${(num / 1e6).toFixed(2)}M`;
-  if (num >= 1e3) return `$${(num / 1e3).toFixed(2)}K`;
+  if (num >= 1e12) return `$${(num / 1e12).toFixed(1)}T`;
+  if (num >= 1e9) return `$${(num / 1e9).toFixed(1)}B`;
+  if (num >= 1e6) return `$${(num / 1e6).toFixed(1)}M`;
+  if (num >= 1e3) return `$${(num / 1e3).toFixed(1)}K`;
   return `$${num.toFixed(2)}`;
-}
-
-// Generate smooth SVG path points for trend chart
-function generateChartPath(isPositive: boolean): string {
-  if (isPositive) {
-    return "M 0,80 C 40,75 70,85 100,60 C 130,35 160,50 190,30 C 220,10 250,25 280,15 C 310,5 340,15 360,5";
-  }
-  return "M 0,10 C 40,15 70,25 100,35 C 130,55 160,40 190,65 C 220,75 250,60 280,80 C 310,85 340,75 360,95";
 }
 
 export default function PhantomCoinDetailModal({
   isOpen,
   onClose,
   coin,
-  onSwap,
-  onBuy,
+  onTrade,
 }: PhantomCoinDetailModalProps) {
-  const [timeframe, setTimeframe] = useState<"1D" | "1W" | "1M" | "1Y" | "ALL">("1D");
+  const [isFavorite, setIsFavorite] = useState(false);
 
   if (!isOpen || !coin) return null;
 
   const isPositive = coin.change24h >= 0;
-  const strokeColor = isPositive ? "#34d399" : "#f87171";
-  const fillColor = isPositive ? "rgba(52, 211, 153, 0.1)" : "rgba(248, 113, 113, 0.1)";
-
-  const volume24h = coin.marketCap * 0.085;
-  const ath = coin.price * (isPositive ? 1.45 : 2.1);
+  const marketCap = coin.marketCap || (coin.price * 580000000);
+  const volume24h = marketCap * 0.13;
+  const fundingRate = "0.00125%";
+  const openInterest = formatLargeNum(marketCap * 0.008);
 
   return (
-    <div className="fixed inset-0 z-[70] flex flex-col bg-[#000000] text-white font-sans animate-slideUp overflow-hidden">
-      {/* ── HEADER ── */}
-      <div className="sticky top-0 z-10 bg-[#000000] px-4 pt-12 pb-3 flex items-center justify-between border-b border-white/5">
-        <div className="flex items-center space-x-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-9 h-9 rounded-full bg-[#1c1c1e] flex items-center justify-center hover:bg-[#2c2c2e] transition-colors cursor-pointer shrink-0"
-          >
-            <ArrowLeft className="w-5 h-5 text-white" />
-          </button>
-          <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden bg-[#1c1c1e] shrink-0">
-              <img
-                src={coin.image}
-                alt={coin.name}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).src = "/img.jpeg";
-                }}
-              />
-            </div>
-            <span className="font-extrabold text-base text-white">{coin.name}</span>
-            <CheckCircle2 className="w-4 h-4 text-[#a594fd] fill-[#a594fd]/20" />
-          </div>
+    <div className="fixed inset-0 z-[70] flex flex-col justify-end bg-black/80 backdrop-blur-sm animate-fadeIn">
+      {/* Click backdrop to dismiss */}
+      <div className="absolute inset-0" onClick={onClose} />
+
+      {/* Main Sheet Container */}
+      <div className="relative z-10 w-full max-w-[430px] mx-auto bg-[#000000] text-white rounded-t-[32px] border-t border-white/10 max-h-[92vh] flex flex-col overflow-hidden shadow-2xl animate-slideUp">
+        
+        {/* Handle Bar Drag Indicator */}
+        <div className="pt-3 pb-1 flex justify-center cursor-pointer" onClick={onClose}>
+          <div className="w-10 h-1 bg-[#3f3f46] rounded-full" />
         </div>
 
-        <button
-          type="button"
-          className="w-9 h-9 rounded-full bg-[#1c1c1e] flex items-center justify-center hover:bg-[#2c2c2e] text-gray-400 hover:text-white transition-colors cursor-pointer"
-        >
-          <ExternalLink className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* ── BODY ── */}
-      <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6 max-w-lg mx-auto w-full">
-        {/* PRICE HERO */}
-        <div className="space-y-1">
-          <div className="text-4xl font-extrabold text-white font-mono tracking-tight">
-            {formatPrice(coin.price)}
-          </div>
-          <div className="flex items-center space-x-2">
-            <span
-              className={`flex items-center space-x-1 text-sm font-bold px-2.5 py-0.5 rounded-full ${
-                isPositive ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"
-              }`}
-            >
-              {isPositive ? (
-                <TrendingUp className="w-3.5 h-3.5" />
+        {/* ── TOP HEADER BAR ── */}
+        <div className="px-5 py-3 flex items-center justify-between border-b border-white/5 shrink-0">
+          <div className="flex items-center space-x-3">
+            {/* Token Icon */}
+            <div className="w-9 h-9 rounded-full overflow-hidden bg-[#27272a] border border-white/10 flex items-center justify-center shrink-0">
+              {coin.image ? (
+                <img
+                  src={coin.image}
+                  alt={coin.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = "none";
+                  }}
+                />
               ) : (
-                <TrendingDown className="w-3.5 h-3.5" />
+                <span className="font-black text-xs text-white">{coin.symbol.slice(0, 3)}</span>
               )}
-              <span>
-                {isPositive ? "+" : ""}
-                {coin.change24h.toFixed(2)}%
-              </span>
-            </span>
-            <span className="text-xs font-semibold text-gray-500">24h Change</span>
+            </div>
+
+            {/* Token Title & Price Subtitle */}
+            <div>
+              <div className="font-extrabold text-base text-white leading-tight">{coin.name}</div>
+              <div className="text-xs font-bold text-gray-400 font-mono">{formatPrice(coin.price)}</div>
+            </div>
+          </div>
+
+          {/* Right Action Icons (♡, ···, X) */}
+          <div className="flex items-center space-x-2">
+            <button
+              type="button"
+              onClick={() => setIsFavorite(!isFavorite)}
+              className="w-9 h-9 rounded-full bg-[#18181b] hover:bg-[#27272a] flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <Heart className={`w-5 h-5 ${isFavorite ? "fill-red-500 text-red-500" : "text-gray-300"}`} />
+            </button>
+            <button
+              type="button"
+              className="w-9 h-9 rounded-full bg-[#18181b] hover:bg-[#27272a] flex items-center justify-center transition-colors cursor-pointer text-gray-300"
+            >
+              <MoreHorizontal className="w-5 h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-9 h-9 rounded-full bg-[#18181b] hover:bg-[#27272a] flex items-center justify-center transition-colors cursor-pointer text-gray-300"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
         </div>
 
-        {/* PRICE CHART */}
-        <div className="bg-[#111113] rounded-3xl p-4 border border-white/5 space-y-4">
-          <div className="h-44 w-full relative pt-2">
-            <svg viewBox="0 0 360 100" className="w-full h-full overflow-visible">
-              <defs>
-                <linearGradient id={`grad-${coin.id}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={strokeColor} stopOpacity="0.3" />
-                  <stop offset="100%" stopColor={strokeColor} stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              {/* Area fill */}
-              <path
-                d={`${generateChartPath(isPositive)} L 360,100 L 0,100 Z`}
-                fill={`url(#grad-${coin.id})`}
-              />
-              {/* Stroke path */}
-              <path
-                d={generateChartPath(isPositive)}
-                fill="none"
-                stroke={strokeColor}
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-            </svg>
+        {/* ── SCROLLABLE BODY CONTENT ── */}
+        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6 no-scrollbar">
+
+          {/* 1. Market Sentiment Banner Card */}
+          <div className="flex items-center space-x-3.5 p-4 bg-[#18181b] rounded-2xl border border-white/5">
+            <div className="w-9 h-9 rounded-full bg-[#f97316]/20 flex items-center justify-center text-[#f97316] shrink-0">
+              <Flame className="w-5 h-5 fill-[#f97316]" />
+            </div>
+            <span className="font-extrabold text-base text-white">Don&apos;t chase</span>
           </div>
 
-          {/* Timeframe Selector Pills */}
-          <div className="flex items-center justify-between px-2 pt-2 border-t border-white/5">
-            {(["1D", "1W", "1M", "1Y", "ALL"] as const).map((tf) => (
-              <button
-                key={tf}
-                type="button"
-                onClick={() => setTimeframe(tf)}
-                className={`px-3 py-1 rounded-full text-xs font-bold transition-colors cursor-pointer ${
-                  timeframe === tf
-                    ? "bg-[#a594fd] text-black"
-                    : "text-gray-500 hover:text-gray-300"
-                }`}
-              >
-                {tf}
-              </button>
-            ))}
+          {/* 2. AI Market Insight Summary */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-gray-200 leading-relaxed">
+              {coin.name} has seen increased institutional interest and network activity, with tokenized equities on the platform reaching $465 million and a dormant whale resuming accumulation...
+            </p>
+            <div className="flex items-center space-x-1.5 text-xs font-semibold text-[#beacff]">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>1m ago · Generated from market insights</span>
+            </div>
           </div>
+
+          {/* 3. About [Token] > Section & Key Stats */}
+          <div className="space-y-3">
+            <button type="button" className="flex items-center space-x-1 text-xl font-extrabold text-white hover:text-[#beacff] transition-colors cursor-pointer">
+              <span>About {coin.name}</span>
+              <ChevronRight className="w-5 h-5 text-gray-300 stroke-[2.5]" />
+            </button>
+
+            <p className="text-sm font-medium text-gray-300 leading-relaxed">
+              {coin.name} is a high-performance blockchain infrastructure token powering smart contracts, decentralized finance, and web3 applications with maximum scalability.
+            </p>
+
+            {/* Statistics Grid Table */}
+            <div className="bg-[#18181b] rounded-2xl border border-white/5 divide-y divide-white/5">
+              <div className="flex items-center justify-between px-4 py-3.5">
+                <span className="text-sm font-semibold text-gray-400">Security</span>
+                <span className="text-sm font-extrabold text-[#beacff] flex items-center space-x-1">
+                  <span>Verified</span>
+                  <CheckCircle2 className="w-4 h-4 text-[#beacff] fill-[#beacff]/20" />
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between px-4 py-3.5">
+                <span className="text-sm font-semibold text-gray-400">24h Volume</span>
+                <span className="text-sm font-extrabold text-white font-mono">{formatLargeNum(volume24h)}</span>
+              </div>
+
+              <div className="flex items-center justify-between px-4 py-3.5">
+                <span className="text-sm font-semibold text-gray-400">Market cap</span>
+                <span className="text-sm font-extrabold text-white font-mono">{formatLargeNum(marketCap)}</span>
+              </div>
+
+              <div className="flex items-center justify-between px-4 py-3.5">
+                <span className="text-sm font-semibold text-gray-400">Network</span>
+                <span className="text-sm font-extrabold text-white">{coin.name}</span>
+              </div>
+
+              <div className="flex items-center justify-between px-4 py-3.5">
+                <span className="text-sm font-semibold text-gray-400">Funding Rate</span>
+                <span className="text-sm font-extrabold text-white font-mono">{fundingRate}</span>
+              </div>
+
+              <div className="flex items-center justify-between px-4 py-3.5">
+                <span className="text-sm font-semibold text-gray-400">Open Interest</span>
+                <span className="text-sm font-extrabold text-white font-mono">{openInterest}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 4. Up or Down > Prediction Game Widget */}
+          <div className="space-y-3 pt-1">
+            <button type="button" className="flex items-center space-x-1 text-xl font-extrabold text-white hover:text-[#beacff] transition-colors cursor-pointer">
+              <span>Up or Down</span>
+              <ChevronRight className="w-5 h-5 text-gray-300 stroke-[2.5]" />
+            </button>
+
+            <div className="bg-[#18181b] rounded-3xl p-4 border border-white/5 space-y-4">
+              {/* Target & Timer Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 rounded-full overflow-hidden bg-[#27272a] shrink-0">
+                    {coin.image && <img src={coin.image} alt={coin.name} className="w-full h-full object-cover" />}
+                  </div>
+                  <div>
+                    <div className="font-extrabold text-base text-white font-mono">{formatPrice(coin.price)}</div>
+                    <div className="text-xs font-semibold text-gray-400">Target ${(coin.price * 0.9995).toFixed(2)}</div>
+                  </div>
+                </div>
+                <div className="bg-[#202024] px-3 py-1 rounded-full text-xs font-extrabold text-white font-mono border border-white/5">
+                  00:43
+                </div>
+              </div>
+
+              {/* Chart SVG Line with Target Dashed Line */}
+              <div className="h-24 w-full relative pt-2">
+                <svg viewBox="0 0 300 80" className="w-full h-full overflow-visible">
+                  {/* Dashed Target line */}
+                  <line x1="0" y1="50" x2="300" y2="50" stroke="#52525b" strokeDasharray="4 4" strokeWidth="1.5" />
+                  {/* Target pill label */}
+                  <rect x="235" y="41" width="55" height="18" rx="9" fill="#52525b" />
+                  <text x="262" y="53" fill="#ffffff" fontSize="10" fontWeight="bold" textAnchor="middle">${(coin.price * 0.9995).toFixed(2)}</text>
+                  
+                  {/* Live Green Path */}
+                  <path
+                    d="M 0,45 L 30,45 L 40,65 L 70,65 L 90,30 L 110,40 L 125,25 L 140,40 L 160,15 L 210,15 Z"
+                    fill="none"
+                    stroke="#10b981"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                  />
+                  {/* Glowing end point */}
+                  <circle cx="210" cy="15" r="4" fill="#10b981" />
+                  <circle cx="210" cy="15" r="8" fill="#10b981" opacity="0.4" className="animate-ping" />
+                </svg>
+              </div>
+
+              {/* Up / Down Choice Buttons */}
+              <div className="flex items-center space-x-3">
+                <button type="button" className="flex-1 py-3 bg-[#202024] hover:bg-[#2c2c32] rounded-xl text-center transition-colors cursor-pointer border border-white/5">
+                  <span className="font-extrabold text-sm text-[#10b981]">▲ Up · 0%</span>
+                </button>
+                <button type="button" className="flex-1 py-3 bg-[#202024] hover:bg-[#2c2c32] rounded-xl text-center transition-colors cursor-pointer border border-white/5">
+                  <span className="font-extrabold text-sm text-[#ef4444]">▼ Down · 100%</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 5. Explore / Staking Card */}
+          <div className="space-y-3 pt-1">
+            <h3 className="text-xl font-extrabold text-white">Explore</h3>
+            <div className="flex items-center space-x-3.5 p-4 bg-[#18181b] rounded-2xl border border-white/5 cursor-pointer hover:bg-[#202024] transition-all">
+              <div className="w-10 h-10 rounded-full bg-[#beacff]/20 text-[#beacff] flex items-center justify-center shrink-0">
+                <ArrowUpRight className="w-5 h-5 stroke-[2.5]" />
+              </div>
+              <div>
+                <div className="font-extrabold text-base text-white">Stake P{coin.symbol}</div>
+                <div className="text-sm font-semibold text-[#beacff]">Earn 6.03% APY</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 6. Related News Card */}
+          <div className="space-y-2 pt-1 pb-4">
+            <h3 className="text-xl font-extrabold text-white">Related News</h3>
+            <div className="text-xs font-extrabold text-[#10b981]">2 sources · Bullish</div>
+            <p className="text-sm font-medium text-gray-300 leading-relaxed">
+              {coin.name}&apos;s latest protocol upgrade goes live with 90% rent cut, 3.3x larger transactions, and path to enhanced throughput...
+            </p>
+          </div>
+
         </div>
 
-        {/* QUICK ACTION BUTTONS */}
-        <div className="grid grid-cols-3 gap-3">
+        {/* ── FIXED STICKY BOTTOM ACTION BAR ── */}
+        <div className="sticky bottom-0 bg-gradient-to-t from-black via-black/95 to-transparent pt-3 pb-6 px-5 flex items-center justify-between border-t border-white/5 z-20 shrink-0">
+          <div className="text-xs font-bold text-gray-400 font-mono">
+            {formatLargeNum(marketCap)} Market Cap
+          </div>
+
           <button
             type="button"
             onClick={() => {
               onClose();
-              onSwap(coin);
+              onTrade?.(coin);
             }}
-            className="py-3.5 px-4 rounded-2xl bg-[#a594fd] hover:bg-[#b6a7ff] text-black font-extrabold text-sm flex items-center justify-center space-x-2 transition-all shadow-[0_4px_16px_rgba(165,148,253,0.3)] active:scale-[0.98] cursor-pointer"
+            className="bg-[#beacff] hover:bg-[#cca8ff] text-black font-extrabold px-8 py-3 rounded-full text-base transition-all cursor-pointer shadow-[0_0_16px_rgba(190,172,255,0.4)] active:scale-95"
           >
-            <ArrowLeftRight className="w-4 h-4 stroke-[2.5]" />
-            <span>Swap</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              onClose();
-              onBuy(coin);
-            }}
-            className="py-3.5 px-4 rounded-2xl bg-[#1c1c1e] hover:bg-[#2c2c2e] border border-white/5 text-white font-extrabold text-sm flex items-center justify-center space-x-2 transition-colors active:scale-[0.98] cursor-pointer"
-          >
-            <Plus className="w-4 h-4 text-[#a594fd]" />
-            <span>Buy</span>
-          </button>
-
-          <button
-            type="button"
-            className="py-3.5 px-4 rounded-2xl bg-[#1c1c1e] hover:bg-[#2c2c2e] border border-white/5 text-white font-extrabold text-sm flex items-center justify-center space-x-2 transition-colors active:scale-[0.98] cursor-pointer"
-          >
-            <Send className="w-4 h-4 text-[#a594fd]" />
-            <span>Send</span>
+            Trade
           </button>
         </div>
 
-        {/* KEY STATISTICS */}
-        <div className="space-y-3 pt-2">
-          <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">
-            Key Statistics
-          </span>
-          <div className="bg-[#111113] rounded-2xl border border-white/5 divide-y divide-white/5">
-            <div className="flex items-center justify-between px-4 py-3.5">
-              <span className="text-sm font-semibold text-gray-400">Market Cap</span>
-              <span className="text-sm font-extrabold text-white font-mono">
-                {formatLargeNum(coin.marketCap)}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between px-4 py-3.5">
-              <span className="text-sm font-semibold text-gray-400">24h Volume</span>
-              <span className="text-sm font-extrabold text-white font-mono">
-                {formatLargeNum(volume24h)}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between px-4 py-3.5">
-              <span className="text-sm font-semibold text-gray-400">All-Time High</span>
-              <span className="text-sm font-extrabold text-white font-mono">
-                {formatPrice(ath)}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between px-4 py-3.5">
-              <span className="text-sm font-semibold text-gray-400">Popularity Rank</span>
-              <span className="text-sm font-extrabold text-[#a594fd]">#1</span>
-            </div>
-
-            <div className="flex items-center justify-between px-4 py-3.5">
-              <span className="text-sm font-semibold text-gray-400">Network</span>
-              <span className="text-sm font-extrabold text-white">Solana</span>
-            </div>
-          </div>
-        </div>
-
-        {/* TOKEN DESCRIPTION */}
-        <div className="space-y-2 pt-2">
-          <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">
-            About {coin.name}
-          </span>
-          <div className="bg-[#111113] rounded-2xl p-4 border border-white/5 text-xs text-gray-400 leading-relaxed font-medium">
-            {coin.name} ({coin.symbol}) is a decentralized digital token operating on high-performance blockchain infrastructure. It provides instant settlement, zero-friction trading, and seamless compatibility with the Phantom Wallet ecosystem.
-          </div>
-        </div>
       </div>
     </div>
   );

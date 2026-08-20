@@ -2,17 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { ArrowLeft, Search, X, CheckCircle2 } from "lucide-react";
-import { Holding } from "./PhantomPortfolioView";
-
-interface CoinToken {
-  id: string;
-  symbol: string;
-  name: string;
-  image: string;
-  price: number;
-  marketCap: number;
-  change24h: number;
-}
+import { Holding, CoinToken } from "./PhantomPortfolioView";
 
 interface PhantomTokenPickerModalProps {
   isOpen: boolean;
