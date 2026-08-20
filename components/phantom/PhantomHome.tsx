@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Search,
   Plus,
@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import PhantomSidebar from "./PhantomSidebar";
 import PhantomInstallPrompt from "./PhantomInstallPrompt";
+import PhantomSettingsModal from "./PhantomSettingsModal";
+import PhantomProfileModal from "./PhantomProfileModal";
 
 const TRENDING_TOKENS = [
   {
@@ -72,7 +74,27 @@ export default function PhantomHome() {
   const [activeTab, setActiveTab] = useState("Home");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isPlusMenuOpen, setIsPlusMenuOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Persistent user handle & account name
+  const [handle, setHandle] = useState("@GuidedMutt3528");
+  const [accountName, setAccountName] = useState("Account 1");
+
+  useEffect(() => {
+    const savedHandle = localStorage.getItem("phantom_user_handle");
+    const savedAccountName = localStorage.getItem("phantom_account_name");
+    if (savedHandle) setHandle(savedHandle);
+    if (savedAccountName) setAccountName(savedAccountName);
+  }, []);
+
+  const handleSaveProfile = (newHandle: string, newAccountName: string) => {
+    setHandle(newHandle);
+    setAccountName(newAccountName);
+    localStorage.setItem("phantom_user_handle", newHandle);
+    localStorage.setItem("phantom_account_name", newAccountName);
+  };
 
   const tabs = ["Home", "Trade", "Predict", "Explore"];
 
@@ -321,6 +343,28 @@ export default function PhantomHome() {
       <PhantomSidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
+        handle={handle}
+        accountName={accountName}
+        onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+      />
+
+      {/* ── PROFILE MODAL ── */}
+      <PhantomProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+        handle={handle}
+        accountName={accountName}
+        onOpenSettings={() => { setIsProfileOpen(false); setIsSettingsOpen(true); }}
+      />
+
+      {/* ── SETTINGS MODAL ── */}
+      <PhantomSettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        handle={handle}
+        accountName={accountName}
+        onSave={handleSaveProfile}
       />
 
       {/* ── STANDALONE PWA INSTALL PROMPT ── */}

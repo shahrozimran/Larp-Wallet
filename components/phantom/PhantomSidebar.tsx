@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import {
-  X,
   Copy,
   Check,
   User,
@@ -17,11 +16,21 @@ import {
 interface PhantomSidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  handle: string;
+  accountName: string;
+  onOpenProfile: () => void;
+  onOpenSettings: () => void;
 }
 
-export default function PhantomSidebar({ isOpen, onClose }: PhantomSidebarProps) {
+export default function PhantomSidebar({
+  isOpen,
+  onClose,
+  handle,
+  accountName,
+  onOpenProfile,
+  onOpenSettings,
+}: PhantomSidebarProps) {
   const [copied, setCopied] = useState(false);
-  const [handle] = useState("@GuidedMutt3528");
 
   if (!isOpen) return null;
 
@@ -31,13 +40,16 @@ export default function PhantomSidebar({ isOpen, onClose }: PhantomSidebarProps)
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const menuItems = [
-    { icon: User, label: "Profile" },
-    { icon: MessageSquare, label: "Chats" },
-    { icon: Heart, label: "Watchlist" },
-    { icon: Clock, label: "History" },
-    { icon: Settings, label: "Settings" },
-    { icon: HelpCircle, label: "Help & Support" },
+  const topMenuItems = [
+    { icon: User, label: "Profile", onClick: () => { onClose(); onOpenProfile(); } },
+    { icon: MessageSquare, label: "Chats", onClick: () => {} },
+    { icon: Heart, label: "Watchlist", onClick: () => {} },
+    { icon: Clock, label: "History", onClick: () => {} },
+  ];
+
+  const bottomMenuItems = [
+    { icon: Settings, label: "Settings", onClick: () => { onClose(); onOpenSettings(); } },
+    { icon: HelpCircle, label: "Help & Support", onClick: () => {} },
   ];
 
   return (
@@ -48,23 +60,26 @@ export default function PhantomSidebar({ isOpen, onClose }: PhantomSidebarProps)
         onClick={onClose}
       />
 
-      {/* Drawer Container (Matching Screenshot 1) */}
+      {/* Drawer Container */}
       <div className="relative w-[300px] sm:w-[320px] max-w-[85vw] bg-[#000000] text-white h-full flex flex-col justify-between p-6 z-10 shadow-2xl overflow-y-auto animate-slideInLeft font-sans">
-        
+
         {/* TOP SECTION */}
         <div className="space-y-6 pt-2">
-          
+
           {/* Header Row: Avatar & Copy Icon */}
           <div className="flex items-center justify-between">
-            {/* Custom Avatar matching Screenshot 1 */}
-            <div className="w-14 h-14 rounded-full bg-[#8fa1ff] flex items-center justify-center relative overflow-hidden border-2 border-white/10 shadow-md">
+            {/* Clickable Avatar → opens Profile */}
+            <button
+              type="button"
+              onClick={() => { onClose(); onOpenProfile(); }}
+              className="w-14 h-14 rounded-full bg-[#8fa1ff] flex items-center justify-center relative overflow-hidden border-2 border-white/10 shadow-md hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+            >
               <div className="w-9 h-9 rounded-full bg-[#fce886] flex items-center justify-center relative">
-                {/* Sunglasses & Headphones detail */}
                 <div className="w-3.5 h-1.5 bg-[#432c7a] rounded-full absolute top-3 left-1.5" />
                 <div className="w-3.5 h-1.5 bg-[#432c7a] rounded-full absolute top-3 right-1.5" />
                 <div className="w-2.5 h-1 bg-[#ff9e9e] rounded-full absolute bottom-2" />
               </div>
-            </div>
+            </button>
 
             {/* Copy Handle Button */}
             <button
@@ -78,9 +93,7 @@ export default function PhantomSidebar({ isOpen, onClose }: PhantomSidebarProps)
 
           {/* User Handle & X Account Link */}
           <div className="space-y-2">
-            <h2 className="text-2xl font-extrabold text-white tracking-tight">
-              {handle}
-            </h2>
+            <h2 className="text-2xl font-extrabold text-white tracking-tight">{handle}</h2>
             <button
               type="button"
               className="flex items-center space-x-2 text-xs font-semibold text-[#a594fd] hover:text-[#c4b5fd] transition-colors cursor-pointer"
@@ -99,19 +112,20 @@ export default function PhantomSidebar({ isOpen, onClose }: PhantomSidebarProps)
               <span className="w-6 h-6 rounded-full bg-[#1c1c1e] text-[11px] font-mono font-bold flex items-center justify-center text-gray-300">
                 A1
               </span>
-              <span className="text-lg font-bold text-white">Account 1</span>
+              <span className="text-lg font-bold text-white">{accountName}</span>
               <ChevronDown className="w-4 h-4 text-gray-400" />
             </button>
           </div>
 
-          {/* Menu Items List */}
+          {/* Top Menu Items List */}
           <div className="space-y-5 pt-4">
-            {menuItems.slice(0, 4).map((item, index) => {
+            {topMenuItems.map((item, index) => {
               const IconComp = item.icon;
               return (
                 <button
                   key={index}
                   type="button"
+                  onClick={item.onClick}
                   className="w-full flex items-center space-x-4 text-white hover:text-[#a594fd] transition-colors py-1 cursor-pointer text-left group"
                 >
                   <IconComp className="w-5 h-5 text-gray-300 group-hover:text-[#a594fd] transition-colors" />
@@ -125,12 +139,13 @@ export default function PhantomSidebar({ isOpen, onClose }: PhantomSidebarProps)
 
         {/* BOTTOM SECTION (Settings & Help) */}
         <div className="space-y-5 pt-6 border-t border-white/10 pb-4">
-          {menuItems.slice(4).map((item, index) => {
+          {bottomMenuItems.map((item, index) => {
             const IconComp = item.icon;
             return (
               <button
                 key={index}
                 type="button"
+                onClick={item.onClick}
                 className="w-full flex items-center space-x-4 text-white hover:text-[#a594fd] transition-colors py-1 cursor-pointer text-left group"
               >
                 <IconComp className="w-5 h-5 text-gray-300 group-hover:text-[#a594fd] transition-colors" />
