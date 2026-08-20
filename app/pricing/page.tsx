@@ -1,0 +1,332 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import {
+  Wallet,
+  Check,
+  X,
+  ChevronRight,
+  ArrowRight,
+  ArrowUpRight,
+  Flame,
+  ShieldCheck,
+  Lock,
+  Layers,
+  Sparkles,
+  Zap,
+} from "lucide-react";
+
+import Navbar from "@/components/Navbar";
+
+export default function PricingPage() {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-[#060907] text-white flex flex-col font-sans relative selection:bg-[#8a9a5b] selection:text-white pt-24 sm:pt-28">
+      
+      {/* Background Ambient Spotlights */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[#8a9a5b]/12 rounded-full blur-[160px] pointer-events-none" />
+      <div className="fixed bottom-0 right-0 w-[600px] h-[600px] bg-[#54662d]/10 rounded-full blur-[180px] pointer-events-none" />
+
+      {/* CENTRALIZED NAVBAR */}
+      <Navbar onOpenLogin={() => setIsLoginOpen(true)} />
+
+      {/* HERO HEADER */}
+      <section className="relative pt-10 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center flex flex-col items-center">
+        
+        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full badge-pitch-olive text-xs font-mono font-bold tracking-widest uppercase mb-6">
+          <Sparkles className="w-3.5 h-3.5 text-[#a5b67d]" />
+          <span>PRICING</span>
+        </div>
+
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight max-w-4xl leading-[1.15]">
+          <span className="hero-title-white block">Larp Wallet Pricing</span>
+        </h1>
+
+        <p className="mt-6 text-base sm:text-lg text-gray-300 max-w-2xl leading-relaxed font-normal">
+          Choose the plan that works best for you. No hidden fees, instant activation.
+        </p>
+
+      </section>
+
+      {/* 3 PRICING TIERS GRID MATCHING REFERENCE IMAGE */}
+      <section className="pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+          
+          {/* TIER 1: STARTER */}
+          <div className="p-8 rounded-3xl glass-card-dark border border-white/10 hover:border-[#8a9a5b]/40 transition-all flex flex-col justify-between space-y-8">
+            <div className="space-y-6">
+              {/* Header Badge */}
+              <div className="text-center">
+                <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono font-bold text-gray-400 uppercase tracking-widest">
+                  STARTER
+                </span>
+                <div className="mt-6 flex items-baseline justify-center space-x-2">
+                  <span className="text-gray-500 font-mono text-xl line-through">$30</span>
+                  <span className="text-4xl font-extrabold text-white font-mono">$15</span>
+                </div>
+                <div className="text-xs text-gray-400 font-mono mt-1">7 days access</div>
+              </div>
+
+              {/* Features Checklist */}
+              <div className="space-y-3 pt-4 border-t border-white/10 text-xs">
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-gray-200">Full app access on iOS & Android</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-gray-200">All signature wallet views & skins</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-gray-200">Free PDF money guide</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-gray-200">Unlimited custom balances & tokens</span>
+                </div>
+                <div className="flex items-start space-x-3 opacity-40">
+                  <X className="w-4 h-4 text-gray-500 shrink-0 mt-0.5" />
+                  <span className="text-gray-400">Priority Telegram support</span>
+                </div>
+                <div className="flex items-start space-x-3 opacity-40">
+                  <X className="w-4 h-4 text-gray-500 shrink-0 mt-0.5" />
+                  <span className="text-gray-400">Early access to new features</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Button */}
+            <button
+              onClick={() => setIsLoginOpen(true)}
+              className="w-full py-3.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs tracking-wide flex items-center justify-center space-x-2 transition-all cursor-pointer"
+            >
+              <span>Buy</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* TIER 2: MOST POPULAR (HIGHLIGHTED CARD) */}
+          <div className="p-8 rounded-3xl bg-[#0c130e] border-2 border-[#8a9a5b] shadow-[0_0_40px_rgba(138,154,91,0.25)] flex flex-col justify-between space-y-8 relative scale-105 z-10">
+            
+            {/* Highlighted Ribbon Glow */}
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#8a9a5b] text-white text-[10px] font-mono font-extrabold uppercase tracking-widest shadow-lg">
+              MOST POPULAR
+            </div>
+
+            <div className="space-y-6 pt-2">
+              {/* Header Badge */}
+              <div className="text-center">
+                <div className="mt-4 flex items-baseline justify-center space-x-2">
+                  <span className="text-gray-500 font-mono text-xl line-through">$100</span>
+                  <span className="text-5xl font-extrabold text-white font-mono">$45</span>
+                </div>
+                <div className="text-xs text-[#c2d6a3] font-mono font-bold mt-1">1 month access</div>
+              </div>
+
+              {/* Features Checklist */}
+              <div className="space-y-3 pt-4 border-t border-white/10 text-xs">
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-white font-semibold">Full app access on iOS & Android</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-white font-semibold">All signature wallet views & skins</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-white font-semibold">Free PDF money guide</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-white font-semibold">Unlimited custom balances & tokens</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-white font-semibold">Priority Telegram support</span>
+                </div>
+                <div className="flex items-start space-x-3 opacity-40">
+                  <X className="w-4 h-4 text-gray-500 shrink-0 mt-0.5" />
+                  <span className="text-gray-400">Early access to new features</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Button */}
+            <button
+              onClick={() => setIsLoginOpen(true)}
+              className="w-full py-4 px-4 rounded-xl btn-hero-primary font-bold text-xs tracking-wide flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-lg"
+            >
+              <span>Buy</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* TIER 3: BEST VALUE */}
+          <div className="p-8 rounded-3xl glass-card-dark border border-white/10 hover:border-[#8a9a5b]/40 transition-all flex flex-col justify-between space-y-8">
+            <div className="space-y-6">
+              {/* Header Badge */}
+              <div className="text-center">
+                <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-mono font-bold text-gray-400 uppercase tracking-widest">
+                  BEST VALUE
+                </span>
+                <div className="mt-6 flex items-baseline justify-center space-x-2">
+                  <span className="text-gray-500 font-mono text-xl line-through">$300</span>
+                  <span className="text-4xl font-extrabold text-white font-mono">$200</span>
+                </div>
+                <div className="text-xs text-[#a5b67d] font-mono font-bold mt-1">Lifetime access</div>
+              </div>
+
+              {/* Features Checklist */}
+              <div className="space-y-3 pt-4 border-t border-white/10 text-xs">
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-gray-200">Full app access on iOS & Android</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-gray-200">All signature wallet views & skins</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-gray-200">Free PDF money guide</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-gray-200">Unlimited custom balances & tokens</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-gray-200">Priority Telegram support</span>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span className="text-gray-200 font-semibold text-[#c2d6a3]">Early access to new features</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Button */}
+            <button
+              onClick={() => setIsLoginOpen(true)}
+              className="w-full py-3.5 px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs tracking-wide flex items-center justify-center space-x-2 transition-all cursor-pointer"
+            >
+              <span>Buy</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      {/* BOTTOM CALL TO ACTION BANNER */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
+        <div className="rounded-3xl glass-card-dark border border-[#8a9a5b]/40 p-8 sm:p-12 text-center space-y-6 relative overflow-hidden shadow-[0_0_40px_rgba(138,154,91,0.2)]">
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#8a9a5b]/15 rounded-full blur-3xl pointer-events-none" />
+
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
+            Ready to Experience Larp Wallet?
+          </h2>
+          <p className="text-sm text-gray-300 max-w-xl mx-auto">
+            Experience uncompromised elegance and pixel-perfect wallet simulation across all your mobile devices.
+          </p>
+
+          <div className="pt-2 flex justify-center">
+            <button
+              onClick={() => setIsLoginOpen(true)}
+              className="py-4 px-8 rounded-full btn-hero-primary font-bold text-sm tracking-wide cursor-pointer flex items-center space-x-2"
+            >
+              <span>Get Larp Wallet</span>
+              <ArrowUpRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="border-t border-white/10 glass-card-dark py-10 text-xs text-gray-400 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-lg bg-[#8a9a5b]/20 border border-[#8a9a5b]/40 flex items-center justify-center text-[#c2d6a3]">
+              <Wallet className="w-4 h-4" />
+            </div>
+            <span className="font-bold text-white text-base">LARP WALLET</span>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-6 text-gray-400 font-semibold">
+            <Link href="/" className="hover:text-[#c2d6a3] transition-colors">Home</Link>
+            <Link href="/features" className="hover:text-[#c2d6a3] transition-colors">Features</Link>
+            <Link href="/how-it-works" className="hover:text-[#c2d6a3] transition-colors">How It Works</Link>
+            <Link href="/pricing" className="text-[#c2d6a3] font-bold">Pricing</Link>
+            <Link href="/reviews" className="hover:text-[#c2d6a3] transition-colors">Reviews</Link>
+          </div>
+
+          <div className="text-gray-500 font-mono text-[11px]">
+            © {new Date().getFullYear()} Larp Wallet. Built 100% for fun and pranks.
+          </div>
+        </div>
+      </footer>
+
+      {/* LOGIN & AUTHENTICATION MODAL */}
+      {isLoginOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+          <div className="relative w-full max-w-md rounded-3xl glass-card-dark p-6 sm:p-8 border border-[#8a9a5b]/40 shadow-2xl space-y-6">
+            <button
+              onClick={() => setIsLoginOpen(false)}
+              className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center space-x-3">
+              <div className="p-3 rounded-2xl bg-[#8a9a5b]/20 border border-[#8a9a5b]/40 text-[#c2d6a3]">
+                <Lock className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white">Access Larp Wallet</h3>
+                <p className="text-xs text-gray-400">Enter access key to unlock features</p>
+              </div>
+            </div>
+
+            <form onSubmit={(e) => { e.preventDefault(); setIsLoginOpen(false); }} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+                  Access Key / Email
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="LRP-9814-XXXX-XXXX"
+                  className="w-full px-4 py-3 rounded-xl bg-[#121814] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#8a9a5b]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+                  Password / PIN
+                </label>
+                <input
+                  type="password"
+                  required
+                  placeholder="••••••••"
+                  className="w-full px-4 py-3 rounded-xl bg-[#121814] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#8a9a5b]"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3.5 px-4 rounded-xl btn-hero-primary font-bold text-sm tracking-wide cursor-pointer"
+              >
+                Launch Larp Wallet
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}

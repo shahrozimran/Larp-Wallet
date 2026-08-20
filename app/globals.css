@@ -1,26 +1,152 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #060907;
+  --foreground: #f3f5f3;
+  --olive-primary: #8a9a5b;
+  --olive-accent: #a5b67d;
+  --olive-glow: rgba(138, 154, 91, 0.35);
+  --olive-dark: #162017;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Ambient Lighting */
+.bg-ambient-spotlight-hero {
+  background: radial-gradient(circle at 50% 25%, rgba(138, 154, 91, 0.18) 0%, rgba(6, 9, 7, 0) 60%);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #060907;
+}
+::-webkit-scrollbar-thumb {
+  background: #202b21;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #374b3a;
+}
+
+/* Floating Capsule Dock Navbar */
+.nav-floating-capsule {
+  background: rgba(13, 19, 14, 0.85);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(138, 154, 91, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(138, 154, 91, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+.nav-floating-capsule:hover {
+  border-color: rgba(138, 154, 91, 0.5);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(138, 154, 91, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.nav-link-item {
+  color: #a3b0a5;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.5rem 1.125rem;
+  border-radius: 9999px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-link-item:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Elegant Typography & Badges */
+.badge-pitch-olive {
+  background: rgba(138, 154, 91, 0.12);
+  border: 1px solid rgba(138, 154, 91, 0.35);
+  color: #d2e4b7;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 0 20px rgba(138, 154, 91, 0.15);
+}
+
+.hero-title-white {
+  color: #ffffff;
+  letter-spacing: -0.03em;
+}
+
+.hero-olive-text {
+  background: linear-gradient(135deg, #e4eed2 0%, #a5b67d 45%, #8a9a5b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.03em;
+}
+
+/* Primary High-Impact CTA Button */
+.btn-hero-primary {
+  background: linear-gradient(135deg, #8a9a5b 0%, #607038 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 30px rgba(138, 154, 91, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-hero-primary:hover {
+  background: linear-gradient(135deg, #9db26a 0%, #6f8240 100%);
+  box-shadow: 0 0 45px rgba(138, 154, 91, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Navbar Login Pill Button */
+.btn-nav-login {
+  background: linear-gradient(135deg, #8a9a5b 0%, #68793f 100%);
+  color: #ffffff;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 20px rgba(138, 154, 91, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-nav-login:hover {
+  box-shadow: 0 0 32px rgba(138, 154, 91, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px) scale(1.03);
+}
+
+/* Realistic iPhone 16 Pro Device Mockup Frame */
+.iphone-frame-pro {
+  position: relative;
+  background: #090e0b;
+  border-radius: 46px;
+  border: 3.5px solid rgba(138, 154, 91, 0.45);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(138, 154, 91, 0.2), inset 0 0 2px rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.iphone-frame-pro:hover {
+  border-color: rgba(138, 154, 91, 0.75);
+  box-shadow: 0 35px 85px rgba(0, 0, 0, 0.95), 0 0 55px rgba(138, 154, 91, 0.35), inset 0 0 4px rgba(255, 255, 255, 0.3);
+  transform: translateY(-6px);
+}
+
+/* iPhone Glass Screen Reflection Overlay */
+.iphone-screen-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 40%);
+}
+
+.glass-card-dark {
+  background: rgba(12, 17, 13, 0.8);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
