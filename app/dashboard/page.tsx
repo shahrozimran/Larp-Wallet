@@ -34,19 +34,14 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const s = getAuthSession();
-    // Default to logged-in session for smooth viewing
     if (!s.isLoggedIn) {
-      setSession({
-        email: "user@larpzwallet.app",
-        isLoggedIn: true,
-        licenseKey: "ACTIVE",
-        isLicenseActive: true,
-        activeWallet: "phantom",
-      });
+      router.push("/pricing");
+    } else if (!s.isLicenseActive) {
+      router.push("/plans");
     } else {
       setSession(s);
     }
-  }, []);
+  }, [router]);
 
   const handleLogout = () => {
     logoutUser();

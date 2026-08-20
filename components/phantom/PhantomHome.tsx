@@ -222,28 +222,28 @@ export default function PhantomHome() {
 
       </main>
 
-      {/* ── FIXED BOTTOM SEARCH & ACTION BAR (Screenshot 2) ── */}
-      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-[#000000]/95 backdrop-blur-xl border-t border-white/8 px-4 py-3">
+      {/* ── FIXED BOTTOM SEARCH & ACTION BAR (Matching Reference Image) ── */}
+      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-[#000000] via-[#000000]/95 to-transparent pt-3 pb-5 px-4">
         <div className="max-w-lg mx-auto flex items-center justify-between gap-3">
           
           {/* Pill Search Input Bar */}
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-gray-400 absolute left-4 top-3.5" />
+            <Search className="w-5 h-5 text-[#6e6e78] absolute left-4 top-3.5" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search Phantom"
-              className="w-full pl-10 pr-4 py-2.5 rounded-full bg-[#1c1c1e] text-white text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#a594fd] transition-all font-medium"
+              className="w-full pl-11 pr-4 py-3 rounded-full bg-[#1b1a22] border border-white/5 text-white text-base placeholder-[#6e6e78] focus:outline-none focus:border-[#a594fd]/50 transition-all font-medium"
             />
           </div>
 
           {/* Floating Circle Action Button (+) */}
           <button
             type="button"
-            className="w-11 h-11 rounded-full bg-[#a594fd] hover:bg-[#b6a7ff] text-[#000000] flex items-center justify-center shrink-0 cursor-pointer shadow-[0_0_15px_rgba(165,148,253,0.4)] active:scale-95 transition-transform"
+            className="w-12 h-12 rounded-full bg-[#a594fd] hover:bg-[#b6a7ff] text-[#000000] flex items-center justify-center shrink-0 cursor-pointer shadow-[0_0_20px_rgba(165,148,253,0.35)] active:scale-95 transition-transform"
           >
-            <Plus className="w-6 h-6 stroke-[3]" />
+            <Plus className="w-7 h-7 stroke-[2.5]" />
           </button>
 
         </div>

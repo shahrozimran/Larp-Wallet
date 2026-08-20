@@ -12,14 +12,28 @@ interface NavbarProps {
 
 export default function Navbar({ onOpenLogin }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [sessionState, setSessionState] = useState({ isLoggedIn: false, isLicenseActive: false });
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
     const session = getAuthSession();
-    setIsLoggedIn(session.isLoggedIn);
+    setSessionState({
+      isLoggedIn: session.isLoggedIn,
+      isLicenseActive: session.isLicenseActive,
+    });
   }, [pathname]);
+
+  const handleDashboardClick = () => {
+    const currentSession = getAuthSession();
+    if (!currentSession.isLoggedIn) {
+      onOpenLogin();
+    } else if (!currentSession.isLicenseActive) {
+      router.push("/plans");
+    } else {
+      router.push("/dashboard");
+    }
+  };
 
   const navItems = [
     { label: "Features",     href: "/features" },
@@ -71,11 +85,11 @@ export default function Navbar({ onOpenLogin }: NavbarProps) {
             })}
           </nav>
 
-          {/* Right: Login CTA + Mobile Toggle */}
+          {/* Right: Login/Dashboard CTA + Mobile Toggle */}
           <div className="flex items-center space-x-3 shrink-0">
-            {isLoggedIn ? (
+            {sessionState.isLoggedIn ? (
               <button
-                onClick={() => router.push("/dashboard")}
+                onClick={handleDashboardClick}
                 className="px-5 py-1.5 rounded-full btn-hero-primary text-xs font-bold tracking-wide flex items-center space-x-1.5 cursor-pointer shadow-md"
               >
                 <span>Dashboard</span>
@@ -135,12 +149,15 @@ export default function Navbar({ onOpenLogin }: NavbarProps) {
                   </Link>
                 );
               })}
-              <div className="pt-2 pb-1">
+              <div className="pt-2 pb-1 space-y-2">
                 <button
-                  onClick={() => { onOpenLogin(); setMobileMenuOpen(false); }}
-                  className="w-full py-3 rounded-xl btn-nav-login text-sm font-bold cursor-pointer"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleDashboardClick();
+                  }}
+                  className="w-full py-3 rounded-xl btn-hero-primary text-sm font-bold cursor-pointer flex items-center justify-center space-x-1.5"
                 >
-                  Login
+                  <span>{sessionState.isLoggedIn ? "Dashboard" : "Login to Access"}</span>
                 </button>
               </div>
             </nav>
