@@ -136,6 +136,14 @@ export default function PhantomHome() {
     localStorage.setItem(storageKeyHoldings, JSON.stringify(newHoldings));
   };
 
+  // Live search matching tokens
+  const searchMatches = searchQuery.trim().length > 0
+    ? coins.filter((c) =>
+        c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
+
   // English Nav Tabs: Home, Trade, Explore
   const navTabs = [
     { key: "Start", label: "Home" },
@@ -217,17 +225,62 @@ export default function PhantomHome() {
         )}
       </main>
 
-      {/* ── SPEED DIAL BACKDROP OVERLAY ── */}
-      {isPlusMenuOpen && (
+      {/* ── SPEED DIAL / SEARCH BACKDROP OVERLAY ── */}
+      {(isPlusMenuOpen || searchQuery.trim().length > 0) && (
         <div
           className="fixed inset-0 z-40 bg-[#000000]/80 backdrop-blur-sm animate-fadeIn transition-opacity"
-          onClick={() => setIsPlusMenuOpen(false)}
+          onClick={() => {
+            setIsPlusMenuOpen(false);
+            setSearchQuery("");
+          }}
         />
       )}
 
       {/* ── FIXED BOTTOM SEARCH & ACTION BAR ── */}
       <footer className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-[#000000] via-[#000000]/95 to-transparent pt-3 pb-5 px-4">
         
+        {/* Live Search Popup Menu Over Bottom Footer */}
+        {searchQuery.trim().length > 0 && (
+          <div className="max-w-lg mx-auto mb-3 bg-[#18181b] border border-white/10 rounded-2xl p-2 max-h-72 overflow-y-auto no-scrollbar shadow-2xl animate-slideUp relative z-50">
+            {searchMatches.length === 0 ? (
+              <div className="p-4 text-center text-sm font-semibold text-gray-400">
+                No tokens found matching &quot;{searchQuery}&quot;
+              </div>
+            ) : (
+              searchMatches.map((coin) => (
+                <div
+                  key={coin.id}
+                  onClick={() => {
+                    setSelectedCoinForDetail(coin);
+                    setSearchQuery("");
+                  }}
+                  className="flex items-center justify-between p-3 rounded-xl hover:bg-[#202024] cursor-pointer transition-colors group"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-9 h-9 rounded-full overflow-hidden bg-[#27272a] border border-white/10 shrink-0 flex items-center justify-center">
+                      {coin.image ? (
+                        <img src={coin.image} alt={coin.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="font-extrabold text-xs text-white">{coin.symbol.slice(0, 3)}</span>
+                      )}
+                    </div>
+                    <div>
+                      <div className="font-extrabold text-sm text-white group-hover:text-[#beacff] transition-colors">{coin.name}</div>
+                      <div className="text-xs font-semibold text-gray-400">{coin.symbol}</div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-extrabold text-sm text-white font-mono">${coin.price.toFixed(2)}</div>
+                    <div className={`text-xs font-bold font-mono ${coin.change24h >= 0 ? "text-[#10b981]" : "text-[#ef4444]"}`}>
+                      {coin.change24h >= 0 ? "+" : ""}{coin.change24h.toFixed(2)}%
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
         {/* Speed Dial Menu Items */}
         {isPlusMenuOpen && (
           <div className="max-w-lg mx-auto flex flex-col items-end space-y-4 mb-4 pr-1 animate-slideUp">
@@ -258,16 +311,31 @@ export default function PhantomHome() {
 
         <div className="max-w-lg mx-auto flex items-center justify-between gap-3">
           
-          {/* Search Input Bar */}
+          {/* Interactive Search Input Bar */}
           <div className="relative flex-1">
             <Search className="w-5 h-5 text-gray-400 absolute left-4 top-3.5" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && searchMatches.length > 0) {
+                  setSelectedCoinForDetail(searchMatches[0]);
+                  setSearchQuery("");
+                }
+              }}
               placeholder="Search Phantom"
-              className="w-full pl-11 pr-4 py-3 rounded-full bg-[#202024] border border-white/5 text-white text-base placeholder-gray-400 focus:outline-none focus:border-[#beacff]/60 transition-all font-medium"
+              className="w-full pl-11 pr-10 py-3 rounded-full bg-[#202024] border border-white/5 text-white text-base placeholder-gray-400 focus:outline-none focus:border-[#beacff]/60 transition-all font-medium"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-4 top-3.5 text-gray-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
           {/* Floating Circle Action Button (+) / (X) */}
