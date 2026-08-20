@@ -140,29 +140,8 @@ export default function PhantomHome() {
   return (
     <div className="relative min-h-[100dvh] bg-[#000000] text-white font-sans flex flex-col selection:bg-[#beacff] selection:text-black overflow-x-hidden">
       
-      {/* ── TOP SYSTEM STATUS BAR (21:38 | Dynamic Island | 5G 20%) ── */}
-      <div className="sticky top-0 z-50 bg-[#000000] px-6 pt-2 pb-1 flex items-center justify-between text-xs font-semibold text-white select-none">
-        {/* Left Time */}
-        <span className="font-extrabold text-sm tracking-tight">21:38</span>
-
-        {/* Center Dynamic Island Notch Pill */}
-        <div className="w-24 h-5 rounded-full bg-[#000000] border border-white/10 flex items-center justify-center px-2 space-x-1.5 shadow-inner">
-          <div className="w-2.5 h-2.5 rounded-full border-2 border-[#10b981] flex items-center justify-center">
-            <div className="w-1 h-1 rounded-full bg-[#10b981] animate-pulse" />
-          </div>
-        </div>
-
-        {/* Right System Indicators */}
-        <div className="flex items-center space-x-1.5 text-gray-200">
-          <span className="text-[10px] font-black tracking-wider">5G</span>
-          <div className="flex items-center bg-[#202024] px-1.5 py-0.5 rounded text-[10px] font-extrabold text-white">
-            20⚡
-          </div>
-        </div>
-      </div>
-
       {/* ── HEADER NAV BAR (Avatar + Pill Tabs) ── */}
-      <header className="sticky top-[29px] z-40 bg-[#000000]/95 backdrop-blur-md px-4 py-2.5 flex items-center space-x-2.5 border-b border-white/5">
+      <header className="sticky top-0 z-40 bg-[#000000]/95 backdrop-blur-md px-4 py-2.5 flex items-center space-x-2.5 border-b border-white/5">
         
         {/* Profile Avatar Button (Yellow Blob Avatar in Purple Frame matching Screenshot) */}
         <button

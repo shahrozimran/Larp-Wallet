@@ -26,6 +26,37 @@ interface PhantomPortfolioViewProps {
   accountName: string;
 }
 
+type EnrichedHolding = {
+  coinId: string;
+  qty: number;
+  avgBuyPrice: number;
+  coin: CoinToken;
+  currentValue: number;
+  costBasis: number;
+  pnlUsd: number;
+  pnlPct: number;
+};
+
+// Default tokens shown when portfolio is empty
+const DEFAULT_TOKENS = [
+  { id: "solana", symbol: "SOL", name: "Solana" },
+  { id: "ethereum", symbol: "ETH", name: "Ethereum" },
+  { id: "bitcoin", symbol: "BTC", name: "Bitcoin" },
+];
+
+function formatValue(usd: number, currency: "usd" | "gbp", rate: number): string {
+  const value = currency === "gbp" ? usd * rate : usd;
+  const symbol = currency === "gbp" ? "£" : "$";
+  return `${symbol}${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function formatQty(qty: number): string {
+  if (qty === 0) return "0";
+  if (qty < 0.001) return qty.toFixed(8);
+  if (qty < 1) return qty.toFixed(5);
+  return qty.toLocaleString("en-US", { maximumFractionDigits: 4 });
+}
+
 export default function PhantomPortfolioView({
   holdings,
   coins,
@@ -34,37 +65,55 @@ export default function PhantomPortfolioView({
   accountName = "Konto 1",
 }: PhantomPortfolioViewProps) {
 
-  // If user has custom holdings from transactions, calculate them, otherwise default to screenshot exact 1:1 data
-  const hasUserHoldings = holdings.length > 0;
+  // Enrich user holdings dynamically with live coin prices
+  const enrichedHoldings: EnrichedHolding[] = holdings
+    .map((h) => {
+      const coin = coins.find((c) => c.id === h.coinId) || {
+        id: h.coinId,
+        symbol: h.coinId.toUpperCase(),
+        name: h.coinId.charAt(0).toUpperCase() + h.coinId.slice(1),
+        image: "",
+        price: h.avgBuyPrice || 0,
+        change24h: 0,
+      };
+      const currentValue = h.qty * coin.price;
+      const costBasis = h.qty * h.avgBuyPrice;
+      const pnlUsd = currentValue - costBasis;
+      const pnlPct = costBasis > 0 ? (pnlUsd / costBasis) * 100 : 0;
+      return { ...h, coin, currentValue, costBasis, pnlUsd, pnlPct };
+    })
+    .sort((a, b) => b.currentValue - a.currentValue);
 
-  // Exact 1:1 screenshot defaults
-  const solanaHolding = holdings.find((h) => h.coinId === "solana");
-  const bfsHolding = holdings.find((h) => h.coinId === "bfs");
+  // Total balance & total PnL calculated dynamically
+  const totalUsd = enrichedHoldings.reduce((s, e) => s + e.currentValue, 0);
+  const totalCostBasis = enrichedHoldings.reduce((s, e) => s + e.costBasis, 0);
+  const totalPnlUsd = totalUsd - totalCostBasis;
+  const totalPnlPct = totalCostBasis > 0 ? (totalPnlUsd / totalCostBasis) * 100 : 0;
+  const isPnlPositive = totalPnlUsd >= 0;
 
-  const solQty = solanaHolding ? solanaHolding.qty : 0.09413;
-  const solPrice = coins.find((c) => c.id === "solana")?.price || 8.22;
-  const solValue = solanaHolding ? solQty * solPrice : 8.22;
-  const solChange = solanaHolding ? (coins.find((c) => c.id === "solana")?.change24h || 6.10) : 0.48;
+  // Default zero rows if no user holdings exist
+  const heldIds = new Set(enrichedHoldings.map((e) => e.coinId));
+  const defaultRows = DEFAULT_TOKENS.filter((d) => !heldIds.has(d.id)).map((d) => {
+    const coin = coins.find((c) => c.id === d.id);
+    return {
+      coinId: d.id,
+      qty: 0,
+      coin: coin ?? { id: d.id, symbol: d.symbol, name: d.name, image: "", price: 0, change24h: 0 },
+    };
+  });
 
-  const bfsQty = bfsHolding ? bfsHolding.qty : 176.12138;
-  const bfsPrice = coins.find((c) => c.id === "bfs")?.price || 0.00034;
-  const bfsValue = bfsHolding ? bfsQty * bfsPrice : 0.06;
-
-  const totalBalance = hasUserHoldings
-    ? holdings.reduce((sum, h) => {
-        const c = coins.find((coin) => coin.id === h.coinId);
-        return sum + (c ? c.price * h.qty : 0);
-      }, 0)
-    : 8.28;
-
-  const formattedBalance = `$${totalBalance.toFixed(2)}`;
+  // Perps market data dynamically fetched from live coins or default top futures
+  const btcCoin = coins.find((c) => c.id === "bitcoin");
+  const ethCoin = coins.find((c) => c.id === "ethereum");
+  const btcChange = btcCoin ? btcCoin.change24h : 6.28;
+  const ethChange = ethCoin ? ethCoin.change24h : 10.93;
 
   return (
     <div className="flex flex-col w-full px-4 pt-3 space-y-6">
 
-      {/* ── ACCOUNT SELECTOR & BALANCE SECTION ── */}
+      {/* ── ACCOUNT SELECTOR & DYNAMIC BALANCE SECTION ── */}
       <div className="space-y-1">
-        {/* Konto 1 Selector */}
+        {/* Account Selector */}
         <button
           type="button"
           className="flex items-center space-x-1 text-sm font-semibold text-gray-300 hover:text-white transition-colors cursor-pointer"
@@ -73,20 +122,29 @@ export default function PhantomPortfolioView({
           <ChevronDown className="w-4 h-4 text-gray-300 stroke-[2.5]" />
         </button>
 
-        {/* Huge $8.28 Balance */}
-        <div className="text-[3.2rem] font-extrabold text-white leading-tight tracking-tight font-sans">
-          {formattedBalance}
+        {/* Dynamic Balance */}
+        <div className="text-[3.1rem] font-extrabold text-white leading-tight tracking-tight font-sans">
+          {formatValue(totalUsd, currency, usdToGbp)}
         </div>
 
-        {/* PnL Indicator Row (+ $0.48 [+6.10%]) */}
-        <div className="flex items-center space-x-2 pt-0.5">
-          <span className="text-base font-extrabold text-[#10b981]">
-            +$0.48
-          </span>
-          <span className="bg-[#10b981] text-[#000000] font-black text-xs px-2.5 py-0.5 rounded-full tracking-tight">
-            +6.10%
-          </span>
-        </div>
+        {/* Dynamic PnL Indicator Row */}
+        {enrichedHoldings.length > 0 ? (
+          <div className="flex items-center space-x-2 pt-0.5">
+            <span className={`text-base font-extrabold ${isPnlPositive ? "text-[#10b981]" : "text-[#ef4444]"}`}>
+              {isPnlPositive ? "+" : "-"}{formatValue(Math.abs(totalPnlUsd), currency, usdToGbp)}
+            </span>
+            <span className={`font-black text-xs px-2.5 py-0.5 rounded-full tracking-tight ${
+              isPnlPositive ? "bg-[#10b981] text-[#000000]" : "bg-[#ef4444] text-white"
+            }`}>
+              {isPnlPositive ? "+" : ""}{totalPnlPct.toFixed(2)}%
+            </span>
+          </div>
+        ) : (
+          <div className="flex items-center space-x-2 pt-0.5">
+            <span className="text-base font-extrabold text-[#10b981]">+$0.00</span>
+            <span className="bg-[#10b981] text-[#000000] font-black text-xs px-2.5 py-0.5 rounded-full tracking-tight">+0.00%</span>
+          </div>
+        )}
       </div>
 
       {/* ── CASH CARD ROW ── */}
@@ -113,76 +171,87 @@ export default function PhantomPortfolioView({
           <ChevronRight className="w-5 h-5 text-gray-300 stroke-[2.5]" />
         </button>
 
-        {/* Token Cards Stack */}
+        {/* Token Cards List */}
         <div className="space-y-2.5">
           
-          {/* Solana Card */}
-          <div className="flex items-center justify-between p-4 bg-[#18181b] hover:bg-[#202024] rounded-2xl border border-white/5 transition-all cursor-pointer">
-            <div className="flex items-center space-x-3.5">
-              {/* Solana Logo Circle */}
-              <div className="w-11 h-11 rounded-full bg-[#000000] border border-white/10 flex items-center justify-center shrink-0 overflow-hidden relative">
-                <svg viewBox="0 0 397.7 311.7" className="w-6 h-6">
-                  <linearGradient id="solGrad1" x1="362.9" y1="38.4" x2="35.3" y2="38.4" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stopColor="#00ffa3"/>
-                    <stop offset="1" stopColor="#dc1fff"/>
-                  </linearGradient>
-                  <path fill="url(#solGrad1)" d="M64.6 237.9c2.4-2.4 5.7-3.8 9.1-3.8h314.6c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.1 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7z"/>
-                  <linearGradient id="solGrad2" x1="362.9" y1="155.8" x2="35.3" y2="155.8" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stopColor="#00ffa3"/>
-                    <stop offset="1" stopColor="#dc1fff"/>
-                  </linearGradient>
-                  <path fill="url(#solGrad2)" d="M64.6 3.8C67 1.4 70.3 0 73.7 0h314.6c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.1 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8z"/>
-                  <linearGradient id="solGrad3" x1="362.9" y1="273.2" x2="35.3" y2="273.2" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stopColor="#00ffa3"/>
-                    <stop offset="1" stopColor="#dc1fff"/>
-                  </linearGradient>
-                  <path fill="url(#solGrad3)" d="M333.1 120.9c-2.4-2.4-5.7-3.8-9.1-3.8H9.4c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.1 3.8h314.6c5.8 0 8.7-7 4.6-11.1l-62.7-62.7z"/>
-                </svg>
-              </div>
+          {/* User Active Holdings */}
+          {enrichedHoldings.map((item) => {
+            const isPos = item.pnlUsd >= 0;
+            return (
+              <div
+                key={item.coinId}
+                className="flex items-center justify-between p-4 bg-[#18181b] hover:bg-[#202024] rounded-2xl border border-white/5 transition-all cursor-pointer group"
+              >
+                <div className="flex items-center space-x-3.5">
+                  {/* Coin Avatar */}
+                  <div className="w-11 h-11 rounded-full overflow-hidden bg-[#27272a] border border-white/10 flex items-center justify-center shrink-0">
+                    {item.coin.image ? (
+                      <img
+                        src={item.coin.image}
+                        alt={item.coin.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <span className="font-black text-xs text-white">{item.coin.symbol.slice(0, 3)}</span>
+                    )}
+                  </div>
 
-              <div>
-                <div className="font-extrabold text-base text-white">Solana</div>
-                <div className="text-sm font-semibold text-gray-400">
-                  {solQty.toLocaleString("en-US", { maximumFractionDigits: 5 })} SOL
+                  <div>
+                    <div className="font-extrabold text-base text-white group-hover:text-[#beacff] transition-colors">
+                      {item.coin.name}
+                    </div>
+                    <div className="text-sm font-semibold text-gray-400">
+                      {formatQty(item.qty)} {item.coin.symbol}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <div className="font-extrabold text-base text-white font-mono">
+                    {formatValue(item.currentValue, currency, usdToGbp)}
+                  </div>
+                  <div className={`text-xs font-extrabold font-mono ${isPos ? "text-[#10b981]" : "text-[#ef4444]"}`}>
+                    {isPos ? "+" : "-"}{formatValue(Math.abs(item.pnlUsd), currency, usdToGbp)}
+                  </div>
                 </div>
               </div>
-            </div>
+            );
+          })}
 
-            <div className="text-right">
-              <div className="font-extrabold text-base text-white font-mono">
-                ${solValue.toFixed(2)}
-              </div>
-              <div className="text-xs font-extrabold text-[#10b981] font-mono">
-                +${solChange.toFixed(2)}
-              </div>
-            </div>
-          </div>
+          {/* Default Rows if User Has No Holdings */}
+          {enrichedHoldings.length === 0 &&
+            defaultRows.map((row) => (
+              <div
+                key={row.coinId}
+                className="flex items-center justify-between p-4 bg-[#18181b] hover:bg-[#202024] rounded-2xl border border-white/5 transition-all cursor-pointer opacity-80"
+              >
+                <div className="flex items-center space-x-3.5">
+                  <div className="w-11 h-11 rounded-full overflow-hidden bg-[#27272a] border border-white/10 flex items-center justify-center shrink-0">
+                    {row.coin.image ? (
+                      <img
+                        src={row.coin.image}
+                        alt={row.coin.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="font-black text-xs text-white">{row.coin.symbol}</span>
+                    )}
+                  </div>
+                  <div>
+                    <div className="font-extrabold text-base text-white">{row.coin.name}</div>
+                    <div className="text-sm font-semibold text-gray-400">0 {row.coin.symbol}</div>
+                  </div>
+                </div>
 
-          {/* BFS Card */}
-          <div className="flex items-center justify-between p-4 bg-[#18181b] hover:bg-[#202024] rounded-2xl border border-white/5 transition-all cursor-pointer">
-            <div className="flex items-center space-x-3.5">
-              {/* BFS Custom Badge Icon */}
-              <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#00d2ff] via-[#3a7bd5] to-[#f857a6] border border-white/10 flex items-center justify-center shrink-0 shadow-md">
-                <span className="font-black text-white text-xs italic tracking-wider">BFS</span>
-              </div>
-
-              <div>
-                <div className="font-extrabold text-base text-white">BFS</div>
-                <div className="text-sm font-semibold text-gray-400">
-                  {bfsQty.toLocaleString("en-US", { maximumFractionDigits: 5 })} BFS
+                <div className="text-right">
+                  <div className="font-extrabold text-base text-white font-mono">$0.00</div>
+                  <div className="text-xs font-extrabold text-gray-500 font-mono">$0.00</div>
                 </div>
               </div>
-            </div>
-
-            <div className="text-right">
-              <div className="font-extrabold text-base text-white font-mono">
-                ${bfsValue.toFixed(2)}
-              </div>
-              <div className="text-xs font-extrabold text-[#ef4444] font-mono">
-                -&lt;$0.01
-              </div>
-            </div>
-          </div>
+            ))}
 
         </div>
       </div>
@@ -203,59 +272,44 @@ export default function PhantomPortfolioView({
           
           {/* BTC Card */}
           <div className="w-36 h-36 rounded-2xl bg-[#18181b] hover:bg-[#202024] p-4 border border-white/5 flex flex-col justify-between shrink-0 transition-all cursor-pointer group">
-            {/* Top Logo */}
             <div className="w-10 h-10 rounded-full bg-[#f7931a] flex items-center justify-center text-white font-black text-lg shadow-md shrink-0">
               ₿
             </div>
-
-            {/* Middle Name + Badge */}
             <div className="flex items-center space-x-1.5 pt-2">
               <span className="font-extrabold text-base text-white">BTC</span>
               <span className="bg-[#27272a] text-gray-300 text-[10px] font-extrabold px-1.5 py-0.5 rounded">
                 40x
               </span>
             </div>
-
-            {/* Bottom Change */}
-            <div className="text-base font-extrabold text-[#10b981]">
-              +6.28%
+            <div className={`text-base font-extrabold ${btcChange >= 0 ? "text-[#10b981]" : "text-[#ef4444]"}`}>
+              {btcChange >= 0 ? "+" : ""}{btcChange.toFixed(2)}%
             </div>
           </div>
 
           {/* ETH Card */}
           <div className="w-36 h-36 rounded-2xl bg-[#18181b] hover:bg-[#202024] p-4 border border-white/5 flex flex-col justify-between shrink-0 transition-all cursor-pointer group">
-            {/* Top Logo */}
             <div className="w-10 h-10 rounded-full bg-[#282a36] border border-white/10 flex items-center justify-center text-teal-300 font-extrabold text-base shadow-md shrink-0">
               ◆
             </div>
-
-            {/* Middle Name + Badge */}
             <div className="flex items-center space-x-1.5 pt-2">
               <span className="font-extrabold text-base text-white">ETH</span>
               <span className="bg-[#27272a] text-gray-300 text-[10px] font-extrabold px-1.5 py-0.5 rounded">
                 25x
               </span>
             </div>
-
-            {/* Bottom Change */}
-            <div className="text-base font-extrabold text-[#10b981]">
-              +10.93%
+            <div className={`text-base font-extrabold ${ethChange >= 0 ? "text-[#10b981]" : "text-[#ef4444]"}`}>
+              {ethChange >= 0 ? "+" : ""}{ethChange.toFixed(2)}%
             </div>
           </div>
 
           {/* HY Card */}
           <div className="w-36 h-36 rounded-2xl bg-[#18181b] hover:bg-[#202024] p-4 border border-white/5 flex flex-col justify-between shrink-0 transition-all cursor-pointer group">
-            {/* Top Logo */}
             <div className="w-10 h-10 rounded-full bg-[#14262b] border border-[#20ded3]/30 flex items-center justify-center text-[#20ded3] font-black text-sm shadow-md shrink-0">
               HY
             </div>
-
-            {/* Middle Name */}
             <div className="flex items-center space-x-1.5 pt-2">
               <span className="font-extrabold text-base text-white">HY...</span>
             </div>
-
-            {/* Bottom Change */}
             <div className="text-base font-extrabold text-[#10b981]">
               +3...
             </div>
