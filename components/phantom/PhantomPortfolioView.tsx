@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { CheckCircle2, Trash2, TrendingUp } from "lucide-react";
+import { CheckCircle2, ChevronRight, CreditCard } from "lucide-react";
 
 export interface Holding {
   coinId: string;
@@ -18,14 +18,31 @@ interface CoinToken {
   change24h: number;
 }
 
+// Default "zero" tokens always shown like real Phantom
+const DEFAULT_TOKENS = [
+  { id: "solana", symbol: "SOL", name: "Solana" },
+  { id: "ethereum", symbol: "ETH", name: "Ethereum" },
+  { id: "bitcoin", symbol: "BTC", name: "Bitcoin" },
+];
+
 interface PhantomPortfolioViewProps {
   holdings: Holding[];
   coins: CoinToken[];
   currency: "usd" | "gbp";
   usdToGbp: number;
-  onCurrencyToggle: () => void;
-  onRemoveHolding: (coinId: string) => void;
+  accountName: string;
 }
+
+type EnrichedHolding = {
+  coinId: string;
+  qty: number;
+  avgBuyPrice: number;
+  coin: CoinToken;
+  currentValue: number;
+  costBasis: number;
+  pnlUsd: number;
+  pnlPct: number;
+};
 
 function formatValue(usd: number, currency: "usd" | "gbp", rate: number): string {
   const value = currency === "gbp" ? usd * rate : usd;
@@ -33,13 +50,11 @@ function formatValue(usd: number, currency: "usd" | "gbp", rate: number): string
   return `${symbol}${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-function formatQty(qty: number, symbol: string): string {
-  const formatted = qty < 0.001
-    ? qty.toFixed(8)
-    : qty < 1
-    ? qty.toFixed(5)
-    : qty.toLocaleString("en-US", { maximumFractionDigits: 4 });
-  return `${formatted} ${symbol}`;
+function formatQty(qty: number): string {
+  if (qty === 0) return "0";
+  if (qty < 0.001) return qty.toFixed(8);
+  if (qty < 1) return qty.toFixed(5);
+  return qty.toLocaleString("en-US", { maximumFractionDigits: 4 });
 }
 
 export default function PhantomPortfolioView({
@@ -47,20 +62,12 @@ export default function PhantomPortfolioView({
   coins,
   currency,
   usdToGbp,
-  onCurrencyToggle,
-  onRemoveHolding,
+  accountName,
 }: PhantomPortfolioViewProps) {
-  type EnrichedHolding = Holding & {
-    coin: CoinToken;
-    currentValue: number;
-    costBasis: number;
-    pnlUsd: number;
-    pnlPct: number;
-  };
-
-  // Enrich holdings with live price data
-  const enriched: EnrichedHolding[] = holdings
-    .map((h) => {
+  // Enrich user holdings
+  type MaybeEnriched = EnrichedHolding | null;
+  const enrichedHoldings: EnrichedHolding[] = holdings
+    .map((h): MaybeEnriched => {
       const coin = coins.find((c) => c.id === h.coinId);
       if (!coin) return null;
       const currentValue = h.qty * coin.price;
@@ -72,107 +79,157 @@ export default function PhantomPortfolioView({
     .filter((x): x is EnrichedHolding => x !== null)
     .sort((a, b) => b.currentValue - a.currentValue);
 
-  const totalUsd = enriched.reduce((sum: number, e: EnrichedHolding) => sum + e.currentValue, 0);
-  const totalPnlUsd = enriched.reduce((sum: number, e: EnrichedHolding) => sum + e.pnlUsd, 0);
-  const totalPnlPct = totalUsd > 0 ? (totalPnlUsd / (totalUsd - totalPnlUsd)) * 100 : 0;
-
+  const totalUsd = enrichedHoldings.reduce((s, e) => s + e.currentValue, 0);
+  const totalPnlUsd = enrichedHoldings.reduce((s, e) => s + e.pnlUsd, 0);
   const isPnlPositive = totalPnlUsd >= 0;
 
+  // Build the token list: user holdings + default zeros for tokens not held
+  const heldIds = new Set(enrichedHoldings.map((e) => e.coinId));
+  const defaultRows = DEFAULT_TOKENS
+    .filter((d) => !heldIds.has(d.id))
+    .map((d) => {
+      const coin = coins.find((c) => c.id === d.id);
+      return { coinId: d.id, qty: 0, coin: coin ?? { id: d.id, symbol: d.symbol, name: d.name, image: "", price: 0, change24h: 0 } };
+    });
+
   return (
-    <div className="space-y-5">
+    <div className="flex flex-col w-full">
 
-      {/* ── BALANCE CARD ── */}
-      <div className="mx-0 pt-4 pb-2 space-y-3">
+      {/* ── BALANCE SECTION ── */}
+      <div className="px-4 pt-4 pb-3 space-y-2">
+        {/* Free Wallet label */}
+        <button
+          type="button"
+          className="flex items-center space-x-1 text-xs font-semibold text-gray-400 hover:text-gray-200 transition-colors cursor-pointer"
+        >
+          <span>Free Wallet</span>
+          <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" className="opacity-60">
+            <path d="M0 0l5 6 5-6H0z" />
+          </svg>
+        </button>
 
-        {/* Currency Toggle */}
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={onCurrencyToggle}
-            className="flex items-center space-x-1 px-3 py-1 rounded-full bg-[#1c1c1e] border border-white/5 hover:bg-[#2c2c2e] transition-colors cursor-pointer"
-          >
-            <span className={`text-xs font-bold px-2 py-0.5 rounded-full transition-colors ${currency === "usd" ? "bg-[#a594fd] text-black" : "text-gray-400"}`}>$ USD</span>
-            <span className={`text-xs font-bold px-2 py-0.5 rounded-full transition-colors ${currency === "gbp" ? "bg-[#a594fd] text-black" : "text-gray-400"}`}>£ GBP</span>
-          </button>
+        {/* Large total balance */}
+        <div className="text-[2.6rem] font-extrabold text-white leading-none tracking-tight">
+          {formatValue(totalUsd, currency, usdToGbp)}
         </div>
 
-        {/* Total Balance Display */}
-        <div className="text-center space-y-1">
-          <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Total Balance</div>
-          <div className="text-4xl font-extrabold text-white tracking-tight">
-            {formatValue(totalUsd, currency, usdToGbp)}
-          </div>
-          <div className={`flex items-center justify-center space-x-1.5 text-sm font-bold ${isPnlPositive ? "text-emerald-400" : "text-red-400"}`}>
-            <TrendingUp className="w-4 h-4" />
-            <span>
-              {isPnlPositive ? "+" : ""}{formatValue(Math.abs(totalPnlUsd), currency, usdToGbp)}
-              {" "}({isPnlPositive ? "+" : ""}{totalPnlPct.toFixed(2)}%)
+        {/* P/L badge */}
+        {enrichedHoldings.length > 0 && (
+          <div className="flex items-center space-x-2">
+            <span className={`text-sm font-bold px-2 py-0.5 rounded-full ${
+              isPnlPositive
+                ? "bg-emerald-500/20 text-emerald-400"
+                : "bg-red-500/20 text-red-400"
+            }`}>
+              {isPnlPositive ? "+" : ""}
+              {formatValue(Math.abs(totalPnlUsd), currency, usdToGbp)}
             </span>
+            <span className="text-xs font-bold text-gray-500 bg-[#1c1c1e] px-2 py-0.5 rounded-full">24H</span>
           </div>
+        )}
+      </div>
+
+      {/* ── CASH ROW ── */}
+      <div className="mx-4 mb-4">
+        <div className="flex items-center justify-between px-4 py-3.5 bg-[#111113] rounded-2xl border border-white/5">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-lg bg-[#1c1c1e] flex items-center justify-center">
+              <CreditCard className="w-4 h-4 text-gray-400" />
+            </div>
+            <span className="font-bold text-white text-sm">Cash</span>
+          </div>
+          <span className="font-bold text-white text-sm font-mono">$0.00</span>
         </div>
       </div>
 
-      {/* ── HOLDINGS HEADER ── */}
-      <div className="flex items-center justify-between px-1">
-        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Holdings</span>
-        <span className="text-xs font-semibold text-gray-600">{enriched.length} token{enriched.length !== 1 ? "s" : ""}</span>
-      </div>
+      {/* ── TOKENS SECTION ── */}
+      <div className="px-4 space-y-2">
+        {/* Section Header */}
+        <button
+          type="button"
+          className="flex items-center space-x-1 text-lg font-extrabold text-white hover:text-[#a594fd] transition-colors cursor-pointer mb-1"
+        >
+          <span>Tokens</span>
+          <ChevronRight className="w-5 h-5 text-gray-400" />
+        </button>
 
-      {/* ── HOLDINGS LIST ── */}
-      <div className="space-y-2">
-        {enriched.map((item) => {
-          const isPositive = item.coin.change24h >= 0;
-          const isPnlPos = item.pnlUsd >= 0;
+        {/* User Holdings */}
+        {enrichedHoldings.map((item) => (
+          <div
+            key={item.coinId}
+            className="flex items-center justify-between py-3 border-b border-white/5"
+          >
+            {/* Left: icon + name + qty */}
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-[#1c1c1e] border border-white/10 shrink-0">
+                <img
+                  src={item.coin.image}
+                  alt={item.coin.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/img.jpeg"; }}
+                />
+              </div>
+              <div>
+                <div className="flex items-center space-x-1">
+                  <span className="font-extrabold text-sm text-white">{item.coin.name}</span>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#a594fd] fill-[#a594fd]/20 shrink-0" />
+                </div>
+                <div className="text-xs text-gray-500 font-semibold">
+                  {formatQty(item.qty)} {item.coin.symbol}
+                </div>
+              </div>
+            </div>
 
-          return (
-            <div
-              key={item.coinId}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#09090b] border border-white/5 group relative overflow-hidden"
-            >
-              {/* Token Left: icon + name + qty */}
-              <div className="flex items-center space-x-3.5 flex-1 min-w-0">
-                <div className="relative w-11 h-11 rounded-full overflow-hidden bg-[#1c1c1e] border border-white/10 shrink-0">
+            {/* Right: value + P/L */}
+            <div className="text-right">
+              <div className="font-extrabold text-sm text-white font-mono">
+                {formatValue(item.currentValue, currency, usdToGbp)}
+              </div>
+              <div className={`text-xs font-bold font-mono ${
+                item.pnlUsd >= 0 ? "text-emerald-400" : "text-red-400"
+              }`}>
+                {item.pnlUsd >= 0 ? "+" : ""}
+                {formatValue(Math.abs(item.pnlUsd), currency, usdToGbp)}
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Default Zero Tokens */}
+        {defaultRows.map((row) => (
+          <div
+            key={row.coinId}
+            className="flex items-center justify-between py-3 border-b border-white/5 opacity-60"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-[#1c1c1e] border border-white/10 shrink-0">
+                {row.coin.image ? (
                   <img
-                    src={item.coin.image}
-                    alt={item.coin.name}
+                    src={row.coin.image}
+                    alt={row.coin.name}
                     className="w-full h-full object-cover"
                     onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/img.jpeg"; }}
                   />
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center space-x-1.5">
-                    <span className="font-extrabold text-base text-white truncate">{item.coin.name}</span>
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#8b79f6] fill-[#8b79f6]/20 shrink-0" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="text-[9px] font-bold text-gray-500">{row.coin.symbol}</span>
                   </div>
-                  <div className="text-xs font-semibold text-gray-500">
-                    {formatQty(item.qty, item.coin.symbol)}
-                  </div>
-                </div>
+                )}
               </div>
-
-              {/* Token Right: value + 24h change */}
-              <div className="text-right flex items-center space-x-3 shrink-0">
-                <div>
-                  <div className="font-extrabold text-base text-white font-mono">
-                    {formatValue(item.currentValue, currency, usdToGbp)}
-                  </div>
-                  <div className={`text-xs font-bold font-mono ${isPositive ? "text-emerald-400" : "text-red-400"}`}>
-                    {isPositive ? "+" : ""}{item.coin.change24h.toFixed(2)}%
-                  </div>
+              <div>
+                <div className="flex items-center space-x-1">
+                  <span className="font-extrabold text-sm text-white">{row.coin.name}</span>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#a594fd] fill-[#a594fd]/20 shrink-0" />
                 </div>
-
-                {/* Remove button */}
-                <button
-                  type="button"
-                  onClick={() => onRemoveHolding(item.coinId)}
-                  className="opacity-0 group-hover:opacity-100 w-8 h-8 rounded-full bg-red-500/15 flex items-center justify-center hover:bg-red-500/30 transition-all cursor-pointer"
-                >
-                  <Trash2 className="w-3.5 h-3.5 text-red-400" />
-                </button>
+                <div className="text-xs text-gray-500 font-semibold">0 {row.coin.symbol}</div>
               </div>
             </div>
-          );
-        })}
+            <div className="text-right">
+              <div className="font-extrabold text-sm text-white font-mono">$0.00</div>
+              <div className="text-xs font-bold font-mono text-gray-600">$0.00</div>
+            </div>
+          </div>
+        ))}
       </div>
 
     </div>

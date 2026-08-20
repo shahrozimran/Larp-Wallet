@@ -16,7 +16,8 @@ interface PhantomSettingsModalProps {
   onClose: () => void;
   handle: string;
   accountName: string;
-  onSave: (handle: string, accountName: string) => void;
+  currency: "usd" | "gbp";
+  onSave: (handle: string, accountName: string, currency: "usd" | "gbp") => void;
 }
 
 export default function PhantomSettingsModal({
@@ -24,17 +25,20 @@ export default function PhantomSettingsModal({
   onClose,
   handle,
   accountName,
+  currency,
   onSave,
 }: PhantomSettingsModalProps) {
   const [editHandle, setEditHandle] = useState(handle);
   const [editAccountName, setEditAccountName] = useState(accountName);
+  const [editCurrency, setEditCurrency] = useState<"usd" | "gbp">(currency);
+  const [showCurrencyPicker, setShowCurrencyPicker] = useState(false);
   const [saved, setSaved] = useState(false);
 
   if (!isOpen) return null;
 
   const handleSave = () => {
     const cleanHandle = editHandle.startsWith("@") ? editHandle : `@${editHandle}`;
-    onSave(cleanHandle, editAccountName);
+    onSave(cleanHandle, editAccountName, editCurrency);
     setSaved(true);
     setTimeout(() => {
       setSaved(false);
@@ -42,29 +46,12 @@ export default function PhantomSettingsModal({
     }, 900);
   };
 
-  const settingsGroups = [
-    {
-      title: "Preferences",
-      items: [
-        { icon: DollarSign, label: "Preferred Currency", value: "USD" },
-        { icon: Globe, label: "Network", value: "Solana Mainnet" },
-      ],
-    },
-    {
-      title: "Security",
-      items: [
-        { icon: Shield, label: "Security & Passcode", value: "" },
-      ],
-    },
-  ];
+  const currencyLabel = editCurrency === "gbp" ? "GBP (£)" : "USD ($)";
 
   return (
     <div className="fixed inset-0 z-[60] flex">
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
       {/* Full-screen slide-up panel */}
       <div className="relative w-full h-full bg-[#000000] text-white flex flex-col z-10 animate-slideInLeft overflow-y-auto font-sans">
@@ -84,7 +71,7 @@ export default function PhantomSettingsModal({
         {/* ── BODY ── */}
         <div className="flex-1 px-4 py-6 space-y-8 max-w-lg mx-auto w-full">
 
-          {/* Account Customization Card */}
+          {/* Account Customization */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2 px-1">
               <User className="w-4 h-4 text-[#a594fd]" />
@@ -92,11 +79,9 @@ export default function PhantomSettingsModal({
             </div>
 
             <div className="bg-[#111113] rounded-2xl overflow-hidden border border-white/5 space-y-px">
-              {/* Handle Field */}
+              {/* Handle */}
               <div className="px-4 py-4 space-y-2">
-                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Username / Handle
-                </label>
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Username / Handle</label>
                 <div className="flex items-center space-x-2 bg-[#1c1c1e] rounded-xl px-3 py-2.5 border border-white/5 focus-within:border-[#a594fd]/60 transition-colors">
                   <span className="text-[#a594fd] font-bold text-base select-none">@</span>
                   <input
@@ -111,11 +96,9 @@ export default function PhantomSettingsModal({
 
               <div className="h-px bg-white/5 mx-4" />
 
-              {/* Account Name Field */}
+              {/* Account Name */}
               <div className="px-4 py-4 space-y-2">
-                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Account Name
-                </label>
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Account Name</label>
                 <div className="flex items-center bg-[#1c1c1e] rounded-xl px-3 py-2.5 border border-white/5 focus-within:border-[#a594fd]/60 transition-colors">
                   <input
                     type="text"
@@ -129,37 +112,92 @@ export default function PhantomSettingsModal({
             </div>
           </div>
 
-          {/* Other Settings Groups */}
-          {settingsGroups.map((group) => (
-            <div key={group.title} className="space-y-3">
-              <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">
-                {group.title}
-              </span>
-              <div className="bg-[#111113] rounded-2xl overflow-hidden border border-white/5 divide-y divide-white/5">
-                {group.items.map((item) => {
-                  const IconComp = item.icon;
-                  return (
-                    <button
-                      key={item.label}
-                      type="button"
-                      className="w-full flex items-center justify-between px-4 py-4 hover:bg-white/5 transition-colors cursor-pointer group"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <IconComp className="w-5 h-5 text-[#a594fd]" />
-                        <span className="text-base font-semibold text-white">{item.label}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {item.value && (
-                          <span className="text-sm text-gray-400">{item.value}</span>
+          {/* Preferences */}
+          <div className="space-y-3">
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">Preferences</span>
+            <div className="bg-[#111113] rounded-2xl overflow-hidden border border-white/5 divide-y divide-white/5">
+
+              {/* Currency Row — expandable */}
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setShowCurrencyPicker(!showCurrencyPicker)}
+                  className="w-full flex items-center justify-between px-4 py-4 hover:bg-white/5 transition-colors cursor-pointer group"
+                >
+                  <div className="flex items-center space-x-3">
+                    <DollarSign className="w-5 h-5 text-[#a594fd]" />
+                    <span className="text-base font-semibold text-white">Preferred Currency</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-400 font-semibold">{currencyLabel}</span>
+                    <ChevronRight className={`w-4 h-4 text-gray-600 transition-transform ${showCurrencyPicker ? "rotate-90" : ""}`} />
+                  </div>
+                </button>
+
+                {/* Inline Currency Picker */}
+                {showCurrencyPicker && (
+                  <div className="border-t border-white/5 divide-y divide-white/5">
+                    {[
+                      { value: "usd", label: "US Dollar", symbol: "$", short: "USD ($)" },
+                      { value: "gbp", label: "British Pound", symbol: "£", short: "GBP (£)" },
+                    ].map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => { setEditCurrency(opt.value as "usd" | "gbp"); setShowCurrencyPicker(false); }}
+                        className="w-full flex items-center justify-between px-6 py-3.5 hover:bg-white/5 transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <span className="w-7 h-7 rounded-full bg-[#2c2c2e] text-white text-sm font-bold flex items-center justify-center">
+                            {opt.symbol}
+                          </span>
+                          <div className="text-left">
+                            <div className="text-sm font-semibold text-white">{opt.label}</div>
+                            <div className="text-xs text-gray-500">{opt.short}</div>
+                          </div>
+                        </div>
+                        {editCurrency === opt.value && (
+                          <Check className="w-4 h-4 text-[#a594fd]" />
                         )}
-                        <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-gray-400 transition-colors" />
-                      </div>
-                    </button>
-                  );
-                })}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
+
+              {/* Network */}
+              <button
+                type="button"
+                className="w-full flex items-center justify-between px-4 py-4 hover:bg-white/5 transition-colors cursor-pointer group"
+              >
+                <div className="flex items-center space-x-3">
+                  <Globe className="w-5 h-5 text-[#a594fd]" />
+                  <span className="text-base font-semibold text-white">Network</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-400">Solana Mainnet</span>
+                  <ChevronRight className="w-4 h-4 text-gray-600" />
+                </div>
+              </button>
             </div>
-          ))}
+          </div>
+
+          {/* Security */}
+          <div className="space-y-3">
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">Security</span>
+            <div className="bg-[#111113] rounded-2xl overflow-hidden border border-white/5">
+              <button
+                type="button"
+                className="w-full flex items-center justify-between px-4 py-4 hover:bg-white/5 transition-colors cursor-pointer group"
+              >
+                <div className="flex items-center space-x-3">
+                  <Shield className="w-5 h-5 text-[#a594fd]" />
+                  <span className="text-base font-semibold text-white">Security & Passcode</span>
+                </div>
+                <ChevronRight className="w-4 h-4 text-gray-600" />
+              </button>
+            </div>
+          </div>
 
           {/* Save Button */}
           <button
