@@ -18,6 +18,7 @@ import PhantomSettingsModal from "./PhantomSettingsModal";
 import PhantomProfileModal from "./PhantomProfileModal";
 import PhantomAddCashModal from "./PhantomAddCashModal";
 import PhantomPortfolioView, { Holding } from "./PhantomPortfolioView";
+import PhantomTradeView from "./PhantomTradeView";
 
 interface CoinToken {
   id: string;
@@ -132,14 +133,19 @@ export default function PhantomHome() {
     });
   };
 
+  const handleUpdateHoldings = (newHoldings: Holding[]) => {
+    setHoldings(newHoldings);
+    localStorage.setItem("phantom_holdings", JSON.stringify(newHoldings));
+  };
 
-  const tabs = ["Home", "Trade", "Predict", "Explore"];
+
+  const tabs = ["Home", "Trade", "Explore"];
 
   const speedDialItems = [
     { id: "send", label: "Send", icon: Send, onClick: () => {} },
     { id: "receive", label: "Receive", icon: QrCode, onClick: () => {} },
     { id: "add_cash", label: "Add Cash", icon: CircleDollarSign, onClick: () => { setIsPlusMenuOpen(false); setIsAddCashOpen(true); } },
-    { id: "trade", label: "Trade", icon: ArrowLeftRight, onClick: () => {} },
+    { id: "trade", label: "Trade", icon: ArrowLeftRight, onClick: () => { setIsPlusMenuOpen(false); setActiveTab("Trade"); } },
   ];
 
   const hasHoldings = holdings.length > 0;
@@ -193,18 +199,29 @@ export default function PhantomHome() {
       {/* ── MAIN CONTENT AREA ── */}
       <main className="flex-1 max-w-[430px] w-full mx-auto pb-28">
 
-        {/* ── PORTFOLIO VIEW: Always shown (empty or funded) ── */}
-        <PhantomPortfolioView
-          holdings={holdings}
-          coins={coins}
-          currency={currency}
-          usdToGbp={usdToGbp}
-          accountName={accountName}
-        />
+        {activeTab === "Trade" ? (
+          <PhantomTradeView
+            coins={coins}
+            holdings={holdings}
+            currency={currency}
+            usdToGbp={usdToGbp}
+            onAddHolding={handleAddHolding}
+            onUpdateHoldings={handleUpdateHoldings}
+          />
+        ) : (
+          <>
+            {/* ── PORTFOLIO VIEW: Always shown (empty or funded) ── */}
+            <PhantomPortfolioView
+              holdings={holdings}
+              coins={coins}
+              currency={currency}
+              usdToGbp={usdToGbp}
+              accountName={accountName}
+            />
 
-        {/* ── TRENDING TOKENS SECTION (only shown when no holdings) ── */}
-        {!hasHoldings && (
-        <div className="space-y-4 px-4 pt-4">
+            {/* ── TRENDING TOKENS SECTION (only shown when no holdings) ── */}
+            {!hasHoldings && (
+            <div className="space-y-4 px-4 pt-4">
 
           
           {/* Section Header with last-updated pulse */}
@@ -295,6 +312,8 @@ export default function PhantomHome() {
           </div>
 
         </div>
+        )}
+          </>
         )}
       </main>
 
