@@ -19,6 +19,7 @@ import PhantomProfileModal from "./PhantomProfileModal";
 import PhantomAddCashModal from "./PhantomAddCashModal";
 import PhantomPortfolioView, { Holding } from "./PhantomPortfolioView";
 import PhantomTradeView from "./PhantomTradeView";
+import PhantomExploreView from "./PhantomExploreView";
 
 interface CoinToken {
   id: string;
@@ -207,6 +208,12 @@ export default function PhantomHome() {
             usdToGbp={usdToGbp}
             onAddHolding={handleAddHolding}
             onUpdateHoldings={handleUpdateHoldings}
+          />
+        ) : activeTab === "Explore" ? (
+          <PhantomExploreView
+            coins={coins}
+            onSwap={() => setActiveTab("Trade")}
+            onBuy={() => setIsAddCashOpen(true)}
           />
         ) : (
           <>
