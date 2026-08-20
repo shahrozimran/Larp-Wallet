@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Copy,
   Check,
@@ -11,7 +12,10 @@ import {
   Settings,
   HelpCircle,
   ChevronDown,
+  LogOut,
+  LayoutDashboard,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 interface PhantomSidebarProps {
   isOpen: boolean;
@@ -31,6 +35,8 @@ export default function PhantomSidebar({
   onOpenSettings,
 }: PhantomSidebarProps) {
   const [copied, setCopied] = useState(false);
+  const router = useRouter();
+  const { user, profile, signOut } = useAuth();
 
   if (!isOpen) return null;
 
@@ -40,8 +46,15 @@ export default function PhantomSidebar({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    onClose();
+    router.push("/");
+  };
+
   const topMenuItems = [
     { icon: User, label: "Profile", onClick: () => { onClose(); onOpenProfile(); } },
+    { icon: LayoutDashboard, label: "Hub Dashboard", onClick: () => { onClose(); router.push("/dashboard"); } },
     { icon: MessageSquare, label: "Chats", onClick: () => {} },
     { icon: Heart, label: "Watchlist", onClick: () => {} },
     { icon: Clock, label: "History", onClick: () => {} },
@@ -91,9 +104,19 @@ export default function PhantomSidebar({
             </button>
           </div>
 
-          {/* User Handle */}
+          {/* User Handle & Badge */}
           <div className="space-y-1">
             <h2 className="text-2xl font-extrabold text-white tracking-tight">{handle}</h2>
+            {user?.email && (
+              <div className="flex items-center space-x-2 pt-0.5">
+                <span className="px-2 py-0.5 rounded-full bg-[#7c5ce8]/20 text-[#c4b5fd] text-[10px] font-mono font-bold uppercase">
+                  {profile?.plan_type || "Pro"}
+                </span>
+                <span className="text-[11px] text-gray-400 font-mono truncate max-w-[150px]">
+                  {user.email}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Account Selector Pill */}
@@ -111,7 +134,7 @@ export default function PhantomSidebar({
           </div>
 
           {/* Top Menu Items List */}
-          <div className="space-y-5 pt-4">
+          <div className="space-y-4 pt-4">
             {topMenuItems.map((item, index) => {
               const IconComp = item.icon;
               return (
@@ -130,8 +153,8 @@ export default function PhantomSidebar({
 
         </div>
 
-        {/* BOTTOM SECTION (Settings & Help) */}
-        <div className="space-y-5 pt-6 border-t border-white/10 pb-4">
+        {/* BOTTOM SECTION (Settings, Help & Sign Out) */}
+        <div className="space-y-4 pt-4 border-t border-white/10 pb-2">
           {bottomMenuItems.map((item, index) => {
             const IconComp = item.icon;
             return (
@@ -146,6 +169,15 @@ export default function PhantomSidebar({
               </button>
             );
           })}
+
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="w-full flex items-center space-x-3.5 text-red-400 hover:text-red-300 transition-colors py-2 px-3 rounded-xl bg-red-500/10 hover:bg-red-500/15 cursor-pointer text-left font-bold text-sm"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Sign Out</span>
+          </button>
         </div>
 
       </div>

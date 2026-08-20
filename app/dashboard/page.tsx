@@ -13,55 +13,60 @@ import {
   ArrowUpRight,
   Send,
   Download,
+  User,
+  ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 
-import {
-  getAuthSession,
-  logoutUser,
-  setActiveWalletType,
-  UserSession,
-} from "@/lib/auth";
-
+import { useAuth } from "@/context/AuthContext";
 import PortfolioCard from "@/app/components/PortfolioCard";
 import AssetList from "@/app/components/AssetList";
 import SendReceiveModals from "@/app/components/SendReceiveModals";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [session, setSession] = useState<UserSession | null>(null);
+  const {
+    user,
+    profile,
+    isLoggedIn,
+    isLicenseActive,
+    loading,
+    signOut,
+    updateActiveWallet,
+  } = useAuth();
+
   const [selectedWallet, setSelectedWallet] = useState<"phantom" | "trust" | "ledger" | null>(null);
   const [activeModal, setActiveModal] = useState<"send" | "receive" | null>(null);
 
   useEffect(() => {
-    const s = getAuthSession();
-    if (!s.isLoggedIn) {
-      router.push("/pricing");
-    } else if (!s.isLicenseActive) {
-      router.push("/plans");
-    } else {
-      setSession(s);
+    if (!loading) {
+      if (!isLoggedIn) {
+        router.push("/login?redirect=/dashboard");
+      } else if (!isLicenseActive) {
+        router.push("/plans");
+      }
     }
-  }, [router]);
+  }, [loading, isLoggedIn, isLicenseActive, router]);
 
-  const handleLogout = () => {
-    logoutUser();
+  const handleLogout = async () => {
+    await signOut();
     router.push("/");
   };
 
-  const handleSelectWallet = (wallet: "phantom" | "trust" | "ledger") => {
+  const handleSelectWallet = async (wallet: "phantom" | "trust" | "ledger") => {
     setSelectedWallet(wallet);
-    setActiveWalletType(wallet);
+    await updateActiveWallet(wallet);
     if (wallet === "phantom") {
       router.push("/phantom");
     }
   };
 
-  if (!session) {
+  if (loading || !isLoggedIn || !isLicenseActive) {
     return (
       <div className="min-h-screen bg-[#08061a] text-white flex items-center justify-center font-sans">
         <div className="flex items-center space-x-3 text-[#a78bfa]">
           <RefreshCw className="w-6 h-6 animate-spin" />
-          <span className="font-mono text-sm font-semibold">Loading Dashboard...</span>
+          <span className="font-mono text-sm font-semibold">Verifying authorization &amp; loading...</span>
         </div>
       </div>
     );
@@ -118,14 +123,23 @@ export default function DashboardPage() {
             </span>
           </Link>
 
-          {/* Logout Button */}
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer"
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Logout</span>
-          </button>
+          {/* User Status & Logout */}
+          <div className="flex items-center space-x-3">
+            <div className="hidden sm:flex items-center space-x-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs">
+              <span className="px-2 py-0.5 rounded-full bg-[#7c5ce8]/20 text-[#c4b5fd] font-mono uppercase text-[10px] font-bold">
+                {profile?.plan_type || "Pro"}
+              </span>
+              <span className="text-gray-300 font-mono max-w-[150px] truncate">{user?.email}</span>
+            </div>
+
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Logout</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -134,9 +148,10 @@ export default function DashboardPage() {
 
         {/* Title Header */}
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <span className="text-xs font-mono font-bold uppercase tracking-widest text-[#a78bfa]">
-            Dashboard
-          </span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7c5ce8]/15 border border-[#7c5ce8]/30 text-xs font-mono font-bold text-[#c4b5fd]">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#a78bfa]" />
+            <span>Authenticated &amp; Authorized</span>
+          </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white">
             Select Your Wallet
           </h1>
@@ -201,7 +216,7 @@ export default function DashboardPage() {
               </div>
               <button
                 onClick={() => setSelectedWallet(null)}
-                className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-gray-400 hover:text-white transition-colors"
+                className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-gray-400 hover:text-white transition-colors cursor-pointer"
               >
                 Close View
               </button>

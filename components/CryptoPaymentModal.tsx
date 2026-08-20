@@ -9,12 +9,13 @@ import {
   QrCode,
   Clock,
   ShieldCheck,
-  ArrowRight,
   RefreshCw,
-  Sparkles,
   Zap,
+  Sparkles,
+  AlertCircle,
 } from "lucide-react";
-import { activateLicenseKey } from "@/lib/auth";
+import { useAuth } from "@/context/AuthContext";
+import { createClient } from "@/lib/supabase/client";
 
 export interface SelectedPlan {
   name: string;
@@ -25,6 +26,7 @@ export interface SelectedPlan {
 interface CryptoPaymentModalProps {
   plan: SelectedPlan | null;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
 const CRYPTO_OPTIONS = [
@@ -66,14 +68,22 @@ const CRYPTO_OPTIONS = [
   },
 ];
 
-export default function CryptoPaymentModal({ plan, onClose }: CryptoPaymentModalProps) {
+export default function CryptoPaymentModal({
+  plan,
+  onClose,
+  onSuccess,
+}: CryptoPaymentModalProps) {
   const router = useRouter();
+  const { user, activateLicense, refreshProfile } = useAuth();
+  const [supabase] = useState(() => createClient());
+
   const [selectedCrypto, setSelectedCrypto] = useState(CRYPTO_OPTIONS[0]);
   const [copied, setCopied] = useState(false);
   const [keyCopied, setKeyCopied] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [generatedKey, setGeneratedKey] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(899); // 14:59 countdown
 
   useEffect(() => {
@@ -110,22 +120,61 @@ export default function CryptoPaymentModal({ plan, onClose }: CryptoPaymentModal
     setTimeout(() => setKeyCopied(false), 2000);
   };
 
-  const handleConfirmPayment = () => {
+  const handleConfirmPayment = async () => {
     setIsConfirming(true);
-    setTimeout(() => {
+    setErrorMessage(null);
+
+    try {
+      const planTier = plan.name.toLowerCase().includes("starter")
+        ? "starter"
+        : plan.name.toLowerCase().includes("lifetime")
+        ? "lifetime"
+        : "pro";
+
+      const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+      const newKey = `LRP-${planTier.toUpperCase()}-${randomSuffix}`;
+
+      // Save order in Supabase database
+      if (user) {
+        await (supabase.from("crypto_orders") as any).insert({
+          user_id: user.id,
+          plan_name: plan.name,
+          plan_tier: planTier,
+          price_usd: numPrice,
+          crypto_symbol: selectedCrypto.symbol,
+          crypto_amount: parseFloat(cryptoAmount),
+          deposit_address: selectedCrypto.address,
+          status: "completed",
+          generated_license_key: newKey,
+        });
+
+        // Automatically activate this key for the user
+        await activateLicense(newKey);
+      }
+
+      setTimeout(() => {
+        setIsConfirming(false);
+        setGeneratedKey(newKey);
+        setPaymentSuccess(true);
+      }, 1500);
+    } catch (err: any) {
+      console.error("Order processing error:", err);
       setIsConfirming(false);
-      const newKey = `LRP-9814-PRO-${Math.floor(1000 + Math.random() * 9000)}`;
-      setGeneratedKey(newKey);
-      setPaymentSuccess(true);
-    }, 1800);
+      setErrorMessage(err.message || "Failed to process payment confirmation.");
+    }
   };
 
-  const handleGoToActivation = () => {
-    if (generatedKey) {
-      activateLicenseKey(generatedKey);
+  const handleGoToActivation = async () => {
+    if (generatedKey && user) {
+      await activateLicense(generatedKey);
+      await refreshProfile();
     }
     onClose();
-    router.push("/dashboard");
+    if (onSuccess) {
+      onSuccess();
+    } else {
+      router.push("/dashboard");
+    }
   };
 
   return (
@@ -135,7 +184,7 @@ export default function CryptoPaymentModal({ plan, onClose }: CryptoPaymentModal
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+          className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>
@@ -158,16 +207,23 @@ export default function CryptoPaymentModal({ plan, onClose }: CryptoPaymentModal
           </div>
         </div>
 
+        {errorMessage && (
+          <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/25 flex items-start space-x-2.5 text-xs text-red-300 animate-fadeIn">
+            <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
+
         {paymentSuccess ? (
-          <div className="py-8 flex flex-col items-center text-center space-y-6 animate-fadeIn">
+          <div className="py-6 flex flex-col items-center text-center space-y-6 animate-fadeIn">
             <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-emerald-400 animate-bounce">
               <Check className="w-8 h-8" />
             </div>
             
             <div className="space-y-1">
-              <h4 className="text-2xl font-extrabold text-white">Payment Confirmed!</h4>
+              <h4 className="text-2xl font-extrabold text-white">Payment Confirmed &amp; Activated!</h4>
               <p className="text-xs text-gray-300">
-                Your purchase of <span className="text-[#a78bfa] font-semibold">{plan.name}</span> is verified.
+                Your purchase of <span className="text-[#a78bfa] font-semibold">{plan.name}</span> is verified and linked to your Supabase account.
               </p>
             </div>
 
@@ -180,7 +236,7 @@ export default function CryptoPaymentModal({ plan, onClose }: CryptoPaymentModal
                 {generatedKey}
               </div>
               <p className="text-[11px] text-gray-400">
-                Copy your license key below to activate access to all 3 wallets.
+                Your membership is now active in Supabase. You have full access to all wallets.
               </p>
             </div>
 
@@ -210,7 +266,7 @@ export default function CryptoPaymentModal({ plan, onClose }: CryptoPaymentModal
                 className="w-full py-3.5 px-4 rounded-xl btn-hero-primary font-bold text-xs flex items-center justify-center space-x-2 transition-all cursor-pointer shadow-lg"
               >
                 <ShieldCheck className="w-4 h-4 text-white" />
-                <span>Activate Key &amp; Open Wallets</span>
+                <span>Launch Dashboard Simulator</span>
               </button>
             </div>
 
@@ -345,7 +401,7 @@ export default function CryptoPaymentModal({ plan, onClose }: CryptoPaymentModal
               {isConfirming ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Verifying Blockchain Transaction...</span>
+                  <span>Verifying Blockchain Transaction &amp; Updating Database...</span>
                 </>
               ) : (
                 <>

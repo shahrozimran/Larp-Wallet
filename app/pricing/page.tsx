@@ -21,17 +21,17 @@ import {
 import Navbar from "@/components/Navbar";
 import LoginModal from "@/components/LoginModal";
 import CryptoPaymentModal, { SelectedPlan } from "@/components/CryptoPaymentModal";
-import { getAuthSession, loginUser } from "@/lib/auth";
+import { useAuth } from "@/context/AuthContext";
 
 export default function PricingPage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<SelectedPlan | null>(null);
   const [pendingPlan, setPendingPlan] = useState<SelectedPlan | null>(null);
   const router = useRouter();
+  const { isLoggedIn } = useAuth();
 
   const handleBuyClick = (plan: SelectedPlan) => {
-    const session = getAuthSession();
-    if (!session.isLoggedIn) {
+    if (!isLoggedIn) {
       setIsLoginOpen(true);
     } else {
       router.push("/plans");
