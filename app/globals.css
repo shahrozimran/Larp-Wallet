@@ -1,12 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #060907;
-  --foreground: #f3f5f3;
-  --olive-primary: #8a9a5b;
-  --olive-accent: #a5b67d;
-  --olive-glow: rgba(138, 154, 91, 0.35);
-  --olive-dark: #162017;
+  --background: #08061a;
+  --foreground: #f3f0ff;
+  --purple-primary: #7c5ce8;
+  --purple-accent: #9b7af5;
+  --purple-bright: #a78bfa;
+  --purple-glow: rgba(124, 92, 232, 0.35);
+  --purple-dark: #1a1035;
+  --purple-muted: #4a3a8a;
 }
 
 body {
@@ -19,9 +21,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Ambient Lighting */
+/* Purple Ambient Background */
 .bg-ambient-spotlight-hero {
-  background: radial-gradient(circle at 50% 25%, rgba(138, 154, 91, 0.18) 0%, rgba(6, 9, 7, 0) 60%);
+  background: radial-gradient(ellipse at 50% 0%, rgba(124, 92, 232, 0.25) 0%, rgba(8, 6, 26, 0) 65%);
 }
 
 /* Custom Scrollbars */
@@ -30,54 +32,59 @@ body {
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #060907;
+  background: #08061a;
 }
 ::-webkit-scrollbar-thumb {
-  background: #202b21;
+  background: #2d1f6e;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #374b3a;
+  background: #4a3a8a;
 }
 
-/* Floating Capsule Dock Navbar */
-.nav-floating-capsule {
-  background: rgba(13, 19, 14, 0.85);
-  -webkit-backdrop-filter: blur(24px);
-  backdrop-filter: blur(24px);
-  border: 1px solid rgba(138, 154, 91, 0.3);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(138, 154, 91, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  border-radius: 9999px;
+/* ─── TOP FLAT NAVBAR (matches reference) ─── */
+.nav-flat-bar {
+  background: rgba(8, 6, 26, 0.92);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(124, 92, 232, 0.18);
+  box-shadow: 0 1px 30px rgba(0, 0, 0, 0.6), 0 0 40px rgba(124, 92, 232, 0.08);
   transition: all 0.3s ease;
 }
 
-.nav-floating-capsule:hover {
-  border-color: rgba(138, 154, 91, 0.5);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.85), 0 0 35px rgba(138, 154, 91, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-}
-
 .nav-link-item {
-  color: #a3b0a5;
-  font-size: 0.875rem;
-  font-weight: 600;
-  padding: 0.5rem 1.125rem;
-  border-radius: 9999px;
+  color: #9b92c4;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.375rem 0.875rem;
+  border-radius: 6px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.01em;
 }
 
 .nav-link-item:hover {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(124, 92, 232, 0.12);
 }
 
 /* Elegant Typography & Badges */
-.badge-pitch-olive {
-  background: rgba(138, 154, 91, 0.12);
-  border: 1px solid rgba(138, 154, 91, 0.35);
-  color: #d2e4b7;
+.badge-pitch-purple {
+  background: rgba(124, 92, 232, 0.12);
+  border: 1px solid rgba(124, 92, 232, 0.35);
+  color: #c4b5fd;
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
-  box-shadow: 0 0 20px rgba(138, 154, 91, 0.15);
+  box-shadow: 0 0 20px rgba(124, 92, 232, 0.18);
+}
+
+/* Keep legacy class so other pages don't break */
+.badge-pitch-olive {
+  background: rgba(124, 92, 232, 0.12);
+  border: 1px solid rgba(124, 92, 232, 0.35);
+  color: #c4b5fd;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 0 20px rgba(124, 92, 232, 0.18);
 }
 
 .hero-title-white {
@@ -86,7 +93,7 @@ body {
 }
 
 .hero-olive-text {
-  background: linear-gradient(135deg, #e4eed2 0%, #a5b67d 45%, #8a9a5b 100%);
+  background: linear-gradient(135deg, #e8dfff 0%, #a78bfa 45%, #7c5ce8 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -95,47 +102,48 @@ body {
 
 /* Primary High-Impact CTA Button */
 .btn-hero-primary {
-  background: linear-gradient(135deg, #8a9a5b 0%, #607038 100%);
+  background: linear-gradient(135deg, #7c5ce8 0%, #5b3fc4 100%);
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 30px rgba(138, 154, 91, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 30px rgba(124, 92, 232, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-hero-primary:hover {
-  background: linear-gradient(135deg, #9db26a 0%, #6f8240 100%);
-  box-shadow: 0 0 45px rgba(138, 154, 91, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, #9070f0 0%, #6d4fd4 100%);
+  box-shadow: 0 0 50px rgba(124, 92, 232, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.4);
   transform: translateY(-2px) scale(1.02);
 }
 
 /* Navbar Login Pill Button */
 .btn-nav-login {
-  background: linear-gradient(135deg, #8a9a5b 0%, #68793f 100%);
+  background: linear-gradient(135deg, #7c5ce8 0%, #5b3fc4 100%);
   color: #ffffff;
   font-weight: 700;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 0 20px rgba(138, 154, 91, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 18px rgba(124, 92, 232, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.25);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-nav-login:hover {
-  box-shadow: 0 0 32px rgba(138, 154, 91, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 30px rgba(124, 92, 232, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   transform: translateY(-1px) scale(1.03);
+  background: linear-gradient(135deg, #9070f0 0%, #6d4fd4 100%);
 }
 
 /* Realistic iPhone 16 Pro Device Mockup Frame */
 .iphone-frame-pro {
   position: relative;
-  background: #090e0b;
+  background: #07051a;
   border-radius: 46px;
-  border: 3.5px solid rgba(138, 154, 91, 0.45);
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(138, 154, 91, 0.2), inset 0 0 2px rgba(255, 255, 255, 0.2);
+  border: 3.5px solid rgba(124, 92, 232, 0.4);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.85), 0 0 35px rgba(124, 92, 232, 0.2), inset 0 0 2px rgba(255, 255, 255, 0.15);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .iphone-frame-pro:hover {
-  border-color: rgba(138, 154, 91, 0.75);
-  box-shadow: 0 35px 85px rgba(0, 0, 0, 0.95), 0 0 55px rgba(138, 154, 91, 0.35), inset 0 0 4px rgba(255, 255, 255, 0.3);
+  border-color: rgba(124, 92, 232, 0.7);
+  box-shadow: 0 35px 85px rgba(0, 0, 0, 0.95), 0 0 55px rgba(124, 92, 232, 0.35), inset 0 0 4px rgba(255, 255, 255, 0.25);
   transform: translateY(-6px);
 }
 
@@ -145,8 +153,153 @@ body {
 }
 
 .glass-card-dark {
-  background: rgba(12, 17, 13, 0.8);
+  background: rgba(12, 9, 35, 0.8);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(124, 92, 232, 0.12);
+}
+
+/* Keep legacy floating capsule for backward compat if still referenced */
+.nav-floating-capsule {
+  background: rgba(8, 6, 26, 0.92);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(124, 92, 232, 0.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(124, 92, 232, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+/* ─── PHONE HERO FLOATING DISPLAY (Synchronized Up & Down Animation) ─── */
+@keyframes floatSynchronized {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-16px); }
+}
+
+.float-phone-1,
+.float-phone-2,
+.float-phone-3,
+.float-phone-4 {
+  animation: floatSynchronized 4s ease-in-out infinite;
+}
+
+.phone-float-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
+.phone-mockup-float {
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8)) drop-shadow(0 0 25px rgba(124, 92, 232, 0.25));
+  transition: transform 0.4s ease, filter 0.4s ease;
+  border-radius: 36px;
+}
+
+.phone-mockup-float:hover {
+  filter: drop-shadow(0 30px 60px rgba(124, 92, 232, 0.5));
+}
+
+@media (max-width: 1024px) {
+  .phone-float-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 520px;
+    gap: 16px;
+    padding: 10px 16px;
+  }
+  .phone-mockup-float {
+    max-width: 240px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .phone-float-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 360px;
+    gap: 12px;
+    padding: 10px 12px;
+  }
+  .phone-mockup-float {
+    max-width: 165px;
+  }
+}
+
+@media (max-width: 380px) {
+  .phone-float-container {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    max-width: 240px;
+  }
+  .phone-mockup-float {
+    max-width: 220px;
+  }
+}
+
+/* ─── REVIEWS INFINITE MARQUEE CAROUSEL ─── */
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.reviews-marquee-container {
+  overflow: hidden;
+  width: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+.reviews-marquee-track {
+  display: flex;
+  gap: 20px;
+  width: max-content;
+  animation: marqueeScroll 35s linear infinite;
+  padding: 10px 0;
+}
+
+.reviews-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.review-card-item {
+  width: 340px;
+  flex-shrink: 0;
+}
+
+/* Hero discount badge */
+.hero-price-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  background: rgba(124, 92, 232, 0.1);
+  border: 1px solid rgba(124, 92, 232, 0.25);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #c4b5fd;
+}
+
+/* Ghost / outline CTA button */
+.btn-hero-ghost {
+  background: transparent;
+  color: #e2e0ff;
+  border: 1.5px solid rgba(124, 92, 232, 0.4);
+  box-shadow: 0 0 20px rgba(124, 92, 232, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-hero-ghost:hover {
+  background: rgba(124, 92, 232, 0.1);
+  border-color: rgba(124, 92, 232, 0.7);
+  box-shadow: 0 0 30px rgba(124, 92, 232, 0.25);
+  transform: translateY(-2px);
 }

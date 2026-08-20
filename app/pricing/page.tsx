@@ -23,11 +23,11 @@ export default function PricingPage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#060907] text-white flex flex-col font-sans relative selection:bg-[#8a9a5b] selection:text-white pt-24 sm:pt-28">
+    <div className="min-h-screen bg-[#08061a] text-white flex flex-col font-sans relative selection:bg-[#7c5ce8] selection:text-white pt-14">
       
       {/* Background Ambient Spotlights */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[#8a9a5b]/12 rounded-full blur-[160px] pointer-events-none" />
-      <div className="fixed bottom-0 right-0 w-[600px] h-[600px] bg-[#54662d]/10 rounded-full blur-[180px] pointer-events-none" />
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[#7c5ce8]/14 rounded-full blur-[160px] pointer-events-none" />
+      <div className="fixed bottom-0 right-0 w-[600px] h-[600px] bg-[#4a2db8]/08 rounded-full blur-[180px] pointer-events-none" />
 
       {/* CENTRALIZED NAVBAR */}
       <Navbar onOpenLogin={() => setIsLoginOpen(true)} />
@@ -35,8 +35,8 @@ export default function PricingPage() {
       {/* HERO HEADER */}
       <section className="relative pt-10 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center flex flex-col items-center">
         
-        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full badge-pitch-olive text-xs font-mono font-bold tracking-widest uppercase mb-6">
-          <Sparkles className="w-3.5 h-3.5 text-[#a5b67d]" />
+        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full badge-pitch-purple text-xs font-mono font-bold tracking-widest uppercase mb-6">
+          <Sparkles className="w-3.5 h-3.5 text-[#a78bfa]" />
           <span>PRICING</span>
         </div>
 
@@ -55,7 +55,7 @@ export default function PricingPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
           
           {/* TIER 1: STARTER */}
-          <div className="p-8 rounded-3xl glass-card-dark border border-white/10 hover:border-[#8a9a5b]/40 transition-all flex flex-col justify-between space-y-8">
+          <div className="p-8 rounded-3xl glass-card-dark border border-white/10 hover:border-[#7c5ce8]/40 transition-all flex flex-col justify-between space-y-8">
             <div className="space-y-6">
               {/* Header Badge */}
               <div className="text-center">
@@ -72,19 +72,19 @@ export default function PricingPage() {
               {/* Features Checklist */}
               <div className="space-y-3 pt-4 border-t border-white/10 text-xs">
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
                   <span className="text-gray-200">Full app access on iOS & Android</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
                   <span className="text-gray-200">All signature wallet views & skins</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
                   <span className="text-gray-200">Free PDF money guide</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
                   <span className="text-gray-200">Unlimited custom balances & tokens</span>
                 </div>
                 <div className="flex items-start space-x-3 opacity-40">
@@ -109,10 +109,10 @@ export default function PricingPage() {
           </div>
 
           {/* TIER 2: MOST POPULAR (HIGHLIGHTED CARD) */}
-          <div className="p-8 rounded-3xl bg-[#0c130e] border-2 border-[#8a9a5b] shadow-[0_0_40px_rgba(138,154,91,0.25)] flex flex-col justify-between space-y-8 relative md:scale-105 z-10">
+          <div className="p-8 rounded-3xl bg-[#0e0926] border-2 border-[#7c5ce8] shadow-[0_0_40px_rgba(124,92,232,0.35)] flex flex-col justify-between space-y-8 relative md:scale-105 z-10">
             
             {/* Highlighted Ribbon Glow */}
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#8a9a5b] text-white text-[10px] font-mono font-extrabold uppercase tracking-widest shadow-lg">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-[#7c5ce8] to-[#9b7af5] text-white text-[10px] font-mono font-extrabold uppercase tracking-widest shadow-lg">
               MOST POPULAR
             </div>
 
@@ -123,29 +123,29 @@ export default function PricingPage() {
                   <span className="text-gray-500 font-mono text-xl line-through">$100</span>
                   <span className="text-5xl font-extrabold text-white font-mono">$45</span>
                 </div>
-                <div className="text-xs text-[#c2d6a3] font-mono font-bold mt-1">1 month access</div>
+                <div className="text-xs text-[#a78bfa] font-mono font-bold mt-1">1 month access</div>
               </div>
 
               {/* Features Checklist */}
               <div className="space-y-3 pt-4 border-t border-white/10 text-xs">
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
                   <span className="text-white font-semibold">Full app access on iOS & Android</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
                   <span className="text-white font-semibold">All signature wallet views & skins</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
                   <span className="text-white font-semibold">Free PDF money guide</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
                   <span className="text-white font-semibold">Unlimited custom balances & tokens</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
                   <span className="text-white font-semibold">Priority Telegram support</span>
                 </div>
                 <div className="flex items-start space-x-3 opacity-40">
@@ -166,7 +166,7 @@ export default function PricingPage() {
           </div>
 
           {/* TIER 3: BEST VALUE */}
-          <div className="p-8 rounded-3xl glass-card-dark border border-white/10 hover:border-[#8a9a5b]/40 transition-all flex flex-col justify-between space-y-8">
+          <div className="p-8 rounded-3xl glass-card-dark border border-white/10 hover:border-[#7c5ce8]/40 transition-all flex flex-col justify-between space-y-8">
             <div className="space-y-6">
               {/* Header Badge */}
               <div className="text-center">
@@ -177,34 +177,34 @@ export default function PricingPage() {
                   <span className="text-gray-500 font-mono text-xl line-through">$300</span>
                   <span className="text-4xl font-extrabold text-white font-mono">$200</span>
                 </div>
-                <div className="text-xs text-[#a5b67d] font-mono font-bold mt-1">Lifetime access</div>
+                <div className="text-xs text-[#a78bfa] font-mono font-bold mt-1">Lifetime access</div>
               </div>
 
               {/* Features Checklist */}
               <div className="space-y-3 pt-4 border-t border-white/10 text-xs">
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
                   <span className="text-gray-200">Full app access on iOS & Android</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
                   <span className="text-gray-200">All signature wallet views & skins</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
                   <span className="text-gray-200">Free PDF money guide</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
                   <span className="text-gray-200">Unlimited custom balances & tokens</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
                   <span className="text-gray-200">Priority Telegram support</span>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span className="text-gray-200 font-semibold text-[#c2d6a3]">Early access to new features</span>
+                  <Check className="w-4 h-4 text-[#a78bfa] shrink-0 mt-0.5" />
+                  <span className="text-gray-200 font-semibold text-[#a78bfa]">Early access to new features</span>
                 </div>
               </div>
             </div>
@@ -224,8 +224,8 @@ export default function PricingPage() {
 
       {/* BOTTOM CALL TO ACTION BANNER */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
-        <div className="rounded-3xl glass-card-dark border border-[#8a9a5b]/40 p-8 sm:p-12 text-center space-y-6 relative overflow-hidden shadow-[0_0_40px_rgba(138,154,91,0.2)]">
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#8a9a5b]/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="rounded-3xl glass-card-dark border border-[#7c5ce8]/40 p-8 sm:p-12 text-center space-y-6 relative overflow-hidden shadow-[0_0_40px_rgba(124,92,232,0.2)]">
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#7c5ce8]/15 rounded-full blur-3xl pointer-events-none" />
 
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
             Ready to Experience Larp Wallet?
@@ -249,19 +249,23 @@ export default function PricingPage() {
       {/* FOOTER */}
       <footer className="border-t border-white/10 glass-card-dark py-10 text-xs text-gray-400 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-[#8a9a5b]/20 border border-[#8a9a5b]/40 flex items-center justify-center text-[#c2d6a3]">
-              <Wallet className="w-4 h-4" />
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="w-8 h-8 rounded-xl overflow-hidden border border-[#7c5ce8]/50 shadow-[0_0_12px_rgba(124,92,232,0.4)] group-hover:shadow-[0_0_20px_rgba(124,92,232,0.7)] transition-all">
+              <img
+                src="/img.jpeg"
+                alt="Larp Wallet Logo"
+                className="w-full h-full object-cover"
+              />
             </div>
-            <span className="font-bold text-white text-base">LARP WALLET</span>
-          </div>
+            <span className="font-bold text-white text-base group-hover:text-[#c4b5fd] transition-colors">LARP WALLET</span>
+          </Link>
 
           <div className="flex flex-wrap justify-center gap-6 text-gray-400 font-semibold">
-            <Link href="/" className="hover:text-[#c2d6a3] transition-colors">Home</Link>
-            <Link href="/features" className="hover:text-[#c2d6a3] transition-colors">Features</Link>
-            <Link href="/how-it-works" className="hover:text-[#c2d6a3] transition-colors">How It Works</Link>
-            <Link href="/pricing" className="text-[#c2d6a3] font-bold">Pricing</Link>
-            <Link href="/reviews" className="hover:text-[#c2d6a3] transition-colors">Reviews</Link>
+            <Link href="/" className="hover:text-[#a78bfa] transition-colors">Home</Link>
+            <Link href="/features" className="hover:text-[#a78bfa] transition-colors">Features</Link>
+            <Link href="/how-it-works" className="hover:text-[#a78bfa] transition-colors">How It Works</Link>
+            <Link href="/pricing" className="text-[#a78bfa] font-bold">Pricing</Link>
+            <Link href="/reviews" className="hover:text-[#a78bfa] transition-colors">Reviews</Link>
           </div>
 
           <div className="text-gray-500 font-mono text-[11px]">
@@ -273,7 +277,7 @@ export default function PricingPage() {
       {/* LOGIN & AUTHENTICATION MODAL */}
       {isLoginOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-          <div className="relative w-full max-w-md rounded-3xl glass-card-dark p-6 sm:p-8 border border-[#8a9a5b]/40 shadow-2xl space-y-6">
+          <div className="relative w-full max-w-md rounded-3xl glass-card-dark p-6 sm:p-8 border border-[#7c5ce8]/30 shadow-2xl space-y-6">
             <button
               onClick={() => setIsLoginOpen(false)}
               className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
@@ -282,7 +286,7 @@ export default function PricingPage() {
             </button>
 
             <div className="flex items-center space-x-3">
-              <div className="p-3 rounded-2xl bg-[#8a9a5b]/20 border border-[#8a9a5b]/40 text-[#c2d6a3]">
+              <div className="p-3 rounded-2xl bg-[#7c5ce8]/15 border border-[#7c5ce8]/30 text-[#a78bfa]">
                 <Lock className="w-5 h-5" />
               </div>
               <div>
@@ -300,7 +304,7 @@ export default function PricingPage() {
                   type="text"
                   required
                   placeholder="LRP-9814-XXXX-XXXX"
-                  className="w-full px-4 py-3 rounded-xl bg-[#121814] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#8a9a5b]"
+                  className="w-full px-4 py-3 rounded-xl bg-[#0d0a24] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#7c5ce8]"
                 />
               </div>
 
@@ -312,7 +316,7 @@ export default function PricingPage() {
                   type="password"
                   required
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl bg-[#121814] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#8a9a5b]"
+                  className="w-full px-4 py-3 rounded-xl bg-[#0d0a24] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#7c5ce8]"
                 />
               </div>
 

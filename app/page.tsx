@@ -5,606 +5,353 @@ import Link from "next/link";
 import {
   Wallet,
   Download,
-  Check,
   ShieldCheck,
   Zap,
-  Sparkles,
-  ArrowRight,
   Star,
   Lock,
   Layers,
-  TrendingUp,
   X,
-  Copy,
-  Wifi,
-  Battery,
-  Signal,
-  Eye,
-  Send,
-  DownloadCloud,
-  RefreshCw,
   ChevronRight,
-  Activity,
-  Flame,
-  PieChart,
 } from "lucide-react";
 
 import Navbar from "@/components/Navbar";
 
 export default function Home() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen bg-[#060907] text-white flex flex-col font-sans relative selection:bg-[#8a9a5b] selection:text-white pt-24 sm:pt-28">
-      
-      {/* Background Ambient Spotlights matching reference light effects */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[#8a9a5b]/12 rounded-full blur-[160px] pointer-events-none" />
-      <div className="fixed bottom-0 right-0 w-[600px] h-[600px] bg-[#54662d]/10 rounded-full blur-[180px] pointer-events-none" />
+    <div className="min-h-screen bg-[#08061a] text-white flex flex-col font-sans relative selection:bg-[#7c5ce8] selection:text-white pt-14">
 
-      {/* CENTRALIZED NAVBAR */}
+      {/* Background Ambient Spotlights */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[550px] bg-[#7c5ce8]/14 rounded-full blur-[180px] pointer-events-none" />
+      <div className="fixed top-0 left-0 w-[500px] h-[500px] bg-[#5b3fc4]/06 rounded-full blur-[160px] pointer-events-none" />
+      <div className="fixed bottom-0 right-0 w-[600px] h-[600px] bg-[#4a2db8]/06 rounded-full blur-[200px] pointer-events-none" />
+
+      {/* NAVBAR */}
       <Navbar onOpenLogin={() => setIsLoginOpen(true)} />
 
-      {/* HERO SECTION */}
-      <section className="relative pt-12 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center flex flex-col items-center">
-        
-        {/* Top Release Pill Badge */}
-        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full badge-pitch-olive text-xs font-bold tracking-wide mb-8">
-          <Flame className="w-3.5 h-3.5 text-[#a5b67d]" />
-          <span>Now available on iOS & Android</span>
+      {/* ── HERO SECTION ── */}
+      <section className="relative pt-16 sm:pt-20 pb-4 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center flex flex-col items-center">
+
+        {/* Live badge */}
+        <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full badge-pitch-purple text-[11px] sm:text-xs font-semibold tracking-wide mb-5 sm:mb-6">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#a78bfa] animate-pulse" />
+          Now available on iOS &amp; Android
         </div>
 
-        {/* Dual-Tone Pitching Hero Title */}
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight max-w-4xl leading-[1.1]">
-          <span className="hero-title-white block">Simulate Success.</span>
-          <span className="hero-olive-text block mt-2">Flex The Bag.</span>
-        </h1>
-
-        {/* Hero Paragraph Subtitle */}
-        <p className="mt-7 text-base sm:text-lg text-gray-300 max-w-2xl leading-relaxed font-normal">
-          The <span className="text-white font-semibold">#1 Fake Crypto Portfolio App</span>. Fake your crypto bag with the 1:1 signature Larp Wallet interface. Add custom tokens, watch live prices, and trigger mock notifications. Built 100% for fun and pranks.
-        </p>
-
-        {/* Single Primary High-Impact CTA Button */}
-        <div className="mt-10 flex items-center justify-center w-full max-w-xs">
-          <button
-            onClick={() => setIsLoginOpen(true)}
-            className="w-full py-4 px-8 rounded-full btn-hero-primary flex items-center justify-center space-x-3 text-base font-bold tracking-wide cursor-pointer"
-          >
-            <Download className="w-5 h-5 text-white" />
-            <span>Get Larp Wallet</span>
-          </button>
-        </div>
-
-      </section>
-
-      {/* APP SHOWCASE / REALISTIC IPHONE 16 PRO MOCKUP GRID */}
-      <section id="showcase" className="pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <div className="text-center mb-12 space-y-2">
-          <span className="text-xs font-mono font-bold tracking-widest text-[#a5b67d] uppercase">
-            SIGNATURE LARP INTERFACE
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-            Experience The Full Larp Wallet Ecosystem.
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-7 items-stretch">
-          
-          {/* MOCKUP 1: LARP WALLET MAIN VIEW */}
-          <div className="iphone-frame-pro p-4 flex flex-col justify-between min-h-[500px] overflow-hidden select-none w-full max-w-[320px] sm:max-w-none mx-auto">
-            <div className="iphone-screen-glass absolute inset-0 pointer-events-none" />
-
-            {/* Status Bar */}
-            <div className="flex items-center justify-between text-[11px] font-semibold text-gray-300 px-3 pt-1">
-              <span>9:41</span>
-              
-              {/* Dynamic Island Notch */}
-              <div className="w-24 h-4 bg-black rounded-full border border-white/10 flex items-center justify-end px-2 space-x-1">
-                <span className="w-2 h-2 rounded-full bg-[#8a9a5b]" />
-              </div>
-
-              <div className="flex items-center space-x-1.5 text-gray-300">
-                <Signal className="w-3 h-3" />
-                <Wifi className="w-3 h-3" />
-                <Battery className="w-3.5 h-3.5 text-emerald-400" />
-              </div>
-            </div>
-
-            {/* Screen Content */}
-            <div className="space-y-4 pt-4 px-1 z-10">
-              <div className="flex items-center justify-between text-xs text-gray-400">
-                <div className="flex items-center space-x-1.5">
-                  <div className="w-5 h-5 rounded-md bg-[#8a9a5b]/20 flex items-center justify-center text-[#c2d6a3]">
-                    <Wallet className="w-3 h-3" />
-                  </div>
-                  <span className="font-bold text-white text-xs">Larp Wallet Main</span>
-                </div>
-                <span className="text-[10px] font-mono text-gray-400">USD</span>
-              </div>
-
-              <div>
-                <div className="text-xl sm:text-2xl font-extrabold text-white font-mono tracking-tight">$1,361,148.44</div>
-                <div className="text-[11px] text-emerald-400 font-bold mt-0.5 flex items-center space-x-1">
-                  <TrendingUp className="w-3 h-3" />
-                  <span>+$68,794.12 (+5.3%) 24h</span>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="grid grid-cols-3 gap-2 pt-1 text-[11px] font-bold text-center">
-                <div className="py-2 rounded-xl bg-white/5 border border-white/5 text-gray-300">Deposit</div>
-                <div className="py-2 rounded-xl bg-[#8a9a5b] text-white shadow-md">Send</div>
-                <div className="py-2 rounded-xl bg-white/5 border border-white/5 text-gray-300">Swap</div>
-              </div>
-
-              {/* Holdings List */}
-              <div className="space-y-2 pt-2">
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between text-xs">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center font-bold text-white text-xs">
-                      Ξ
-                    </div>
-                    <div>
-                      <div className="font-bold text-white">Ethereum</div>
-                      <div className="text-[10px] font-mono text-gray-400">454.02 ETH</div>
-                    </div>
-                  </div>
-                  <div className="text-right font-mono font-bold text-xs">$712,450.21</div>
-                </div>
-
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between text-xs">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center font-bold text-white text-xs">
-                      ₿
-                    </div>
-                    <div>
-                      <div className="font-bold text-white">Bitcoin</div>
-                      <div className="text-[10px] font-mono text-gray-400">8.92 BTC</div>
-                    </div>
-                  </div>
-                  <div className="text-right font-mono font-bold text-xs">$573,210.00</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom iOS Home Indicator */}
-            <div className="pt-6 pb-1 z-10">
-              <div className="w-32 h-1 bg-white/30 rounded-full mx-auto" />
-            </div>
-          </div>
-
-          {/* MOCKUP 2: LARP WALLET PRO HOLDINGS & PNL */}
-          <div className="iphone-frame-pro p-4 flex flex-col justify-between min-h-[500px] overflow-hidden select-none w-full max-w-[320px] sm:max-w-none mx-auto">
-            <div className="iphone-screen-glass absolute inset-0 pointer-events-none" />
-
-            {/* Status Bar */}
-            <div className="flex items-center justify-between text-[11px] font-semibold text-gray-300 px-3 pt-1">
-              <span>9:41</span>
-              
-              {/* Dynamic Island Notch */}
-              <div className="w-24 h-4 bg-black rounded-full border border-white/10 flex items-center justify-end px-2 space-x-1">
-                <span className="w-2 h-2 rounded-full bg-[#8a9a5b]" />
-              </div>
-
-              <div className="flex items-center space-x-1.5 text-gray-300">
-                <Signal className="w-3 h-3" />
-                <Wifi className="w-3 h-3" />
-                <Battery className="w-3.5 h-3.5 text-emerald-400" />
-              </div>
-            </div>
-
-            {/* Screen Content */}
-            <div className="space-y-4 pt-4 px-1 z-10">
-              <div className="flex items-center justify-between text-xs text-gray-400">
-                <div className="flex items-center space-x-1.5">
-                  <ShieldCheck className="w-4 h-4 text-[#8a9a5b]" />
-                  <span className="font-bold text-white text-xs">Larp Wallet Pro</span>
-                </div>
-                <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#8a9a5b]/20 text-[#c2d6a3]">
-                  MULTI-ASSET
-                </span>
-              </div>
-
-              <div>
-                <div className="text-xl sm:text-2xl font-extrabold text-white font-mono tracking-tight">$19,847,109.65</div>
-                <div className="text-[11px] text-[#c2d6a3] font-bold mt-0.5">+$412,900.00 24h PnL</div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="grid grid-cols-4 gap-1.5 pt-1 text-[10px] font-bold text-center">
-                <div className="py-2 rounded-xl bg-white/5 border border-white/5 text-gray-300">Transfer</div>
-                <div className="py-2 rounded-xl bg-[#8a9a5b] text-white shadow-md">Receive</div>
-                <div className="py-2 rounded-xl bg-white/5 border border-white/5 text-gray-300">Buy</div>
-                <div className="py-2 rounded-xl bg-white/5 border border-white/5 text-gray-300">Swap</div>
-              </div>
-
-              {/* Holdings List */}
-              <div className="space-y-2 pt-2">
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between text-xs">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-7 h-7 rounded-full bg-emerald-500 text-black flex items-center justify-center font-bold text-xs">
-                      ₮
-                    </div>
-                    <div>
-                      <div className="font-bold text-white">Tether USD</div>
-                      <div className="text-[10px] font-mono text-gray-400">12,247,705 USDT</div>
-                    </div>
-                  </div>
-                  <div className="text-right font-mono font-bold text-xs">$12,247,705.00</div>
-                </div>
-
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between text-xs">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-7 h-7 rounded-full bg-purple-500 flex items-center justify-center font-bold text-xs">
-                      ◎
-                    </div>
-                    <div>
-                      <div className="font-bold text-white">Solana</div>
-                      <div className="text-[10px] font-mono text-gray-400">51,080 SOL</div>
-                    </div>
-                  </div>
-                  <div className="text-right font-mono font-bold text-xs">$7,598,400.00</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom iOS Home Indicator */}
-            <div className="pt-6 pb-1 z-10">
-              <div className="w-32 h-1 bg-white/30 rounded-full mx-auto" />
-            </div>
-          </div>
-
-          {/* MOCKUP 3: LARP WALLET SAFE DEPOSITS */}
-          <div className="iphone-frame-pro p-4 flex flex-col justify-between min-h-[500px] overflow-hidden select-none w-full max-w-[320px] sm:max-w-none mx-auto">
-            <div className="iphone-screen-glass absolute inset-0 pointer-events-none" />
-
-            {/* Status Bar */}
-            <div className="flex items-center justify-between text-[11px] font-semibold text-gray-300 px-3 pt-1">
-              <span>9:41</span>
-              
-              {/* Dynamic Island Notch */}
-              <div className="w-24 h-4 bg-black rounded-full border border-white/10 flex items-center justify-end px-2 space-x-1">
-                <span className="w-2 h-2 rounded-full bg-[#8a9a5b]" />
-              </div>
-
-              <div className="flex items-center space-x-1.5 text-gray-300">
-                <Signal className="w-3 h-3" />
-                <Wifi className="w-3 h-3" />
-                <Battery className="w-3.5 h-3.5 text-emerald-400" />
-              </div>
-            </div>
-
-            {/* Screen Content */}
-            <div className="space-y-4 pt-4 px-1 z-10">
-              <div className="flex items-center justify-between text-xs text-gray-400">
-                <div className="flex items-center space-x-1.5">
-                  <Lock className="w-4 h-4 text-[#8a9a5b]" />
-                  <span className="font-bold text-white text-xs">Larp Wallet Safe</span>
-                </div>
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-              </div>
-
-              <div>
-                <div className="text-xl sm:text-2xl font-extrabold text-white font-mono tracking-tight">$23,917,471.67</div>
-                <div className="text-[11px] text-emerald-400 font-bold mt-0.5">+$470,544.52 (+2.01%)</div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="grid grid-cols-4 gap-1.5 pt-1 text-[10px] font-bold text-center">
-                <div className="py-2 rounded-xl bg-white/5 border border-white/5 text-gray-300">Send</div>
-                <div className="py-2 rounded-xl bg-[#8a9a5b] text-white shadow-md">Receive</div>
-                <div className="py-2 rounded-xl bg-white/5 border border-white/5 text-gray-300">Swap</div>
-                <div className="py-2 rounded-xl bg-white/5 border border-white/5 text-gray-300">Buy</div>
-              </div>
-
-              {/* Holdings List */}
-              <div className="space-y-2 pt-2">
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between text-xs">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-7 h-7 rounded-full bg-[#8a9a5b] flex items-center justify-center font-bold text-white text-xs">
-                      ₿
-                    </div>
-                    <div>
-                      <div className="font-bold text-white">Bitcoin</div>
-                      <div className="text-[10px] font-mono text-gray-400">257.4 BTC</div>
-                    </div>
-                  </div>
-                  <div className="text-right font-mono font-bold text-xs">$16,525,620.00</div>
-                </div>
-
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between text-xs">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center font-bold text-white text-xs">
-                      Ξ
-                    </div>
-                    <div>
-                      <div className="font-bold text-white">Ethereum</div>
-                      <div className="text-[10px] font-mono text-gray-400">1,932.4 ETH</div>
-                    </div>
-                  </div>
-                  <div className="text-right font-mono font-bold text-xs">$6,676,471.67</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom iOS Home Indicator */}
-            <div className="pt-6 pb-1 z-10">
-              <div className="w-32 h-1 bg-white/30 rounded-full mx-auto" />
-            </div>
-          </div>
-
-          {/* MOCKUP 4: LARP WALLET PORTFOLIO ANALYTICS DIAL */}
-          <div className="iphone-frame-pro p-4 flex flex-col justify-between min-h-[500px] overflow-hidden select-none w-full max-w-[320px] sm:max-w-none mx-auto">
-            <div className="iphone-screen-glass absolute inset-0 pointer-events-none" />
-
-            {/* Status Bar */}
-            <div className="flex items-center justify-between text-[11px] font-semibold text-gray-300 px-3 pt-1">
-              <span>9:41</span>
-              
-              {/* Dynamic Island Notch */}
-              <div className="w-24 h-4 bg-black rounded-full border border-white/10 flex items-center justify-end px-2 space-x-1">
-                <span className="w-2 h-2 rounded-full bg-[#8a9a5b]" />
-              </div>
-
-              <div className="flex items-center space-x-1.5 text-gray-300">
-                <Signal className="w-3 h-3" />
-                <Wifi className="w-3 h-3" />
-                <Battery className="w-3.5 h-3.5 text-emerald-400" />
-              </div>
-            </div>
-
-            {/* Screen Content */}
-            <div className="space-y-4 pt-4 px-1 z-10">
-              <div className="flex items-center justify-between text-xs text-gray-400">
-                <div className="flex items-center space-x-1.5">
-                  <PieChart className="w-4 h-4 text-[#8a9a5b]" />
-                  <span className="font-bold text-white text-xs">Larp Wallet Dial</span>
-                </div>
-                <span className="text-[10px] font-mono text-gray-400">ANALYTICS</span>
-              </div>
-
-              <div>
-                <div className="text-xl sm:text-2xl font-extrabold text-white font-mono tracking-tight">$10,226,180</div>
-                <div className="text-[11px] text-[#c2d6a3] font-bold mt-0.5">Asset Allocation Dial</div>
-              </div>
-
-              {/* Simulated Allocation Bar */}
-              <div className="space-y-1.5 pt-1">
-                <div className="h-2 rounded-full bg-white/10 overflow-hidden flex">
-                  <div className="w-[60%] bg-[#8a9a5b]" />
-                  <div className="w-[25%] bg-indigo-500" />
-                  <div className="w-[15%] bg-amber-500" />
-                </div>
-                <div className="flex justify-between text-[10px] font-mono text-gray-400 pt-0.5">
-                  <span className="text-[#c2d6a3]">60% SOL</span>
-                  <span className="text-indigo-400">25% ETH</span>
-                  <span className="text-amber-400">15% BTC</span>
-                </div>
-              </div>
-
-              {/* Holdings List */}
-              <div className="space-y-2 pt-2">
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between text-xs">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-7 h-7 rounded-full bg-[#8a9a5b]/20 text-[#c2d6a3] flex items-center justify-center font-bold text-xs">
-                      ◎
-                    </div>
-                    <div>
-                      <div className="font-bold text-white">Solana Vault</div>
-                      <div className="text-[10px] font-mono text-gray-400">41,200 SOL</div>
-                    </div>
-                  </div>
-                  <div className="text-right font-mono font-bold text-xs">$6,135,708</div>
-                </div>
-
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between text-xs">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-7 h-7 rounded-full bg-indigo-600/30 text-indigo-300 flex items-center justify-center font-bold text-xs">
-                      Ξ
-                    </div>
-                    <div>
-                      <div className="font-bold text-white">Ethereum Vault</div>
-                      <div className="text-[10px] font-mono text-gray-400">1,180 ETH</div>
-                    </div>
-                  </div>
-                  <div className="text-right font-mono font-bold text-xs">$4,090,472</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom iOS Home Indicator */}
-            <div className="pt-6 pb-1 z-10">
-              <div className="w-32 h-1 bg-white/30 rounded-full mx-auto" />
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* OVERVIEW / BENTO FEATURES SECTION */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10 w-full">
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-          <span className="text-xs font-mono font-bold tracking-widest text-[#a5b67d] uppercase">
-            Designed For Content Creators
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-            Built 100% For Fun & Pranks
-          </h2>
-          <p className="text-base text-gray-300 font-normal">
-            Override balances instantly, trigger deposit push alerts on cue, and simulate peer-to-peer transfers with zero risk and 100% client-side privacy.
+        {/* Tagline — two lines, clean professional style */}
+        <div className="mb-4 sm:mb-5 space-y-0.5 sm:space-y-1">
+          <p className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-tight text-white">
+            Fake it till
+          </p>
+          <p className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-tight hero-olive-text">
+            You Make It.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          
-          <div className="p-8 rounded-3xl glass-card-dark border border-white/10 hover:border-[#8a9a5b]/50 transition-all space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#8a9a5b]/20 border border-[#8a9a5b]/40 flex items-center justify-center text-[#c2d6a3]">
-              <Layers className="w-6 h-6" />
-            </div>
-            <h3 className="text-xl font-bold text-white">Pixel-Perfect Signature UI</h3>
-            <p className="text-sm text-gray-300 leading-relaxed font-normal">
-              Built with sub-pixel precision mirroring authentic wallet layouts for high-resolution screenshots & video creation.
-            </p>
-          </div>
+        {/* H1 */}
+        <h1 className="text-xs sm:text-sm md:text-base font-semibold text-[#a78bfa] tracking-widest uppercase mb-4 sm:mb-5">
+          The #1 Fake Crypto Wallet App
+        </h1>
 
-          <div className="p-8 rounded-3xl glass-card-dark border border-white/10 hover:border-[#8a9a5b]/50 transition-all space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#8a9a5b]/20 border border-[#8a9a5b]/40 flex items-center justify-center text-[#c2d6a3]">
-              <Zap className="w-6 h-6" />
-            </div>
-            <h3 className="text-xl font-bold text-white">Trigger Mock Deposit Alerts</h3>
-            <p className="text-sm text-gray-300 leading-relaxed font-normal">
-              Send real-time simulated incoming crypto notifications directly to your phone screen on cue for pristine video production.
-            </p>
-          </div>
+        {/* Description */}
+        <p className="text-xs sm:text-sm md:text-base text-gray-300 max-w-xl leading-relaxed mb-6 sm:mb-8 px-2">
+          Display any balance on a pixel-perfect Phantom Wallet, Trust Wallet, Ledger, or Exodus interface. Live prices, custom tokens, push notifications — built purely for entertainment.
+        </p>
 
-          <div id="security" className="p-8 rounded-3xl glass-card-dark border border-white/10 hover:border-[#8a9a5b]/50 transition-all space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#8a9a5b]/20 border border-[#8a9a5b]/40 flex items-center justify-center text-[#c2d6a3]">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-            <h3 className="text-xl font-bold text-white">Zero Data & 100% Safe</h3>
-            <p className="text-sm text-gray-300 leading-relaxed font-normal">
-              No seed phrases or private keys required. Completely risk-free simulator operating 100% locally in your browser.
-            </p>
-          </div>
-
+        {/* Price display */}
+        <div className="flex items-baseline justify-center gap-2 sm:gap-3 mb-3">
+          <span className="text-2xl sm:text-3xl font-bold text-gray-500 line-through font-mono">$30</span>
+          <span className="text-4xl sm:text-5xl font-extrabold text-white font-mono">$15</span>
+          <span className="text-xs sm:text-sm text-gray-400 font-medium">starting price</span>
         </div>
 
-        <div className="mt-12 text-center">
-          <Link
-            href="/features"
-            className="inline-flex items-center space-x-2 text-xs font-bold text-[#c2d6a3] hover:text-white underline underline-offset-4"
+        {/* Discount badge */}
+        <div className="hero-price-badge mb-6 sm:mb-8 text-[11px] sm:text-xs">
+          <span className="w-2 h-2 rounded-full bg-[#a78bfa]" />
+          Regional discount: 50% off
+        </div>
+
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full max-w-xs sm:max-w-none">
+          <button
+            onClick={() => setIsLoginOpen(true)}
+            className="w-full sm:w-auto px-6 sm:px-8 py-3.5 rounded-full btn-hero-primary flex items-center justify-center gap-2.5 text-xs sm:text-sm font-bold tracking-wide cursor-pointer"
           >
+            <Download className="w-4 h-4" />
+            Get Larp Wallet
+          </button>
+          <a
+            href="https://t.me/larpzwalletcom"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto px-6 sm:px-8 py-3.5 rounded-full btn-hero-ghost flex items-center justify-center gap-2.5 text-xs sm:text-sm font-bold tracking-wide"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" height="16" width="16" viewBox="0 0 640 640">
+              <path d="M320 72C183 72 72 183 72 320C72 457 183 568 320 568C457 568 568 457 568 320C568 183 457 72 320 72zM435 240.7C431.3 279.9 415.1 375.1 406.9 419C403.4 437.6 396.6 443.8 390 444.4C375.6 445.7 364.7 434.9 350.7 425.7C328.9 411.4 316.5 402.5 295.4 388.5C270.9 372.4 286.8 363.5 300.7 349C304.4 345.2 367.8 287.5 369 282.3C369.2 281.6 369.3 279.2 367.8 277.9C366.3 276.6 364.2 277.1 362.7 277.4C360.5 277.9 325.6 300.9 258.1 346.5C248.2 353.3 239.2 356.6 231.2 356.4C222.3 356.2 205.3 351.4 192.6 347.3C177.1 342.3 164.7 339.6 165.8 331C166.4 326.5 172.5 322 184.2 317.3C256.5 285.8 304.7 265 328.8 255C397.7 226.4 412 221.4 421.3 221.2C423.4 221.2 427.9 221.7 430.9 224.1C432.9 225.8 434.1 228.2 434.4 230.8C434.9 234 435 237.3 434.8 240.6z" />
+            </svg>
+            Join Telegram
+          </a>
+        </div>
+      </section>
+
+      {/* ── PHONE MOCKUP FLOATING DISPLAY (Up & Down Slow Animation) ── */}
+      <section className="relative w-full py-10 overflow-hidden">
+
+        {/* Subtle purple glow behind the phones */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(124,92,232,0.15)_0%,transparent_70%)] pointer-events-none" />
+
+        <div className="phone-float-container relative z-10">
+          <img
+            src="/mockup-phone 4.webp"
+            alt="Phantom / Ghost Wallet simulator"
+            className="phone-mockup-float float-phone-1"
+          />
+          <img
+            src="/mockup-phone-l.webp"
+            alt="Trust Wallet simulator"
+            className="phone-mockup-float float-phone-2"
+          />
+          <img
+            src="/mockup-phone-2.webp"
+            alt="Exodus Wallet simulator"
+            className="phone-mockup-float float-phone-3"
+          />
+          <img
+            src="/mockup-phone-3.webp"
+            alt="Ledger Live simulator"
+            className="phone-mockup-float float-phone-4"
+          />
+        </div>
+      </section>
+
+      {/* ── FEATURES BENTO ── */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/8 w-full">
+        <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+          <span className="text-xs font-mono font-bold tracking-widest text-[#a78bfa] uppercase">
+            Designed For Content Creators
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+            Built 100% For Fun &amp; Pranks
+          </h2>
+          <p className="text-base text-gray-300 font-normal">
+            Override balances instantly, trigger deposit push alerts on cue, and simulate peer-to-peer transfers with zero risk.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-7 rounded-3xl glass-card-dark border border-white/8 hover:border-[#7c5ce8]/40 transition-all space-y-4">
+            <div className="w-11 h-11 rounded-2xl bg-[#7c5ce8]/15 border border-[#7c5ce8]/30 flex items-center justify-center text-[#a78bfa]">
+              <Layers className="w-5 h-5" />
+            </div>
+            <h3 className="text-lg font-bold text-white">Pixel-Perfect Signature UI</h3>
+            <p className="text-sm text-gray-400 leading-relaxed">Built with sub-pixel precision mirroring authentic wallet layouts for high-resolution screenshots &amp; video creation.</p>
+          </div>
+          <div className="p-7 rounded-3xl glass-card-dark border border-white/8 hover:border-[#7c5ce8]/40 transition-all space-y-4">
+            <div className="w-11 h-11 rounded-2xl bg-[#7c5ce8]/15 border border-[#7c5ce8]/30 flex items-center justify-center text-[#a78bfa]">
+              <Zap className="w-5 h-5" />
+            </div>
+            <h3 className="text-lg font-bold text-white">Trigger Mock Deposit Alerts</h3>
+            <p className="text-sm text-gray-400 leading-relaxed">Send real-time simulated incoming crypto push notifications directly to your phone on cue for pristine video production.</p>
+          </div>
+          <div id="security" className="p-7 rounded-3xl glass-card-dark border border-white/8 hover:border-[#7c5ce8]/40 transition-all space-y-4">
+            <div className="w-11 h-11 rounded-2xl bg-[#7c5ce8]/15 border border-[#7c5ce8]/30 flex items-center justify-center text-[#a78bfa]">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <h3 className="text-lg font-bold text-white">Zero Data &amp; 100% Safe</h3>
+            <p className="text-sm text-gray-400 leading-relaxed">No seed phrases or private keys required. Completely risk-free simulator operating 100% locally.</p>
+          </div>
+        </div>
+
+        <div className="mt-10 text-center">
+          <Link href="/features" className="inline-flex items-center gap-2 text-xs font-bold text-[#a78bfa] hover:text-white underline underline-offset-4 transition-colors">
             <span>Explore All Interactive Features</span>
             <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
       </section>
 
-      {/* REVIEWS SECTION */}
-      <section id="reviews" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/10">
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-          <span className="text-xs font-mono font-bold tracking-widest text-[#a5b67d] uppercase">
-            Verified Reviews
+      {/* ── FAQ SECTION (Below Features) ── */}
+      <section id="faq" className="py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto border-t border-white/8 w-full">
+        <div className="text-left mb-12 space-y-2">
+          <span className="text-xs font-mono font-bold tracking-widest text-[#a78bfa] uppercase">
+            FAQ
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-            Loved By Content Creators & Streamers
+            Frequently Asked Questions
           </h2>
-          <div className="flex items-center justify-center space-x-1 text-amber-400 pt-1">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-4 h-4 fill-current" />
-            ))}
+        </div>
+
+        <div className="space-y-4">
+          {[
+            {
+              q: "Is Larpz Wallet a real crypto wallet?",
+              a: "No. Larpz Wallet is an entertainment app only — it does not hold, send, receive, or interact with any real crypto assets. No seed phrases or private keys are ever asked for or stored. It is a display app that shows custom balances on a realistic wallet interface."
+            },
+            {
+              q: "Will it look exactly like the real crypto apps?",
+              a: "Yes. Each wallet is designed to be pixel-perfect — identical to the real app on mobile. Prices are pulled live from CoinGecko, the 24-hour chart is interactive, and the send flow screens look and behave like the real thing."
+            },
+            {
+              q: "Does it work on iPhone and Android?",
+              a: "Yes. Larpz Wallet is a PWA (Progressive Web App) that installs directly to your home screen. Use Safari on iOS or Chrome on Android — no App Store download required."
+            },
+            {
+              q: "Can I add custom tokens or memecoins?",
+              a: "Yes. On the apps, you can add any Solana or Ethereum token by contract address. The app fetches the live price and token image from DexScreener automatically."
+            },
+            {
+              q: "How do I receive my license key after purchase?",
+              a: "Delivery is fully automated. Once your crypto payment is detected on-chain, your unique license key is generated and displayed on the order status page — usually within a few minutes."
+            },
+            {
+              q: "What's the difference between the wallets?",
+              a: "All plans include all four wallets: Phantom Wallet (supports memecoins), Trust Wallet (multi-chain look), Ledger (hardware wallet style), and Exodus (multi-chain portfolio view)."
+            },
+            {
+              q: "Is my payment anonymous?",
+              a: "Crypto payments (SOL, ETH, BNB, BTC, TRX, USDT) require no personal information at all. Card payments require an email address, which is passed directly to the payment processor and not stored by us."
+            }
+          ].map((faq, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div
+                key={idx}
+                onClick={() => setOpenFaq(isOpen ? null : idx)}
+                className={`p-6 rounded-2xl glass-card-dark border transition-all duration-300 select-none cursor-pointer ${
+                  isOpen ? "border-[#7c5ce8]/40 shadow-[0_0_20px_rgba(124,92,232,0.15)] bg-[#0c0926]" : "border-white/8 hover:border-white/20"
+                }`}
+              >
+                <div className="flex items-center justify-between font-bold text-base sm:text-lg text-white">
+                  <span className={isOpen ? "text-[#c4b5fd] transition-colors" : "text-white transition-colors"}>{faq.q}</span>
+                  <span className={`ml-4 flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
+                    isOpen ? "bg-[#7c5ce8]/20 border border-[#7c5ce8]/40 text-[#a78bfa] rotate-45" : "bg-white/5 border border-white/10 text-gray-400"
+                  }`}>
+                    +
+                  </span>
+                </div>
+                <div
+                  className={`grid transition-all duration-300 ease-in-out ${
+                    isOpen ? "grid-rows-[1fr] opacity-100 mt-4 pt-4 border-t border-white/8" : "grid-rows-[0fr] opacity-0 mt-0 pt-0 border-t-0 border-transparent"
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <p className="text-sm text-gray-300 leading-relaxed">
+                      {faq.a}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ── REVIEWS (INFINITE MARQUEE CAROUSEL) ── */}
+      <section id="reviews" className="py-20 border-t border-white/8 overflow-hidden w-full">
+        <div className="text-center max-w-3xl mx-auto mb-14 px-4 space-y-3">
+          <span className="text-xs font-mono font-bold tracking-widest text-[#a78bfa] uppercase">Verified Reviews</span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white">Loved By Content Creators &amp; Streamers</h2>
+          <div className="flex items-center justify-center gap-1 text-amber-400 pt-1">
+            {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
             <span className="text-xs text-gray-300 font-bold ml-2">5.0 / 5.0 Rating</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            {
-              name: "Alex Vance",
-              role: "Content Creator",
-              comment: "The signature Larp Wallet UI fidelity is perfection. Best fake wallet app for videos and screenshots!",
-            },
-            {
-              name: "Elena Rostova",
-              role: "Streamer",
-              comment: "Custom token creation and instant balance configuration takes under 10 seconds. Ultra-smooth design.",
-            },
-            {
-              name: "Marcus Chen",
-              role: "Meme Page Admin",
-              comment: "Mock deposit alerts work flawlessly on cue. Hilarious pranks with friends!",
-            },
-          ].map((rev, idx) => (
-            <div key={idx} className="p-6 rounded-3xl glass-card-dark border border-white/10 space-y-4">
-              <div className="flex items-center space-x-1 text-amber-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-3.5 h-3.5 fill-current" />
-                ))}
+        {/* Infinite Marquee Carousel Track */}
+        <div className="reviews-marquee-container">
+          <div className="reviews-marquee-track">
+            {[
+              { name: "Abankek", role: "via Telegram", comment: "Appreciate the fast reply and the help, thank you. Works great on iPhone 12" },
+              { name: "John Stockton", role: "via Telegram", comment: "Bought the lifetime key, amazing and fast service thank you so much!" },
+              { name: "Kal", role: "via Telegram", comment: "Cheers bro, great product vouch +1. Indistinguishable from normal app" },
+              { name: "Gvems", role: "via Telegram", comment: "Vouch Larpz Wallet works perfect for the price 10/10" },
+              { name: "Alex Vance", role: "Content Creator", comment: "The signature Larp Wallet UI fidelity is perfection. Best fake wallet app for videos and screenshots!" },
+              { name: "Elena Rostova", role: "Streamer", comment: "Custom token creation and instant balance configuration takes under 10 seconds. Ultra-smooth design." },
+              { name: "Marcus Chen", role: "Meme Page Admin", comment: "Mock deposit alerts work flawlessly on cue. Hilarious pranks with friends!" },
+              { name: "Ethan", role: "via Telegram", comment: "Thanks bro, huge vouch for you, very helpful and fast service instantly fixed my issue" },
+              { name: "Tokarz", role: "via Telegram", comment: "Thank you so much, everything working! Best larp wallet out there" },
+              { name: "jasjasjas", role: "via Telegram", comment: "Heavy vouch, support fast asf and services are goated" }
+            ].concat([
+              { name: "Abankek", role: "via Telegram", comment: "Appreciate the fast reply and the help, thank you. Works great on iPhone 12" },
+              { name: "John Stockton", role: "via Telegram", comment: "Bought the lifetime key, amazing and fast service thank you so much!" },
+              { name: "Kal", role: "via Telegram", comment: "Cheers bro, great product vouch +1. Indistinguishable from normal app" },
+              { name: "Gvems", role: "via Telegram", comment: "Vouch Larpz Wallet works perfect for the price 10/10" },
+              { name: "Alex Vance", role: "Content Creator", comment: "The signature Larp Wallet UI fidelity is perfection. Best fake wallet app for videos and screenshots!" },
+              { name: "Elena Rostova", role: "Streamer", comment: "Custom token creation and instant balance configuration takes under 10 seconds. Ultra-smooth design." },
+              { name: "Marcus Chen", role: "Meme Page Admin", comment: "Mock deposit alerts work flawlessly on cue. Hilarious pranks with friends!" },
+              { name: "Ethan", role: "via Telegram", comment: "Thanks bro, huge vouch for you, very helpful and fast service instantly fixed my issue" },
+              { name: "Tokarz", role: "via Telegram", comment: "Thank you so much, everything working! Best larp wallet out there" },
+              { name: "jasjasjas", role: "via Telegram", comment: "Heavy vouch, support fast asf and services are goated" }
+            ]).map((rev, idx) => (
+              <div key={idx} className="review-card-item p-6 rounded-3xl glass-card-dark border border-white/8 space-y-4">
+                <div className="flex items-center gap-0.5 text-amber-400">
+                  {[...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5 fill-current" />)}
+                </div>
+                <p className="text-sm text-gray-300 leading-relaxed">&ldquo;{rev.comment}&rdquo;</p>
+                <div className="pt-2 border-t border-white/8 flex items-center justify-between text-xs">
+                  <span className="font-bold text-white">{rev.name}</span>
+                  <span className="text-gray-500">{rev.role}</span>
+                </div>
               </div>
-              <p className="text-xs text-gray-300 leading-relaxed">"{rev.comment}"</p>
-              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
-                <span className="font-bold text-white">{rev.name}</span>
-                <span className="text-gray-500">{rev.role}</span>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="border-t border-white/10 glass-card-dark py-10 text-xs text-gray-400 mt-auto">
+      {/* ── FOOTER ── */}
+      <footer className="border-t border-white/8 bg-[#05040f]/80 py-10 text-xs text-gray-400 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-[#8a9a5b]/20 border border-[#8a9a5b]/40 flex items-center justify-center text-[#c2d6a3]">
-              <Wallet className="w-4 h-4" />
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-8 h-8 rounded-xl overflow-hidden border border-[#7c5ce8]/50 shadow-[0_0_12px_rgba(124,92,232,0.4)] group-hover:shadow-[0_0_20px_rgba(124,92,232,0.7)] transition-all">
+              <img
+                src="/img.jpeg"
+                alt="Larp Wallet Logo"
+                className="w-full h-full object-cover"
+              />
             </div>
-            <span className="font-bold text-white text-base">LARP WALLET</span>
+            <span className="font-bold text-white text-sm group-hover:text-[#c4b5fd] transition-colors">LARP WALLET</span>
+          </Link>
+          <div className="flex flex-wrap justify-center gap-6 text-gray-400 font-medium">
+            <Link href="/" className="hover:text-[#a78bfa] transition-colors">Home</Link>
+            <Link href="/features" className="hover:text-[#a78bfa] transition-colors">Features</Link>
+            <Link href="/how-it-works" className="hover:text-[#a78bfa] transition-colors">How It Works</Link>
+            <Link href="/pricing" className="hover:text-[#a78bfa] transition-colors">Pricing</Link>
+            <Link href="/reviews" className="hover:text-[#a78bfa] transition-colors">Reviews</Link>
           </div>
-
-          <div className="flex flex-wrap justify-center gap-6 text-gray-400 font-semibold">
-            <Link href="/" className="hover:text-[#c2d6a3] transition-colors">Home</Link>
-            <Link href="/features" className="hover:text-[#c2d6a3] transition-colors">Features</Link>
-            <Link href="/how-it-works" className="hover:text-[#c2d6a3] transition-colors">How It Works</Link>
-            <Link href="/pricing" className="hover:text-[#c2d6a3] transition-colors">Pricing</Link>
-            <Link href="/reviews" className="hover:text-[#c2d6a3] transition-colors">Reviews</Link>
-          </div>
-
-          <div className="text-gray-500 font-mono text-[11px]">
-            © {new Date().getFullYear()} Larp Wallet. Built 100% for fun and pranks.
+          <div className="text-gray-600 font-mono text-[11px]">
+            © {new Date().getFullYear()} Larp Wallet. Built 100% for fun.
           </div>
         </div>
       </footer>
 
-      {/* LOGIN & AUTHENTICATION MODAL */}
+      {/* ── LOGIN MODAL ── */}
       {isLoginOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
-          <div className="relative w-full max-w-md rounded-3xl glass-card-dark p-6 sm:p-8 border border-[#8a9a5b]/40 shadow-2xl space-y-6 my-auto max-h-[90vh] overflow-y-auto">
-            <button
-              onClick={() => setIsLoginOpen(false)}
-              className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-            >
+          <div className="relative w-full max-w-md rounded-3xl glass-card-dark p-6 sm:p-8 border border-[#7c5ce8]/30 shadow-2xl space-y-6 my-auto max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setIsLoginOpen(false)} className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors">
               <X className="w-5 h-5" />
             </button>
-
-            <div className="flex items-center space-x-3">
-              <div className="p-3 rounded-2xl bg-[#8a9a5b]/20 border border-[#8a9a5b]/40 text-[#c2d6a3]">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-2xl bg-[#7c5ce8]/15 border border-[#7c5ce8]/30 text-[#a78bfa]">
                 <Lock className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-white">Access Larp Wallet</h3>
-                <p className="text-xs text-gray-400">Enter access key or account email</p>
+                <p className="text-xs text-gray-400">Enter your license key or email</p>
               </div>
             </div>
-
             <form onSubmit={(e) => { e.preventDefault(); setIsLoginOpen(false); }} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-                  Access Key / Email
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="LRP-9814-XXXX-XXXX"
-                  className="w-full px-4 py-3 rounded-xl bg-[#121814] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#8a9a5b]"
-                />
+                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">License Key / Email</label>
+                <input type="text" required placeholder="LRP-9814-XXXX-XXXX" className="w-full px-4 py-3 rounded-xl bg-[#0d0a24] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#7c5ce8] transition-colors" />
               </div>
-
               <div>
-                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-                  Password / PIN
-                </label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl bg-[#121814] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#8a9a5b]"
-                />
+                <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Password / PIN</label>
+                <input type="password" required placeholder="••••••••" className="w-full px-4 py-3 rounded-xl bg-[#0d0a24] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#7c5ce8] transition-colors" />
               </div>
-
-              <button
-                type="submit"
-                className="w-full py-3.5 px-4 rounded-xl btn-hero-primary font-bold text-sm tracking-wide cursor-pointer"
-              >
+              <button type="submit" className="w-full py-3.5 px-4 rounded-xl btn-hero-primary font-bold text-sm tracking-wide cursor-pointer">
                 Launch Larp Wallet
               </button>
             </form>

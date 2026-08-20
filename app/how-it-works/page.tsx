@@ -25,7 +25,7 @@ export default function HowItWorksPage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#060907] text-white flex flex-col font-sans relative selection:bg-[#8a9a5b] selection:text-white pt-24 sm:pt-28">
+    <div className="min-h-screen bg-[#08061a] text-white flex flex-col font-sans relative selection:bg-[#7c5ce8] selection:text-white pt-14">
       
       {/* Background Ambient Spotlights */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[#8a9a5b]/12 rounded-full blur-[160px] pointer-events-none" />
@@ -149,18 +149,23 @@ export default function HowItWorksPage() {
       {/* FOOTER */}
       <footer className="border-t border-white/10 glass-card-dark py-10 text-xs text-gray-400 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-[#8a9a5b]/20 border border-[#8a9a5b]/40 flex items-center justify-center text-[#c2d6a3]">
-              <Wallet className="w-4 h-4" />
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="w-8 h-8 rounded-xl overflow-hidden border border-[#7c5ce8]/50 shadow-[0_0_12px_rgba(124,92,232,0.4)] group-hover:shadow-[0_0_20px_rgba(124,92,232,0.7)] transition-all">
+              <img
+                src="/img.jpeg"
+                alt="Larp Wallet Logo"
+                className="w-full h-full object-cover"
+              />
             </div>
-            <span className="font-bold text-white text-base">LARP WALLET</span>
-          </div>
+            <span className="font-bold text-white text-base group-hover:text-[#c4b5fd] transition-colors">LARP WALLET</span>
+          </Link>
 
           <div className="flex flex-wrap justify-center gap-6 text-gray-400 font-semibold">
-            <Link href="/" className="hover:text-[#c2d6a3] transition-colors">Home</Link>
-            <Link href="/features" className="hover:text-[#c2d6a3] transition-colors">Features</Link>
-            <Link href="/how-it-works" className="text-[#c2d6a3] font-bold">How It Works</Link>
-            <Link href="/#reviews" className="hover:text-[#c2d6a3] transition-colors">Reviews</Link>
+            <Link href="/" className="hover:text-[#a78bfa] transition-colors">Home</Link>
+            <Link href="/features" className="hover:text-[#a78bfa] transition-colors">Features</Link>
+            <Link href="/how-it-works" className="text-[#a78bfa] font-bold">How It Works</Link>
+            <Link href="/pricing" className="hover:text-[#a78bfa] transition-colors">Pricing</Link>
+            <Link href="/reviews" className="hover:text-[#a78bfa] transition-colors">Reviews</Link>
           </div>
 
           <div className="text-gray-500 font-mono text-[11px]">

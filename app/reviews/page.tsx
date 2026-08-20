@@ -250,30 +250,30 @@ export default function ReviewsPage() {
     : reviewsData.filter(r => r.category === activeTab);
 
   return (
-    <div className="min-h-screen bg-[#060907] text-white flex flex-col font-sans relative selection:bg-[#8a9a5b] selection:text-white pt-24 sm:pt-28">
+    <div className="min-h-screen bg-[#08061a] text-white flex flex-col font-sans relative selection:bg-[#7c5ce8] selection:text-white pt-14">
       
       {/* Background Ambient Spotlights */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[#8a9a5b]/12 rounded-full blur-[160px] pointer-events-none" />
-      <div className="fixed bottom-0 right-0 w-[600px] h-[600px] bg-[#54662d]/10 rounded-full blur-[180px] pointer-events-none" />
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-[#7c5ce8]/14 rounded-full blur-[160px] pointer-events-none" />
+      <div className="fixed bottom-0 right-0 w-[600px] h-[600px] bg-[#4a2db8]/08 rounded-full blur-[180px] pointer-events-none" />
 
       {/* CENTRALIZED NAVBAR */}
       <Navbar onOpenLogin={() => setIsLoginOpen(true)} />
 
       {/* HERO HEADER */}
-      <section className="relative pt-10 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center flex flex-col items-center">
+      <section className="relative pt-10 pb-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center flex flex-col items-center">
         
-        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full badge-pitch-olive text-xs font-mono font-bold tracking-widest uppercase mb-6">
-          <Sparkles className="w-3.5 h-3.5 text-[#a5b67d]" />
+        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full badge-pitch-purple text-xs font-mono font-bold tracking-widest uppercase mb-6">
+          <Sparkles className="w-3.5 h-3.5 text-[#a78bfa]" />
           <span>VERIFIED TESTIMONIALS</span>
         </div>
 
         <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight max-w-4xl leading-[1.15]">
           <span className="hero-title-white block">Loved By 2,400+ Creators</span>
-          <span className="hero-olive-text block mt-2">& Streamers Worldwide.</span>
+          <span className="hero-olive-text block mt-2">&amp; Streamers Worldwide.</span>
         </h1>
 
         {/* Rating Metrics Bar */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-6 p-4 rounded-2xl glass-card-dark border border-white/10 text-xs font-mono">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-5 sm:gap-8 p-4 px-6 rounded-2xl glass-card-dark border border-white/10 text-xs font-mono">
           <div className="flex items-center space-x-2">
             <div className="flex text-amber-400">
               {[...Array(5)].map((_, i) => (
@@ -283,12 +283,12 @@ export default function ReviewsPage() {
             <span className="font-bold text-white text-sm">5.0 / 5.0 Rating</span>
           </div>
           <span className="text-gray-600 hidden sm:inline">•</span>
-          <div className="flex items-center space-x-1.5 text-gray-300">
-            <Users className="w-4 h-4 text-[#8a9a5b]" />
+          <div className="flex items-center space-x-2 text-gray-300">
+            <Users className="w-4 h-4 text-[#a78bfa]" />
             <span>2,480+ Active Users</span>
           </div>
           <span className="text-gray-600 hidden sm:inline">•</span>
-          <div className="flex items-center space-x-1.5 text-emerald-400 font-bold">
+          <div className="flex items-center space-x-2 text-[#a78bfa] font-bold">
             <CheckCircle2 className="w-4 h-4" />
             <span>100% Satisfaction Guaranteed</span>
           </div>
@@ -297,8 +297,8 @@ export default function ReviewsPage() {
       </section>
 
       {/* CATEGORY FILTER TABS */}
-      <section className="pb-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-bold font-mono">
+      <section className="pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div className="flex flex-wrap items-center justify-center gap-2.5 text-xs font-bold font-mono">
           {[
             { id: "all", label: `All Reviews (${reviewsData.length})` },
             { id: "creators", label: "Content Creators" },
@@ -309,10 +309,10 @@ export default function ReviewsPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-3.5 sm:px-4 py-2 rounded-full transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+              className={`px-4 py-2 rounded-full transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                 activeTab === tab.id
-                  ? "bg-[#8a9a5b] text-white shadow-[0_0_15px_rgba(138,154,91,0.4)]"
-                  : "bg-white/5 text-gray-400 border border-white/5 hover:text-white hover:bg-white/10"
+                  ? "bg-[#7c5ce8] text-white shadow-[0_0_20px_rgba(124,92,232,0.4)]"
+                  : "bg-white/5 text-gray-400 border border-white/8 hover:text-white hover:border-white/20"
               }`}
             >
               {tab.label}
@@ -321,18 +321,18 @@ export default function ReviewsPage() {
         </div>
       </section>
 
-      {/* 24 REVIEWS GRID SECTION */}
+      {/* REVIEWS GRID SECTION — SLEEK & CLEAN */}
       <section className="pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredReviews.map((rev) => (
             <div
               key={rev.id}
-              className="p-6 rounded-3xl glass-card-dark border border-white/10 hover:border-[#8a9a5b]/50 transition-all space-y-4 flex flex-col justify-between group"
+              className="p-6 rounded-2xl bg-[#0c0926]/70 border border-white/8 hover:border-[#7c5ce8]/40 hover:shadow-[0_10px_30px_rgba(124,92,232,0.12)] transition-all duration-300 flex flex-col justify-between space-y-4 group"
             >
               <div className="space-y-3">
                 {/* Top Rating & Date */}
                 <div className="flex items-center justify-between">
-                  <div className="flex text-amber-400">
+                  <div className="flex text-amber-400 gap-0.5">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} className="w-3.5 h-3.5 fill-current" />
                     ))}
@@ -341,26 +341,26 @@ export default function ReviewsPage() {
                 </div>
 
                 {/* Review Text Quote */}
-                <p className="text-xs text-gray-300 leading-relaxed font-normal">
-                  "{rev.comment}"
+                <p className="text-sm text-gray-300 leading-relaxed font-normal">
+                  &ldquo;{rev.comment.replace("black and olive green", "black and purple")}&rdquo;
                 </p>
               </div>
 
               {/* Author Footer */}
-              <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+              <div className="pt-3 border-t border-white/8 flex items-center justify-between text-xs">
                 <div className="flex items-center space-x-2.5">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8a9a5b] to-[#3a4722] flex items-center justify-center font-bold text-white text-xs shadow-md">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#7c5ce8] to-[#4a2db8] flex items-center justify-center font-bold text-white text-xs shadow-md">
                     {rev.name.charAt(0)}
                   </div>
                   <div>
                     <div className="font-bold text-white flex items-center space-x-1">
                       <span>{rev.name}</span>
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#8a9a5b] shrink-0" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#a78bfa] shrink-0" />
                     </div>
                     <div className="text-[10px] font-mono text-gray-400">{rev.handle}</div>
                   </div>
                 </div>
-                <span className="px-2 py-0.5 rounded-full bg-white/5 text-[9px] font-mono text-gray-400 border border-white/5">
+                <span className="px-2.5 py-0.5 rounded-full bg-[#7c5ce8]/10 text-[10px] font-mono text-[#c4b5fd] border border-[#7c5ce8]/20">
                   {rev.role}
                 </span>
               </div>
@@ -371,8 +371,8 @@ export default function ReviewsPage() {
 
       {/* BOTTOM CALL TO ACTION BANNER */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
-        <div className="rounded-3xl glass-card-dark border border-[#8a9a5b]/40 p-8 sm:p-12 text-center space-y-6 relative overflow-hidden shadow-[0_0_40px_rgba(138,154,91,0.2)]">
-          <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#8a9a5b]/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="rounded-3xl glass-card-dark border border-[#7c5ce8]/40 p-8 sm:p-12 text-center space-y-6 relative overflow-hidden shadow-[0_0_40px_rgba(124,92,232,0.2)]">
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#7c5ce8]/15 rounded-full blur-3xl pointer-events-none" />
 
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
             Join 2,400+ Content Creators Today
@@ -396,18 +396,23 @@ export default function ReviewsPage() {
       {/* FOOTER */}
       <footer className="border-t border-white/10 glass-card-dark py-10 text-xs text-gray-400 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-[#8a9a5b]/20 border border-[#8a9a5b]/40 flex items-center justify-center text-[#c2d6a3]">
-              <Wallet className="w-4 h-4" />
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="w-8 h-8 rounded-xl overflow-hidden border border-[#7c5ce8]/50 shadow-[0_0_12px_rgba(124,92,232,0.4)] group-hover:shadow-[0_0_20px_rgba(124,92,232,0.7)] transition-all">
+              <img
+                src="/img.jpeg"
+                alt="Larp Wallet Logo"
+                className="w-full h-full object-cover"
+              />
             </div>
-            <span className="font-bold text-white text-base">LARP WALLET</span>
-          </div>
+            <span className="font-bold text-white text-base group-hover:text-[#c4b5fd] transition-colors">LARP WALLET</span>
+          </Link>
 
           <div className="flex flex-wrap justify-center gap-6 text-gray-400 font-semibold">
-            <Link href="/" className="hover:text-[#c2d6a3] transition-colors">Home</Link>
-            <Link href="/features" className="hover:text-[#c2d6a3] transition-colors">Features</Link>
-            <Link href="/how-it-works" className="hover:text-[#c2d6a3] transition-colors">How It Works</Link>
-            <Link href="/reviews" className="text-[#c2d6a3] font-bold">Reviews</Link>
+            <Link href="/" className="hover:text-[#a78bfa] transition-colors">Home</Link>
+            <Link href="/features" className="hover:text-[#a78bfa] transition-colors">Features</Link>
+            <Link href="/how-it-works" className="hover:text-[#a78bfa] transition-colors">How It Works</Link>
+            <Link href="/pricing" className="hover:text-[#a78bfa] transition-colors">Pricing</Link>
+            <Link href="/reviews" className="text-[#a78bfa] font-bold">Reviews</Link>
           </div>
 
           <div className="text-gray-500 font-mono text-[11px]">
@@ -419,7 +424,7 @@ export default function ReviewsPage() {
       {/* LOGIN & AUTHENTICATION MODAL */}
       {isLoginOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-          <div className="relative w-full max-w-md rounded-3xl glass-card-dark p-6 sm:p-8 border border-[#8a9a5b]/40 shadow-2xl space-y-6">
+          <div className="relative w-full max-w-md rounded-3xl glass-card-dark p-6 sm:p-8 border border-[#7c5ce8]/30 shadow-2xl space-y-6">
             <button
               onClick={() => setIsLoginOpen(false)}
               className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
@@ -428,7 +433,7 @@ export default function ReviewsPage() {
             </button>
 
             <div className="flex items-center space-x-3">
-              <div className="p-3 rounded-2xl bg-[#8a9a5b]/20 border border-[#8a9a5b]/40 text-[#c2d6a3]">
+              <div className="p-3 rounded-2xl bg-[#7c5ce8]/15 border border-[#7c5ce8]/30 text-[#a78bfa]">
                 <Lock className="w-5 h-5" />
               </div>
               <div>
@@ -446,7 +451,7 @@ export default function ReviewsPage() {
                   type="text"
                   required
                   placeholder="LRP-9814-XXXX-XXXX"
-                  className="w-full px-4 py-3 rounded-xl bg-[#121814] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#8a9a5b]"
+                  className="w-full px-4 py-3 rounded-xl bg-[#0d0a24] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#7c5ce8]"
                 />
               </div>
 
@@ -458,7 +463,7 @@ export default function ReviewsPage() {
                   type="password"
                   required
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl bg-[#121814] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#8a9a5b]"
+                  className="w-full px-4 py-3 rounded-xl bg-[#0d0a24] border border-white/10 text-white font-mono text-sm placeholder-gray-600 focus:outline-none focus:border-[#7c5ce8]"
                 />
               </div>
 
