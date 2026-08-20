@@ -1,7 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, Plus, CheckCircle2, ChevronRight } from "lucide-react";
+import {
+  Search,
+  Plus,
+  CheckCircle2,
+  ChevronRight,
+  Send,
+  QrCode,
+  CircleDollarSign,
+  ArrowLeftRight,
+  X,
+} from "lucide-react";
 import PhantomSidebar from "./PhantomSidebar";
 import PhantomInstallPrompt from "./PhantomInstallPrompt";
 
@@ -61,9 +71,17 @@ const TRENDING_TOKENS = [
 export default function PhantomHome() {
   const [activeTab, setActiveTab] = useState("Home");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isPlusMenuOpen, setIsPlusMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const tabs = ["Home", "Trade", "Predict", "Explore"];
+
+  const speedDialItems = [
+    { id: "send", label: "Send", icon: Send },
+    { id: "receive", label: "Receive", icon: QrCode },
+    { id: "add_cash", label: "Add Cash", icon: CircleDollarSign },
+    { id: "trade", label: "Trade", icon: ArrowLeftRight },
+  ];
 
   const filteredTokens = TRENDING_TOKENS.filter(
     (t) =>
@@ -222,8 +240,49 @@ export default function PhantomHome() {
 
       </main>
 
+      {/* ── SPEED DIAL BACKDROP OVERLAY ── */}
+      {isPlusMenuOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-[#000000]/80 backdrop-blur-sm animate-fadeIn transition-opacity"
+          onClick={() => setIsPlusMenuOpen(false)}
+        />
+      )}
+
       {/* ── FIXED BOTTOM SEARCH & ACTION BAR (Matching Reference Image) ── */}
-      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-[#000000] via-[#000000]/95 to-transparent pt-3 pb-5 px-4">
+      <footer className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-[#000000] via-[#000000]/95 to-transparent pt-3 pb-5 px-4">
+        
+        {/* Speed Dial Menu Items Vertical Stack (Matches Reference Image) */}
+        {isPlusMenuOpen && (
+          <div className="max-w-lg mx-auto flex flex-col items-end space-y-4 mb-4 pr-1 animate-slideUp">
+            {speedDialItems.map((item, index) => {
+              const IconComponent = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    setIsPlusMenuOpen(false);
+                  }}
+                  className="flex items-center space-x-4 group cursor-pointer active:scale-95 transition-transform"
+                  style={{
+                    animationDelay: `${index * 50}ms`,
+                  }}
+                >
+                  {/* Option Label */}
+                  <span className="text-xl sm:text-2xl font-extrabold text-white tracking-tight group-hover:text-[#a594fd] transition-colors">
+                    {item.label}
+                  </span>
+
+                  {/* Option Soft Purple Icon Circle */}
+                  <div className="w-12 h-12 rounded-full bg-[#a594fd] hover:bg-[#b6a7ff] text-[#000000] flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(165,148,253,0.4)] transition-all">
+                    <IconComponent className="w-6 h-6 stroke-[2.5]" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         <div className="max-w-lg mx-auto flex items-center justify-between gap-3">
           
           {/* Pill Search Input Bar */}
@@ -238,12 +297,21 @@ export default function PhantomHome() {
             />
           </div>
 
-          {/* Floating Circle Action Button (+) */}
+          {/* Floating Circle Action Button (+) / (X) */}
           <button
             type="button"
-            className="w-12 h-12 rounded-full bg-[#a594fd] hover:bg-[#b6a7ff] text-[#000000] flex items-center justify-center shrink-0 cursor-pointer shadow-[0_0_20px_rgba(165,148,253,0.35)] active:scale-95 transition-transform"
+            onClick={() => setIsPlusMenuOpen(!isPlusMenuOpen)}
+            className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 cursor-pointer transition-all duration-300 active:scale-95 ${
+              isPlusMenuOpen
+                ? "bg-[#2c2c2e] text-white border border-white/20 shadow-lg rotate-90"
+                : "bg-[#a594fd] hover:bg-[#b6a7ff] text-[#000000] shadow-[0_0_20px_rgba(165,148,253,0.35)]"
+            }`}
           >
-            <Plus className="w-7 h-7 stroke-[2.5]" />
+            {isPlusMenuOpen ? (
+              <X className="w-6 h-6 stroke-[2.5]" />
+            ) : (
+              <Plus className="w-7 h-7 stroke-[2.5]" />
+            )}
           </button>
 
         </div>
