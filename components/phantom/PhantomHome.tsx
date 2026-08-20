@@ -136,11 +136,10 @@ export default function PhantomHome() {
     localStorage.setItem(storageKeyHoldings, JSON.stringify(newHoldings));
   };
 
-  // English Nav Tabs: Home, Trade, Predictions, Explore
+  // English Nav Tabs: Home, Trade, Explore
   const navTabs = [
     { key: "Start", label: "Home" },
     { key: "Handel", label: "Trade" },
-    { key: "Vorhersage", label: "Predictions" },
     { key: "Erkunden", label: "Explore" },
   ];
 
