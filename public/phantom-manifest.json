@@ -1,7 +1,7 @@
 {
   "name": "Phantom Wallet",
   "short_name": "Phantom",
-  "description": "Phantom Crypto & Solana Wallet Simulator",
+  "description": "Phantom Crypto & Solana Wallet",
   "start_url": "/phantom",
   "display": "standalone",
   "background_color": "#000000",
@@ -9,14 +9,14 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/phantom-icon.png",
-      "sizes": "192x192",
+      "src": "/Phantom%202.png",
+      "sizes": "192x192 512x512",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/phantom-icon-512.png",
-      "sizes": "512x512",
+      "src": "/Phantom 2.png",
+      "sizes": "192x192 512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }

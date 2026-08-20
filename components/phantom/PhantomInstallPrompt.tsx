@@ -62,8 +62,8 @@ export default function PhantomInstallPrompt() {
         
         {/* App Icon & Details */}
         <div className="flex items-center space-x-3">
-          <div className="w-11 h-11 rounded-2xl overflow-hidden border border-white/10 shrink-0 bg-[#000000] p-1">
-            <img src="/phantom-icon.png" alt="Phantom App Icon" className="w-full h-full object-cover" />
+          <div className="w-11 h-11 rounded-2xl overflow-hidden border border-white/10 shrink-0 bg-[#beacff] p-1 shadow-sm">
+            <img src="/Phantom 2.png" alt="Phantom App Icon" className="w-full h-full object-contain" />
           </div>
           <div>
             <div className="flex items-center space-x-1">
