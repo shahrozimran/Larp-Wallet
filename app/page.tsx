@@ -17,19 +17,11 @@ import {
 
 import Navbar from "@/components/Navbar";
 import LoginModal from "@/components/LoginModal";
-import { loginUser } from "@/lib/auth";
 
 export default function Home() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const router = useRouter();
-
-  const handleLoginSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    loginUser("demo@larpzwallet.app");
-    setIsLoginOpen(false);
-    router.push("/dashboard");
-  };
 
   return (
     <div className="min-h-screen bg-[#08061a] text-white flex flex-col font-sans relative selection:bg-[#7c5ce8] selection:text-white pt-14">

@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import LoginModal from "@/components/LoginModal";
-import { loginUser } from "@/lib/auth";
 
 const reviewsData = [
   {
@@ -247,13 +246,6 @@ export default function ReviewsPage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"all" | "creators" | "streamers" | "meme" | "editors">("all");
   const router = useRouter();
-
-  const handleLoginSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    loginUser("demo@larpzwallet.app");
-    setIsLoginOpen(false);
-    router.push("/dashboard");
-  };
 
   const filteredReviews = activeTab === "all"
     ? reviewsData
