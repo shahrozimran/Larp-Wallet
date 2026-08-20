@@ -108,12 +108,6 @@ export default function PhantomProfileModal({
               </div>
             </div>
 
-            {/* X Account Badge */}
-            <div className="flex items-center space-x-2 px-3 py-2 bg-[#1c1c1e] rounded-xl border border-white/5">
-              <span className="font-black text-base text-[#a594fd]">𝕏</span>
-              <span className="text-sm font-semibold text-gray-300">Connect your X account</span>
-            </div>
-
             {/* Divider */}
             <div className="h-px bg-white/5" />
 

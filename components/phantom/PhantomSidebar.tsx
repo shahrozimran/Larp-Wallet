@@ -91,16 +91,9 @@ export default function PhantomSidebar({
             </button>
           </div>
 
-          {/* User Handle & X Account Link */}
-          <div className="space-y-2">
+          {/* User Handle */}
+          <div className="space-y-1">
             <h2 className="text-2xl font-extrabold text-white tracking-tight">{handle}</h2>
-            <button
-              type="button"
-              className="flex items-center space-x-2 text-xs font-semibold text-[#a594fd] hover:text-[#c4b5fd] transition-colors cursor-pointer"
-            >
-              <span className="font-bold">𝕏</span>
-              <span>Connect your X account</span>
-            </button>
           </div>
 
           {/* Account Selector Pill */}

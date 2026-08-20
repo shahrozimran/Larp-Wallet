@@ -17,58 +17,28 @@ import PhantomInstallPrompt from "./PhantomInstallPrompt";
 import PhantomSettingsModal from "./PhantomSettingsModal";
 import PhantomProfileModal from "./PhantomProfileModal";
 
-const TRENDING_TOKENS = [
-  {
-    id: "fartcoin",
-    name: "Fartcoin",
-    symbol: "FART",
-    mc: "$160M MC",
-    price: "$0.16007",
-    change: "+7.07%",
-    isPositive: true,
-    img: "/img.jpeg",
-  },
-  {
-    id: "popcat",
-    name: "POPCAT",
-    symbol: "POPCAT",
-    mc: "$46M MC",
-    price: "$0.04676",
-    change: "+10.72%",
-    isPositive: true,
-    img: "/img.jpeg",
-  },
-  {
-    id: "spx",
-    name: "SPX",
-    symbol: "SPX",
-    mc: "$33M MC",
-    price: "$0.39126",
-    change: "+14.68%",
-    isPositive: true,
-    img: "/img.jpeg",
-  },
-  {
-    id: "pnut",
-    name: "PNUT",
-    symbol: "PNUT",
-    mc: "$1.2B MC",
-    price: "$1.18240",
-    change: "+5.42%",
-    isPositive: true,
-    img: "/img.jpeg",
-  },
-  {
-    id: "bonk",
-    name: "BONK",
-    symbol: "BONK",
-    mc: "$2.4B MC",
-    price: "$0.00003",
-    change: "+8.15%",
-    isPositive: true,
-    img: "/img.jpeg",
-  },
-];
+interface CoinToken {
+  id: string;
+  symbol: string;
+  name: string;
+  image: string;
+  price: number;
+  marketCap: number;
+  change24h: number;
+}
+
+function formatPrice(price: number): string {
+  if (price >= 1000) return `$${price.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+  if (price >= 1) return `$${price.toFixed(4)}`;
+  if (price >= 0.01) return `$${price.toFixed(5)}`;
+  return `$${price.toFixed(8)}`;
+}
+
+function formatMarketCap(mc: number): string {
+  if (mc >= 1e9) return `$${(mc / 1e9).toFixed(1)}B MC`;
+  if (mc >= 1e6) return `$${(mc / 1e6).toFixed(0)}M MC`;
+  return `$${(mc / 1e3).toFixed(0)}K MC`;
+}
 
 export default function PhantomHome() {
   const [activeTab, setActiveTab] = useState("Home");
@@ -77,6 +47,11 @@ export default function PhantomHome() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Live market data
+  const [coins, setCoins] = useState<CoinToken[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   // Persistent user handle & account name
   const [handle, setHandle] = useState("@GuidedMutt3528");
@@ -87,6 +62,31 @@ export default function PhantomHome() {
     const savedAccountName = localStorage.getItem("phantom_account_name");
     if (savedHandle) setHandle(savedHandle);
     if (savedAccountName) setAccountName(savedAccountName);
+  }, []);
+
+  // Fetch live prices from our API route
+  const fetchPrices = async () => {
+    try {
+      const res = await fetch("/api/crypto", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.coins) {
+          setCoins(data.coins);
+          setLastUpdated(new Date());
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch prices:", e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPrices();
+    // Auto-refresh every 60 seconds
+    const interval = setInterval(fetchPrices, 60_000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleSaveProfile = (newHandle: string, newAccountName: string) => {
@@ -105,10 +105,10 @@ export default function PhantomHome() {
     { id: "trade", label: "Trade", icon: ArrowLeftRight },
   ];
 
-  const filteredTokens = TRENDING_TOKENS.filter(
-    (t) =>
-      t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCoins = coins.filter(
+    (c) =>
+      c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.symbol.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -208,54 +208,94 @@ export default function PhantomHome() {
           </button>
         </div>
 
-        {/* ── TRENDING TOKENS SECTION (Screenshot 2) ── */}
+        {/* ── TRENDING TOKENS SECTION (Live CoinGecko Data) ── */}
         <div className="space-y-4 pt-2">
           
-          <button
-            type="button"
-            className="flex items-center space-x-1 text-xl font-extrabold text-white hover:text-[#a594fd] transition-colors cursor-pointer"
-          >
-            <span>Trending</span>
-            <ChevronRight className="w-5 h-5 text-gray-400" />
-          </button>
+          {/* Section Header with last-updated pulse */}
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={fetchPrices}
+              className="flex items-center space-x-1 text-xl font-extrabold text-white hover:text-[#a594fd] transition-colors cursor-pointer"
+            >
+              <span>Trending</span>
+              <ChevronRight className="w-5 h-5 text-gray-400" />
+            </button>
+            {lastUpdated && (
+              <span className="text-[10px] font-semibold text-gray-600">
+                Updated {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+              </span>
+            )}
+          </div>
 
           {/* Token List */}
-          <div className="space-y-3">
-            {filteredTokens.map((token) => (
-              <div
-                key={token.id}
-                className="flex items-center justify-between p-3.5 rounded-2xl bg-[#09090b] hover:bg-[#121215] border border-white/5 transition-all cursor-pointer group"
-              >
-                {/* Token Icon & Name */}
-                <div className="flex items-center space-x-3.5">
-                  <div className="relative w-11 h-11 rounded-full overflow-hidden bg-[#1c1c1e] border border-white/10 shrink-0">
-                    <img src={token.img} alt={token.name} className="w-full h-full object-cover" />
+          <div className="space-y-2">
+            {isLoading ? (
+              // Skeleton loading state
+              Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex items-center justify-between p-3.5 rounded-2xl bg-[#09090b] border border-white/5 animate-pulse">
+                  <div className="flex items-center space-x-3.5">
+                    <div className="w-11 h-11 rounded-full bg-[#1c1c1e]" />
+                    <div className="space-y-2">
+                      <div className="w-20 h-3.5 rounded-full bg-[#1c1c1e]" />
+                      <div className="w-14 h-2.5 rounded-full bg-[#1c1c1e]" />
+                    </div>
                   </div>
-                  
-                  <div>
-                    <div className="flex items-center space-x-1.5">
-                      <span className="font-extrabold text-base text-white group-hover:text-[#a594fd] transition-colors">
-                        {token.name}
-                      </span>
-                      <CheckCircle2 className="w-4 h-4 text-[#8b79f6] fill-[#8b79f6]/20" />
-                    </div>
-                    <div className="text-xs font-semibold text-gray-400">
-                      {token.mc}
-                    </div>
+                  <div className="space-y-2 items-end flex flex-col">
+                    <div className="w-16 h-3.5 rounded-full bg-[#1c1c1e]" />
+                    <div className="w-12 h-2.5 rounded-full bg-[#1c1c1e]" />
                   </div>
                 </div>
+              ))
+            ) : filteredCoins.length === 0 ? (
+              <div className="text-center py-8 text-gray-500 text-sm">No tokens found</div>
+            ) : (
+              filteredCoins.map((coin) => {
+                const isPositive = coin.change24h >= 0;
+                return (
+                  <div
+                    key={coin.id}
+                    className="flex items-center justify-between p-3.5 rounded-2xl bg-[#09090b] hover:bg-[#0f0f12] border border-white/5 transition-all cursor-pointer group"
+                  >
+                    {/* Token Icon & Name */}
+                    <div className="flex items-center space-x-3.5">
+                      <div className="relative w-11 h-11 rounded-full overflow-hidden bg-[#1c1c1e] border border-white/10 shrink-0">
+                        <img
+                          src={coin.image}
+                          alt={coin.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/img.jpeg"; }}
+                        />
+                      </div>
+                      
+                      <div>
+                        <div className="flex items-center space-x-1.5">
+                          <span className="font-extrabold text-base text-white group-hover:text-[#a594fd] transition-colors">
+                            {coin.name}
+                          </span>
+                          <CheckCircle2 className="w-4 h-4 text-[#8b79f6] fill-[#8b79f6]/20" />
+                        </div>
+                        <div className="text-xs font-semibold text-gray-500">
+                          {formatMarketCap(coin.marketCap)}
+                        </div>
+                      </div>
+                    </div>
 
-                {/* Price & Change */}
-                <div className="text-right">
-                  <div className="font-extrabold text-base text-white font-mono">
-                    {token.price}
+                    {/* Price & Change */}
+                    <div className="text-right">
+                      <div className="font-extrabold text-base text-white font-mono">
+                        {formatPrice(coin.price)}
+                      </div>
+                      <div className={`text-xs font-bold font-mono ${
+                        isPositive ? "text-emerald-400" : "text-red-400"
+                      }`}>
+                        {isPositive ? "+" : ""}{coin.change24h.toFixed(2)}%
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-xs font-bold text-emerald-400 font-mono">
-                    {token.change}
-                  </div>
-                </div>
-              </div>
-            ))}
+                );
+              })
+            )}
           </div>
 
         </div>
