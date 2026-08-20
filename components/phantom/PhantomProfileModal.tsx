@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { ArrowLeft, Copy, Check, Edit2, X } from "lucide-react";
+import { ArrowLeft, Copy, Check, Edit2 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 interface PhantomProfileModalProps {
   isOpen: boolean;
@@ -11,23 +12,29 @@ interface PhantomProfileModalProps {
   onOpenSettings: () => void;
 }
 
-const WALLET_ADDRESS = "7Xw1...3M4n";
-const FULL_ADDRESS = "7Xw1kFBe8Nn2aqN9cLMGGiRQakQA6Uh3M4n";
-
 export default function PhantomProfileModal({
   isOpen,
   onClose,
-  handle,
-  accountName,
+  handle = "@GuidedMutt3528",
+  accountName = "Account 1",
   onOpenSettings,
 }: PhantomProfileModalProps) {
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [copiedHandle, setCopiedHandle] = useState(false);
+  const { user, profile } = useAuth();
 
   if (!isOpen) return null;
 
+  // Generate deterministic user address based on user ID or fallback
+  const userAddress = user?.id
+    ? `${user.id.slice(0, 4)}...${user.id.slice(-4)}`
+    : "7Xw1...3M4n";
+  const fullAddress = user?.id
+    ? `7Xw1${user.id.replace(/-/g, "").slice(0, 26)}`
+    : "7Xw1kFBe8Nn2aqN9cLMGGiRQakQA6Uh3M4n";
+
   const handleCopyAddress = () => {
-    navigator.clipboard.writeText(FULL_ADDRESS);
+    navigator.clipboard.writeText(fullAddress);
     setCopiedAddress(true);
     setTimeout(() => setCopiedAddress(false), 2000);
   };
@@ -39,7 +46,7 @@ export default function PhantomProfileModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex">
+    <div className="fixed inset-0 z-[60] flex font-sans animate-fadeIn">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm"
@@ -67,8 +74,8 @@ export default function PhantomProfileModal({
             onClick={() => { onClose(); onOpenSettings(); }}
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-[#1c1c1e] hover:bg-[#2c2c2e] transition-colors cursor-pointer"
           >
-            <Edit2 className="w-4 h-4 text-[#a594fd]" />
-            <span className="text-sm font-semibold text-[#a594fd]">Edit</span>
+            <Edit2 className="w-4 h-4 text-[#beacff]" />
+            <span className="text-sm font-bold text-[#beacff]">Edit</span>
           </button>
         </div>
 
@@ -80,16 +87,12 @@ export default function PhantomProfileModal({
 
             {/* Avatar + Handle Row */}
             <div className="flex items-center space-x-4">
-              {/* Yellow mascot avatar */}
-              <div className="w-16 h-16 rounded-full bg-[#8fa1ff] flex items-center justify-center flex-shrink-0 border-2 border-white/10 shadow-lg">
-                <div className="w-11 h-11 rounded-full bg-[#fce886] flex items-center justify-center relative">
-                  <div className="w-4 h-1.5 bg-[#432c7a] rounded-full absolute top-3.5 left-1.5" />
-                  <div className="w-4 h-1.5 bg-[#432c7a] rounded-full absolute top-3.5 right-1.5" />
-                  <div className="w-3 h-1 bg-[#ff9e9e] rounded-full absolute bottom-2.5" />
-                </div>
+              {/* Phantom Logo Avatar */}
+              <div className="w-16 h-16 rounded-full bg-[#beacff] flex items-center justify-center flex-shrink-0 border-2 border-white/10 shadow-lg p-2 overflow-hidden">
+                <img src="/Phantom 2.png" alt="Phantom Logo" className="w-full h-full object-contain" />
               </div>
 
-              {/* Handle + Account Name */}
+              {/* Handle + Account Name + User Email */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-extrabold text-white tracking-tight truncate">{handle}</h2>
@@ -99,12 +102,15 @@ export default function PhantomProfileModal({
                     className="ml-2 p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer flex-shrink-0"
                   >
                     {copiedHandle
-                      ? <Check className="w-4 h-4 text-emerald-400" />
+                      ? <Check className="w-4 h-4 text-[#10b981]" />
                       : <Copy className="w-4 h-4 text-gray-400" />
                     }
                   </button>
                 </div>
                 <p className="text-sm font-semibold text-gray-400 mt-0.5">{accountName}</p>
+                {user?.email && (
+                  <p className="text-xs font-mono text-[#beacff] mt-0.5 truncate">{user.email}</p>
+                )}
               </div>
             </div>
 
@@ -119,18 +125,18 @@ export default function PhantomProfileModal({
                 onClick={handleCopyAddress}
                 className="w-full flex items-center justify-between px-4 py-3 bg-[#1c1c1e] rounded-2xl border border-white/5 hover:bg-[#252528] transition-colors cursor-pointer group"
               >
-                <span className="text-sm font-mono font-semibold text-white">
-                  7Xw1kFBe8Nn2aqN9cL...3M4n
+                <span className="text-sm font-mono font-semibold text-white truncate max-w-[220px]">
+                  {fullAddress}
                 </span>
                 {copiedAddress ? (
                   <div className="flex items-center space-x-1.5">
-                    <Check className="w-4 h-4 text-emerald-400" />
-                    <span className="text-xs font-bold text-emerald-400">Copied!</span>
+                    <Check className="w-4 h-4 text-[#10b981]" />
+                    <span className="text-xs font-bold text-[#10b981]">Copied!</span>
                   </div>
                 ) : (
                   <div className="flex items-center space-x-1.5">
-                    <Copy className="w-4 h-4 text-gray-400 group-hover:text-[#a594fd] transition-colors" />
-                    <span className="text-xs font-semibold text-gray-400 group-hover:text-[#a594fd] transition-colors">Copy</span>
+                    <Copy className="w-4 h-4 text-gray-400 group-hover:text-[#beacff] transition-colors" />
+                    <span className="text-xs font-semibold text-gray-400 group-hover:text-[#beacff] transition-colors">Copy</span>
                   </div>
                 )}
               </button>
@@ -146,12 +152,12 @@ export default function PhantomProfileModal({
                 <span className="text-sm font-bold text-white">{accountName}</span>
               </div>
               <div className="flex items-center justify-between px-4 py-4">
-                <span className="text-sm font-semibold text-gray-400">Network</span>
-                <span className="text-sm font-bold text-[#14F195]">Solana Mainnet</span>
+                <span className="text-sm font-semibold text-gray-400">Plan Tier</span>
+                <span className="text-sm font-bold text-[#beacff] uppercase font-mono">{profile?.plan_type || "Pro"}</span>
               </div>
               <div className="flex items-center justify-between px-4 py-4">
-                <span className="text-sm font-semibold text-gray-400">Balance</span>
-                <span className="text-sm font-bold text-white">$0.00</span>
+                <span className="text-sm font-semibold text-gray-400">Network</span>
+                <span className="text-sm font-bold text-[#10b981]">Solana Mainnet</span>
               </div>
             </div>
           </div>
@@ -162,7 +168,7 @@ export default function PhantomProfileModal({
             onClick={() => { onClose(); onOpenSettings(); }}
             className="w-full py-4 rounded-2xl bg-[#1c1c1e] hover:bg-[#252528] border border-white/5 text-white font-extrabold text-base transition-all flex items-center justify-center space-x-2 cursor-pointer"
           >
-            <Edit2 className="w-5 h-5 text-[#a594fd]" />
+            <Edit2 className="w-5 h-5 text-[#beacff]" />
             <span>Edit Profile</span>
           </button>
 

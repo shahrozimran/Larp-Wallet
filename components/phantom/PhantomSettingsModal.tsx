@@ -49,7 +49,7 @@ export default function PhantomSettingsModal({
   const currencyLabel = editCurrency === "gbp" ? "GBP (£)" : "USD ($)";
 
   return (
-    <div className="fixed inset-0 z-[60] flex">
+    <div className="fixed inset-0 z-[60] flex font-sans animate-fadeIn">
       {/* Backdrop */}
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
@@ -74,16 +74,16 @@ export default function PhantomSettingsModal({
           {/* Account Customization */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2 px-1">
-              <User className="w-4 h-4 text-[#a594fd]" />
-              <span className="text-xs font-bold text-[#a594fd] uppercase tracking-widest">Account</span>
+              <User className="w-4 h-4 text-[#beacff]" />
+              <span className="text-xs font-bold text-[#beacff] uppercase tracking-widest">Account</span>
             </div>
 
             <div className="bg-[#111113] rounded-2xl overflow-hidden border border-white/5 space-y-px">
               {/* Handle */}
               <div className="px-4 py-4 space-y-2">
                 <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Username / Handle</label>
-                <div className="flex items-center space-x-2 bg-[#1c1c1e] rounded-xl px-3 py-2.5 border border-white/5 focus-within:border-[#a594fd]/60 transition-colors">
-                  <span className="text-[#a594fd] font-bold text-base select-none">@</span>
+                <div className="flex items-center space-x-2 bg-[#1c1c1e] rounded-xl px-3 py-2.5 border border-white/5 focus-within:border-[#beacff]/60 transition-colors">
+                  <span className="text-[#beacff] font-bold text-base select-none">@</span>
                   <input
                     type="text"
                     value={editHandle.replace(/^@/, "")}
@@ -99,7 +99,7 @@ export default function PhantomSettingsModal({
               {/* Account Name */}
               <div className="px-4 py-4 space-y-2">
                 <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Account Name</label>
-                <div className="flex items-center bg-[#1c1c1e] rounded-xl px-3 py-2.5 border border-white/5 focus-within:border-[#a594fd]/60 transition-colors">
+                <div className="flex items-center bg-[#1c1c1e] rounded-xl px-3 py-2.5 border border-white/5 focus-within:border-[#beacff]/60 transition-colors">
                   <input
                     type="text"
                     value={editAccountName}
@@ -117,7 +117,7 @@ export default function PhantomSettingsModal({
             <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-1">Preferences</span>
             <div className="bg-[#111113] rounded-2xl overflow-hidden border border-white/5 divide-y divide-white/5">
 
-              {/* Currency Row — expandable */}
+              {/* Currency Row */}
               <div>
                 <button
                   type="button"
@@ -125,7 +125,7 @@ export default function PhantomSettingsModal({
                   className="w-full flex items-center justify-between px-4 py-4 hover:bg-white/5 transition-colors cursor-pointer group"
                 >
                   <div className="flex items-center space-x-3">
-                    <DollarSign className="w-5 h-5 text-[#a594fd]" />
+                    <DollarSign className="w-5 h-5 text-[#beacff]" />
                     <span className="text-base font-semibold text-white">Preferred Currency</span>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -157,7 +157,7 @@ export default function PhantomSettingsModal({
                           </div>
                         </div>
                         {editCurrency === opt.value && (
-                          <Check className="w-4 h-4 text-[#a594fd]" />
+                          <Check className="w-4 h-4 text-[#beacff]" />
                         )}
                       </button>
                     ))}
@@ -171,7 +171,7 @@ export default function PhantomSettingsModal({
                 className="w-full flex items-center justify-between px-4 py-4 hover:bg-white/5 transition-colors cursor-pointer group"
               >
                 <div className="flex items-center space-x-3">
-                  <Globe className="w-5 h-5 text-[#a594fd]" />
+                  <Globe className="w-5 h-5 text-[#beacff]" />
                   <span className="text-base font-semibold text-white">Network</span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -191,7 +191,7 @@ export default function PhantomSettingsModal({
                 className="w-full flex items-center justify-between px-4 py-4 hover:bg-white/5 transition-colors cursor-pointer group"
               >
                 <div className="flex items-center space-x-3">
-                  <Shield className="w-5 h-5 text-[#a594fd]" />
+                  <Shield className="w-5 h-5 text-[#beacff]" />
                   <span className="text-base font-semibold text-white">Security & Passcode</span>
                 </div>
                 <ChevronRight className="w-4 h-4 text-gray-600" />
@@ -205,8 +205,8 @@ export default function PhantomSettingsModal({
             onClick={handleSave}
             className={`w-full py-4 rounded-2xl font-extrabold text-base transition-all flex items-center justify-center space-x-2 cursor-pointer ${
               saved
-                ? "bg-emerald-500 text-white"
-                : "bg-[#a594fd] hover:bg-[#b6a7ff] text-black shadow-[0_4px_20px_rgba(165,148,253,0.3)]"
+                ? "bg-[#10b981] text-white"
+                : "bg-[#beacff] hover:bg-[#cca8ff] text-black shadow-[0_4px_20px_rgba(190,172,255,0.3)]"
             }`}
           >
             {saved ? (

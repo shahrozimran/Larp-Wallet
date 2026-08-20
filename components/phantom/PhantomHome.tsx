@@ -10,6 +10,7 @@ import {
   ArrowLeftRight,
   X,
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 import PhantomSidebar from "./PhantomSidebar";
 import PhantomInstallPrompt from "./PhantomInstallPrompt";
 import PhantomSettingsModal from "./PhantomSettingsModal";
@@ -21,6 +22,19 @@ import PhantomExploreView from "./PhantomExploreView";
 import PhantomCoinDetailModal from "./PhantomCoinDetailModal";
 
 export default function PhantomHome() {
+  const { user, profile } = useAuth();
+  const userKey = user ? user.id : "guest";
+
+  const storageKeyHoldings = `phantom_holdings_${userKey}`;
+  const storageKeyHandle = `phantom_handle_${userKey}`;
+  const storageKeyAccountName = `phantom_account_name_${userKey}`;
+  const storageKeyCurrency = `phantom_currency_${userKey}`;
+
+  // Default handle derived dynamically from user session
+  const defaultHandle = user
+    ? `@${(profile?.full_name || user.user_metadata?.full_name || user.email?.split("@")[0] || "User").replace(/\s+/g, "")}`
+    : "@GuidedMutt3528";
+
   const [activeTab, setActiveTab] = useState("Start");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isPlusMenuOpen, setIsPlusMenuOpen] = useState(false);
@@ -35,26 +49,36 @@ export default function PhantomHome() {
   const [usdToGbp, setUsdToGbp] = useState(0.79);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Holdings portfolio
+  // Holdings portfolio per user
   const [holdings, setHoldings] = useState<Holding[]>([]);
   const [currency, setCurrency] = useState<"usd" | "gbp">("usd");
 
-  // Persistent user handle & account name
-  const [handle, setHandle] = useState("@GuidedMutt3528");
+  // User handle & account name per user
+  const [handle, setHandle] = useState(defaultHandle);
   const [accountName, setAccountName] = useState("Account 1");
 
+  // Re-hydrate state whenever user session changes
   useEffect(() => {
-    const savedHandle = localStorage.getItem("phantom_user_handle");
-    const savedAccountName = localStorage.getItem("phantom_account_name");
-    const savedHoldings = localStorage.getItem("phantom_holdings");
-    const savedCurrency = localStorage.getItem("phantom_currency") as "usd" | "gbp" | null;
-    if (savedHandle) setHandle(savedHandle);
-    if (savedAccountName) setAccountName(savedAccountName);
+    const savedHandle = localStorage.getItem(storageKeyHandle);
+    const savedAccountName = localStorage.getItem(storageKeyAccountName);
+    const savedHoldings = localStorage.getItem(storageKeyHoldings);
+    const savedCurrency = localStorage.getItem(storageKeyCurrency) as "usd" | "gbp" | null;
+
+    setHandle(savedHandle || defaultHandle);
+    setAccountName(savedAccountName || "Account 1");
+
     if (savedHoldings) {
-      try { setHoldings(JSON.parse(savedHoldings)); } catch {}
+      try {
+        setHoldings(JSON.parse(savedHoldings));
+      } catch {
+        setHoldings([]);
+      }
+    } else {
+      setHoldings([]);
     }
+
     if (savedCurrency) setCurrency(savedCurrency);
-  }, []);
+  }, [userKey, defaultHandle, storageKeyHandle, storageKeyAccountName, storageKeyHoldings, storageKeyCurrency]);
 
   // Fetch live prices from our API route
   const fetchPrices = async () => {
@@ -84,9 +108,9 @@ export default function PhantomHome() {
     setHandle(newHandle);
     setAccountName(newAccountName);
     setCurrency(newCurrency);
-    localStorage.setItem("phantom_user_handle", newHandle);
-    localStorage.setItem("phantom_account_name", newAccountName);
-    localStorage.setItem("phantom_currency", newCurrency);
+    localStorage.setItem(storageKeyHandle, newHandle);
+    localStorage.setItem(storageKeyAccountName, newAccountName);
+    localStorage.setItem(storageKeyCurrency, newCurrency);
   };
 
   const handleAddHolding = (coinId: string, qty: number) => {
@@ -102,14 +126,14 @@ export default function PhantomHome() {
       } else {
         next = [...prev, { coinId, qty, avgBuyPrice: coin.price }];
       }
-      localStorage.setItem("phantom_holdings", JSON.stringify(next));
+      localStorage.setItem(storageKeyHoldings, JSON.stringify(next));
       return next;
     });
   };
 
   const handleUpdateHoldings = (newHoldings: Holding[]) => {
     setHoldings(newHoldings);
-    localStorage.setItem("phantom_holdings", JSON.stringify(newHoldings));
+    localStorage.setItem(storageKeyHoldings, JSON.stringify(newHoldings));
   };
 
   // English Nav Tabs: Home, Trade, Predictions, Explore
@@ -133,20 +157,16 @@ export default function PhantomHome() {
       {/* ── HEADER NAV BAR (Avatar + Pill Tabs) ── */}
       <header className="sticky top-0 z-40 bg-[#000000]/95 backdrop-blur-md px-4 py-2.5 flex items-center space-x-2.5 border-b border-white/5">
         
-        {/* Profile Avatar Button */}
+        {/* Profile Avatar Button (Phantom Logo) */}
         <button
           type="button"
           onClick={() => setIsSidebarOpen(true)}
-          className="w-10 h-10 rounded-full bg-[#a594fd] flex items-center justify-center shrink-0 border border-white/10 hover:scale-105 transition-transform cursor-pointer shadow-sm"
+          className="w-10 h-10 rounded-full bg-[#beacff] flex items-center justify-center shrink-0 border border-white/10 hover:scale-105 transition-transform cursor-pointer shadow-sm overflow-hidden p-1"
         >
-          <div className="w-6.5 h-6.5 rounded-full bg-[#fde047] flex items-center justify-center relative shadow-inner">
-            <div className="w-1.5 h-1.5 bg-[#3b0764] rounded-full absolute top-2 left-1.5" />
-            <div className="w-1.5 h-1.5 bg-[#3b0764] rounded-full absolute top-2 right-1.5" />
-            <div className="w-2.5 h-1 bg-[#3b0764] rounded-full absolute bottom-1.5" />
-          </div>
+          <img src="/Phantom 2.png" alt="Phantom Logo" className="w-full h-full object-contain" />
         </button>
 
-        {/* Horizontal Navigation Pills (Home, Trade, Predictions, Explore) */}
+        {/* Horizontal Navigation Pills */}
         <nav className="flex items-center space-x-2 overflow-x-auto no-scrollbar py-0.5">
           {navTabs.map((tab) => {
             const isActive = activeTab === tab.key;
@@ -239,7 +259,7 @@ export default function PhantomHome() {
 
         <div className="max-w-lg mx-auto flex items-center justify-between gap-3">
           
-          {/* Search Input Bar ("Search Phantom") */}
+          {/* Search Input Bar */}
           <div className="relative flex-1">
             <Search className="w-5 h-5 text-gray-400 absolute left-4 top-3.5" />
             <input
