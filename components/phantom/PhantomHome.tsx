@@ -4,13 +4,13 @@ import React, { useState, useEffect } from "react";
 import {
   Search,
   Plus,
-  CheckCircle2,
-  ChevronRight,
   Send,
   QrCode,
   CircleDollarSign,
   ArrowLeftRight,
   X,
+  Wifi,
+  Battery,
 } from "lucide-react";
 import PhantomSidebar from "./PhantomSidebar";
 import PhantomInstallPrompt from "./PhantomInstallPrompt";
@@ -31,21 +31,8 @@ interface CoinToken {
   change24h: number;
 }
 
-function formatPrice(price: number): string {
-  if (price >= 1000) return `$${price.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
-  if (price >= 1) return `$${price.toFixed(4)}`;
-  if (price >= 0.01) return `$${price.toFixed(5)}`;
-  return `$${price.toFixed(8)}`;
-}
-
-function formatMarketCap(mc: number): string {
-  if (mc >= 1e9) return `$${(mc / 1e9).toFixed(1)}B MC`;
-  if (mc >= 1e6) return `$${(mc / 1e6).toFixed(0)}M MC`;
-  return `$${(mc / 1e3).toFixed(0)}K MC`;
-}
-
 export default function PhantomHome() {
-  const [activeTab, setActiveTab] = useState("Home");
+  const [activeTab, setActiveTab] = useState("Start");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isPlusMenuOpen, setIsPlusMenuOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -57,7 +44,6 @@ export default function PhantomHome() {
   const [coins, setCoins] = useState<CoinToken[]>([]);
   const [usdToGbp, setUsdToGbp] = useState(0.79);
   const [isLoading, setIsLoading] = useState(true);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   // Holdings portfolio
   const [holdings, setHoldings] = useState<Holding[]>([]);
@@ -65,7 +51,7 @@ export default function PhantomHome() {
 
   // Persistent user handle & account name
   const [handle, setHandle] = useState("@GuidedMutt3528");
-  const [accountName, setAccountName] = useState("Account 1");
+  const [accountName, setAccountName] = useState("Konto 1");
 
   useEffect(() => {
     const savedHandle = localStorage.getItem("phantom_user_handle");
@@ -88,7 +74,6 @@ export default function PhantomHome() {
         const data = await res.json();
         if (data.coins) {
           setCoins(data.coins);
-          setLastUpdated(new Date());
         }
         if (data.usdToGbp) setUsdToGbp(data.usdToGbp);
       }
@@ -101,7 +86,6 @@ export default function PhantomHome() {
 
   useEffect(() => {
     fetchPrices();
-    // Auto-refresh every 60 seconds
     const interval = setInterval(fetchPrices, 60_000);
     return () => clearInterval(interval);
   }, []);
@@ -122,7 +106,6 @@ export default function PhantomHome() {
       const existing = prev.find((h) => h.coinId === coinId);
       let next: Holding[];
       if (existing) {
-        // Weighted average buy price
         const totalQty = existing.qty + qty;
         const avgPrice = (existing.qty * existing.avgBuyPrice + qty * coin.price) / totalQty;
         next = prev.map((h) => h.coinId === coinId ? { ...h, qty: totalQty, avgBuyPrice: avgPrice } : h);
@@ -139,58 +122,78 @@ export default function PhantomHome() {
     localStorage.setItem("phantom_holdings", JSON.stringify(newHoldings));
   };
 
-
-  const tabs = ["Home", "Trade", "Explore"];
+  // Tabs matching reference screenshot (German: Start, Handel, Vorhersage, Erkunden)
+  const navTabs = [
+    { key: "Start", label: "Start" },
+    { key: "Handel", label: "Handel" },
+    { key: "Vorhersage", label: "Vorhersage" },
+    { key: "Erkunden", label: "Erk..." },
+  ];
 
   const speedDialItems = [
     { id: "send", label: "Send", icon: Send, onClick: () => {} },
     { id: "receive", label: "Receive", icon: QrCode, onClick: () => {} },
     { id: "add_cash", label: "Add Cash", icon: CircleDollarSign, onClick: () => { setIsPlusMenuOpen(false); setIsAddCashOpen(true); } },
-    { id: "trade", label: "Trade", icon: ArrowLeftRight, onClick: () => { setIsPlusMenuOpen(false); setActiveTab("Trade"); } },
+    { id: "trade", label: "Trade", icon: ArrowLeftRight, onClick: () => { setIsPlusMenuOpen(false); setActiveTab("Handel"); } },
   ];
 
-  const hasHoldings = holdings.length > 0;
-
-  const filteredCoins = coins.filter(
-    (c) =>
-      c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.symbol.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
-    <div className="relative min-h-[100dvh] bg-[#000000] text-white font-sans flex flex-col selection:bg-[#a594fd] selection:text-black overflow-x-hidden">
+    <div className="relative min-h-[100dvh] bg-[#000000] text-white font-sans flex flex-col selection:bg-[#beacff] selection:text-black overflow-x-hidden">
       
-      {/* ── TOP HEADER (Matching Screenshot 2) ── */}
-      <header className="sticky top-0 z-40 bg-[#000000]/95 backdrop-blur-md px-4 py-3 flex items-center space-x-3 border-b border-white/5">
+      {/* ── TOP SYSTEM STATUS BAR (21:38 | Dynamic Island | 5G 20%) ── */}
+      <div className="sticky top-0 z-50 bg-[#000000] px-6 pt-2 pb-1 flex items-center justify-between text-xs font-semibold text-white select-none">
+        {/* Left Time */}
+        <span className="font-extrabold text-sm tracking-tight">21:38</span>
+
+        {/* Center Dynamic Island Notch Pill */}
+        <div className="w-24 h-5 rounded-full bg-[#000000] border border-white/10 flex items-center justify-center px-2 space-x-1.5 shadow-inner">
+          <div className="w-2.5 h-2.5 rounded-full border-2 border-[#10b981] flex items-center justify-center">
+            <div className="w-1 h-1 rounded-full bg-[#10b981] animate-pulse" />
+          </div>
+        </div>
+
+        {/* Right System Indicators */}
+        <div className="flex items-center space-x-1.5 text-gray-200">
+          <span className="text-[10px] font-black tracking-wider">5G</span>
+          <div className="flex items-center bg-[#202024] px-1.5 py-0.5 rounded text-[10px] font-extrabold text-white">
+            20⚡
+          </div>
+        </div>
+      </div>
+
+      {/* ── HEADER NAV BAR (Avatar + Pill Tabs) ── */}
+      <header className="sticky top-[29px] z-40 bg-[#000000]/95 backdrop-blur-md px-4 py-2.5 flex items-center space-x-2.5 border-b border-white/5">
         
-        {/* Profile Avatar Button (Opens Left Drawer) */}
+        {/* Profile Avatar Button (Yellow Blob Avatar in Purple Frame matching Screenshot) */}
         <button
           type="button"
           onClick={() => setIsSidebarOpen(true)}
-          className="w-10 h-10 rounded-full bg-[#8fa1ff] flex items-center justify-center shrink-0 border border-white/10 hover:scale-105 transition-transform cursor-pointer"
+          className="w-10 h-10 rounded-full bg-[#a594fd] flex items-center justify-center shrink-0 border border-white/10 hover:scale-105 transition-transform cursor-pointer shadow-sm"
         >
-          <div className="w-6.5 h-6.5 rounded-full bg-[#fce886] flex items-center justify-center relative">
-            <div className="w-2.5 h-1 bg-[#432c7a] rounded-full absolute top-2 left-1" />
-            <div className="w-2.5 h-1 bg-[#432c7a] rounded-full absolute top-2 right-1" />
+          {/* Yellow character icon face */}
+          <div className="w-6.5 h-6.5 rounded-full bg-[#fde047] flex items-center justify-center relative shadow-inner">
+            <div className="w-1.5 h-1.5 bg-[#3b0764] rounded-full absolute top-2 left-1.5" />
+            <div className="w-1.5 h-1.5 bg-[#3b0764] rounded-full absolute top-2 right-1.5" />
+            <div className="w-2.5 h-1 bg-[#3b0764] rounded-full absolute bottom-1.5" />
           </div>
         </button>
 
-        {/* Horizontal Navigation Pills */}
-        <nav className="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab;
+        {/* Horizontal Navigation Pills (Start, Handel, Vorhersage, Erk...) */}
+        <nav className="flex items-center space-x-2 overflow-x-auto no-scrollbar py-0.5">
+          {navTabs.map((tab) => {
+            const isActive = activeTab === tab.key;
             return (
               <button
-                key={tab}
+                key={tab.key}
                 type="button"
-                onClick={() => setActiveTab(tab)}
-                className={`px-5 py-2 rounded-full text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-4 py-1.5 rounded-full text-sm font-extrabold transition-all cursor-pointer whitespace-nowrap ${
                   isActive
-                    ? "bg-[#a594fd] text-[#000000] shadow-[0_0_12px_rgba(165,148,253,0.4)]"
-                    : "bg-[#1c1c1e] text-gray-300 hover:bg-[#2c2c2e] hover:text-white"
+                    ? "bg-[#beacff] text-[#000000] shadow-[0_0_14px_rgba(190,172,255,0.4)]"
+                    : "bg-[#26262a] text-[#a1a1aa] hover:bg-[#323236] hover:text-white"
                 }`}
               >
-                {tab}
+                {tab.label}
               </button>
             );
           })}
@@ -200,7 +203,7 @@ export default function PhantomHome() {
       {/* ── MAIN CONTENT AREA ── */}
       <main className="flex-1 max-w-[430px] w-full mx-auto pb-28">
 
-        {activeTab === "Trade" ? (
+        {activeTab === "Handel" ? (
           <PhantomTradeView
             coins={coins}
             holdings={holdings}
@@ -209,118 +212,20 @@ export default function PhantomHome() {
             onAddHolding={handleAddHolding}
             onUpdateHoldings={handleUpdateHoldings}
           />
-        ) : activeTab === "Explore" ? (
+        ) : activeTab === "Erkunden" ? (
           <PhantomExploreView
             coins={coins}
-            onSwap={() => setActiveTab("Trade")}
+            onSwap={() => setActiveTab("Handel")}
             onBuy={() => setIsAddCashOpen(true)}
           />
         ) : (
-          <>
-            {/* ── PORTFOLIO VIEW: Always shown (empty or funded) ── */}
-            <PhantomPortfolioView
-              holdings={holdings}
-              coins={coins}
-              currency={currency}
-              usdToGbp={usdToGbp}
-              accountName={accountName}
-            />
-
-            {/* ── TRENDING TOKENS SECTION (only shown when no holdings) ── */}
-            {!hasHoldings && (
-            <div className="space-y-4 px-4 pt-4">
-
-          
-          {/* Section Header with last-updated pulse */}
-          <div className="flex items-center justify-between">
-            <button
-              type="button"
-              onClick={fetchPrices}
-              className="flex items-center space-x-1 text-xl font-extrabold text-white hover:text-[#a594fd] transition-colors cursor-pointer"
-            >
-              <span>Trending</span>
-              <ChevronRight className="w-5 h-5 text-gray-400" />
-            </button>
-            {lastUpdated && (
-              <span className="text-[10px] font-semibold text-gray-600">
-                Updated {lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-              </span>
-            )}
-          </div>
-
-          {/* Token List */}
-          <div className="space-y-2">
-            {isLoading ? (
-              // Skeleton loading state
-              Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center justify-between p-3.5 rounded-2xl bg-[#09090b] border border-white/5 animate-pulse">
-                  <div className="flex items-center space-x-3.5">
-                    <div className="w-11 h-11 rounded-full bg-[#1c1c1e]" />
-                    <div className="space-y-2">
-                      <div className="w-20 h-3.5 rounded-full bg-[#1c1c1e]" />
-                      <div className="w-14 h-2.5 rounded-full bg-[#1c1c1e]" />
-                    </div>
-                  </div>
-                  <div className="space-y-2 items-end flex flex-col">
-                    <div className="w-16 h-3.5 rounded-full bg-[#1c1c1e]" />
-                    <div className="w-12 h-2.5 rounded-full bg-[#1c1c1e]" />
-                  </div>
-                </div>
-              ))
-            ) : filteredCoins.length === 0 ? (
-              <div className="text-center py-8 text-gray-500 text-sm">No tokens found</div>
-            ) : (
-              filteredCoins.map((coin) => {
-                const isPositive = coin.change24h >= 0;
-                return (
-                  <div
-                    key={coin.id}
-                    className="flex items-center justify-between p-3.5 rounded-2xl bg-[#09090b] hover:bg-[#0f0f12] border border-white/5 transition-all cursor-pointer group"
-                  >
-                    {/* Token Icon & Name */}
-                    <div className="flex items-center space-x-3.5">
-                      <div className="relative w-11 h-11 rounded-full overflow-hidden bg-[#1c1c1e] border border-white/10 shrink-0">
-                        <img
-                          src={coin.image}
-                          alt={coin.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/img.jpeg"; }}
-                        />
-                      </div>
-                      
-                      <div>
-                        <div className="flex items-center space-x-1.5">
-                          <span className="font-extrabold text-base text-white group-hover:text-[#a594fd] transition-colors">
-                            {coin.name}
-                          </span>
-                          <CheckCircle2 className="w-4 h-4 text-[#8b79f6] fill-[#8b79f6]/20" />
-                        </div>
-                        <div className="text-xs font-semibold text-gray-500">
-                          {formatMarketCap(coin.marketCap)}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Price & Change */}
-                    <div className="text-right">
-                      <div className="font-extrabold text-base text-white font-mono">
-                        {formatPrice(coin.price)}
-                      </div>
-                      <div className={`text-xs font-bold font-mono ${
-                        isPositive ? "text-emerald-400" : "text-red-400"
-                      }`}>
-                        {isPositive ? "+" : ""}{coin.change24h.toFixed(2)}%
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-
-        </div>
-        )}
-          </>
+          <PhantomPortfolioView
+            holdings={holdings}
+            coins={coins}
+            currency={currency}
+            usdToGbp={usdToGbp}
+            accountName={accountName}
+          />
         )}
       </main>
 
@@ -332,10 +237,10 @@ export default function PhantomHome() {
         />
       )}
 
-      {/* ── FIXED BOTTOM SEARCH & ACTION BAR (Matching Reference Image) ── */}
+      {/* ── FIXED BOTTOM SEARCH & ACTION BAR (Phantom durchsuchen + (+) Button) ── */}
       <footer className="fixed bottom-0 left-0 right-0 z-50 bg-gradient-to-t from-[#000000] via-[#000000]/95 to-transparent pt-3 pb-5 px-4">
         
-        {/* Speed Dial Menu Items Vertical Stack (Matches Reference Image) */}
+        {/* Speed Dial Menu Items */}
         {isPlusMenuOpen && (
           <div className="max-w-lg mx-auto flex flex-col items-end space-y-4 mb-4 pr-1 animate-slideUp">
             {speedDialItems.map((item, index) => {
@@ -351,13 +256,10 @@ export default function PhantomHome() {
                   className="flex items-center space-x-4 group cursor-pointer active:scale-95 transition-transform"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  {/* Option Label */}
-                  <span className="text-xl sm:text-2xl font-extrabold text-white tracking-tight group-hover:text-[#a594fd] transition-colors">
+                  <span className="text-xl sm:text-2xl font-extrabold text-white tracking-tight group-hover:text-[#beacff] transition-colors">
                     {item.label}
                   </span>
-
-                  {/* Option Soft Purple Icon Circle */}
-                  <div className="w-12 h-12 rounded-full bg-[#a594fd] hover:bg-[#b6a7ff] text-[#000000] flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(165,148,253,0.4)] transition-all">
+                  <div className="w-12 h-12 rounded-full bg-[#beacff] hover:bg-[#cca8ff] text-[#000000] flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(190,172,255,0.4)] transition-all">
                     <IconComponent className="w-6 h-6 stroke-[2.5]" />
                   </div>
                 </button>
@@ -368,15 +270,15 @@ export default function PhantomHome() {
 
         <div className="max-w-lg mx-auto flex items-center justify-between gap-3">
           
-          {/* Pill Search Input Bar */}
+          {/* Pill Search Input Bar ("Phantom durchsuchen") */}
           <div className="relative flex-1">
-            <Search className="w-5 h-5 text-[#6e6e78] absolute left-4 top-3.5" />
+            <Search className="w-5 h-5 text-gray-400 absolute left-4 top-3.5" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search Phantom"
-              className="w-full pl-11 pr-4 py-3 rounded-full bg-[#1b1a22] border border-white/5 text-white text-base placeholder-[#6e6e78] focus:outline-none focus:border-[#a594fd]/50 transition-all font-medium"
+              placeholder="Phantom durchsuchen"
+              className="w-full pl-11 pr-4 py-3 rounded-full bg-[#202024] border border-white/5 text-white text-base placeholder-gray-400 focus:outline-none focus:border-[#beacff]/60 transition-all font-medium"
             />
           </div>
 
@@ -387,7 +289,7 @@ export default function PhantomHome() {
             className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 cursor-pointer transition-all duration-300 active:scale-95 ${
               isPlusMenuOpen
                 ? "bg-[#2c2c2e] text-white border border-white/20 shadow-lg rotate-90"
-                : "bg-[#a594fd] hover:bg-[#b6a7ff] text-[#000000] shadow-[0_0_20px_rgba(165,148,253,0.35)]"
+                : "bg-[#beacff] hover:bg-[#cca8ff] text-[#000000] shadow-[0_0_20px_rgba(190,172,255,0.35)]"
             }`}
           >
             {isPlusMenuOpen ? (

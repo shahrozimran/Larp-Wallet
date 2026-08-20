@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { CheckCircle2, ChevronRight, CreditCard } from "lucide-react";
+import { ChevronDown, ChevronRight, Banknote } from "lucide-react";
 
 export interface Holding {
   coinId: string;
@@ -18,13 +18,6 @@ interface CoinToken {
   change24h: number;
 }
 
-// Default "zero" tokens always shown like real Phantom
-const DEFAULT_TOKENS = [
-  { id: "solana", symbol: "SOL", name: "Solana" },
-  { id: "ethereum", symbol: "ETH", name: "Ethereum" },
-  { id: "bitcoin", symbol: "BTC", name: "Bitcoin" },
-];
-
 interface PhantomPortfolioViewProps {
   holdings: Holding[];
   coins: CoinToken[];
@@ -33,203 +26,242 @@ interface PhantomPortfolioViewProps {
   accountName: string;
 }
 
-type EnrichedHolding = {
-  coinId: string;
-  qty: number;
-  avgBuyPrice: number;
-  coin: CoinToken;
-  currentValue: number;
-  costBasis: number;
-  pnlUsd: number;
-  pnlPct: number;
-};
-
-function formatValue(usd: number, currency: "usd" | "gbp", rate: number): string {
-  const value = currency === "gbp" ? usd * rate : usd;
-  const symbol = currency === "gbp" ? "£" : "$";
-  return `${symbol}${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
-
-function formatQty(qty: number): string {
-  if (qty === 0) return "0";
-  if (qty < 0.001) return qty.toFixed(8);
-  if (qty < 1) return qty.toFixed(5);
-  return qty.toLocaleString("en-US", { maximumFractionDigits: 4 });
-}
-
 export default function PhantomPortfolioView({
   holdings,
   coins,
   currency,
   usdToGbp,
-  accountName,
+  accountName = "Konto 1",
 }: PhantomPortfolioViewProps) {
-  // Enrich user holdings
-  type MaybeEnriched = EnrichedHolding | null;
-  const enrichedHoldings: EnrichedHolding[] = holdings
-    .map((h): MaybeEnriched => {
-      const coin = coins.find((c) => c.id === h.coinId);
-      if (!coin) return null;
-      const currentValue = h.qty * coin.price;
-      const costBasis = h.qty * h.avgBuyPrice;
-      const pnlUsd = currentValue - costBasis;
-      const pnlPct = costBasis > 0 ? (pnlUsd / costBasis) * 100 : 0;
-      return { ...h, coin, currentValue, costBasis, pnlUsd, pnlPct };
-    })
-    .filter((x): x is EnrichedHolding => x !== null)
-    .sort((a, b) => b.currentValue - a.currentValue);
 
-  const totalUsd = enrichedHoldings.reduce((s, e) => s + e.currentValue, 0);
-  const totalPnlUsd = enrichedHoldings.reduce((s, e) => s + e.pnlUsd, 0);
-  const isPnlPositive = totalPnlUsd >= 0;
+  // If user has custom holdings from transactions, calculate them, otherwise default to screenshot exact 1:1 data
+  const hasUserHoldings = holdings.length > 0;
 
-  // Build the token list: user holdings + default zeros for tokens not held
-  const heldIds = new Set(enrichedHoldings.map((e) => e.coinId));
-  const defaultRows = DEFAULT_TOKENS
-    .filter((d) => !heldIds.has(d.id))
-    .map((d) => {
-      const coin = coins.find((c) => c.id === d.id);
-      return { coinId: d.id, qty: 0, coin: coin ?? { id: d.id, symbol: d.symbol, name: d.name, image: "", price: 0, change24h: 0 } };
-    });
+  // Exact 1:1 screenshot defaults
+  const solanaHolding = holdings.find((h) => h.coinId === "solana");
+  const bfsHolding = holdings.find((h) => h.coinId === "bfs");
+
+  const solQty = solanaHolding ? solanaHolding.qty : 0.09413;
+  const solPrice = coins.find((c) => c.id === "solana")?.price || 8.22;
+  const solValue = solanaHolding ? solQty * solPrice : 8.22;
+  const solChange = solanaHolding ? (coins.find((c) => c.id === "solana")?.change24h || 6.10) : 0.48;
+
+  const bfsQty = bfsHolding ? bfsHolding.qty : 176.12138;
+  const bfsPrice = coins.find((c) => c.id === "bfs")?.price || 0.00034;
+  const bfsValue = bfsHolding ? bfsQty * bfsPrice : 0.06;
+
+  const totalBalance = hasUserHoldings
+    ? holdings.reduce((sum, h) => {
+        const c = coins.find((coin) => coin.id === h.coinId);
+        return sum + (c ? c.price * h.qty : 0);
+      }, 0)
+    : 8.28;
+
+  const formattedBalance = `$${totalBalance.toFixed(2)}`;
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full px-4 pt-3 space-y-6">
 
-      {/* ── BALANCE SECTION ── */}
-      <div className="px-4 pt-4 pb-3 space-y-2">
-        {/* Free Wallet label */}
+      {/* ── ACCOUNT SELECTOR & BALANCE SECTION ── */}
+      <div className="space-y-1">
+        {/* Konto 1 Selector */}
         <button
           type="button"
-          className="flex items-center space-x-1 text-xs font-semibold text-gray-400 hover:text-gray-200 transition-colors cursor-pointer"
+          className="flex items-center space-x-1 text-sm font-semibold text-gray-300 hover:text-white transition-colors cursor-pointer"
         >
-          <span>Free Wallet</span>
-          <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" className="opacity-60">
-            <path d="M0 0l5 6 5-6H0z" />
-          </svg>
+          <span>{accountName || "Konto 1"}</span>
+          <ChevronDown className="w-4 h-4 text-gray-300 stroke-[2.5]" />
         </button>
 
-        {/* Large total balance */}
-        <div className="text-[2.6rem] font-extrabold text-white leading-none tracking-tight">
-          {formatValue(totalUsd, currency, usdToGbp)}
+        {/* Huge $8.28 Balance */}
+        <div className="text-[3.2rem] font-extrabold text-white leading-tight tracking-tight font-sans">
+          {formattedBalance}
         </div>
 
-        {/* P/L badge */}
-        {enrichedHoldings.length > 0 && (
-          <div className="flex items-center space-x-2">
-            <span className={`text-sm font-bold px-2 py-0.5 rounded-full ${
-              isPnlPositive
-                ? "bg-emerald-500/20 text-emerald-400"
-                : "bg-red-500/20 text-red-400"
-            }`}>
-              {isPnlPositive ? "+" : ""}
-              {formatValue(Math.abs(totalPnlUsd), currency, usdToGbp)}
-            </span>
-            <span className="text-xs font-bold text-gray-500 bg-[#1c1c1e] px-2 py-0.5 rounded-full">24H</span>
-          </div>
-        )}
-      </div>
-
-      {/* ── CASH ROW ── */}
-      <div className="mx-4 mb-4">
-        <div className="flex items-center justify-between px-4 py-3.5 bg-[#111113] rounded-2xl border border-white/5">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-[#1c1c1e] flex items-center justify-center">
-              <CreditCard className="w-4 h-4 text-gray-400" />
-            </div>
-            <span className="font-bold text-white text-sm">Cash</span>
-          </div>
-          <span className="font-bold text-white text-sm font-mono">$0.00</span>
+        {/* PnL Indicator Row (+ $0.48 [+6.10%]) */}
+        <div className="flex items-center space-x-2 pt-0.5">
+          <span className="text-base font-extrabold text-[#10b981]">
+            +$0.48
+          </span>
+          <span className="bg-[#10b981] text-[#000000] font-black text-xs px-2.5 py-0.5 rounded-full tracking-tight">
+            +6.10%
+          </span>
         </div>
       </div>
 
-      {/* ── TOKENS SECTION ── */}
-      <div className="px-4 space-y-2">
-        {/* Section Header */}
+      {/* ── CASH CARD ROW ── */}
+      <div>
+        <div className="flex items-center justify-between p-4 bg-[#18181b] hover:bg-[#202024] rounded-2xl border border-white/5 transition-all cursor-pointer">
+          <div className="flex items-center space-x-3.5">
+            <div className="w-10 h-10 rounded-xl bg-[#27272a] flex items-center justify-center text-gray-300 shrink-0">
+              <Banknote className="w-5 h-5 stroke-[2]" />
+            </div>
+            <span className="font-extrabold text-base text-white">Cash</span>
+          </div>
+          <span className="font-extrabold text-base text-white font-mono">$0.00</span>
+        </div>
+      </div>
+
+      {/* ── TOKEN SECTION ── */}
+      <div className="space-y-3">
+        {/* Title */}
         <button
           type="button"
-          className="flex items-center space-x-1 text-lg font-extrabold text-white hover:text-[#a594fd] transition-colors cursor-pointer mb-1"
+          className="flex items-center space-x-1 text-xl font-extrabold text-white hover:text-[#beacff] transition-colors cursor-pointer"
         >
-          <span>Tokens</span>
-          <ChevronRight className="w-5 h-5 text-gray-400" />
+          <span>Token</span>
+          <ChevronRight className="w-5 h-5 text-gray-300 stroke-[2.5]" />
         </button>
 
-        {/* User Holdings */}
-        {enrichedHoldings.map((item) => (
-          <div
-            key={item.coinId}
-            className="flex items-center justify-between py-3 border-b border-white/5"
-          >
-            {/* Left: icon + name + qty */}
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-[#1c1c1e] border border-white/10 shrink-0">
-                <img
-                  src={item.coin.image}
-                  alt={item.coin.name}
-                  className="w-full h-full object-cover"
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/img.jpeg"; }}
-                />
+        {/* Token Cards Stack */}
+        <div className="space-y-2.5">
+          
+          {/* Solana Card */}
+          <div className="flex items-center justify-between p-4 bg-[#18181b] hover:bg-[#202024] rounded-2xl border border-white/5 transition-all cursor-pointer">
+            <div className="flex items-center space-x-3.5">
+              {/* Solana Logo Circle */}
+              <div className="w-11 h-11 rounded-full bg-[#000000] border border-white/10 flex items-center justify-center shrink-0 overflow-hidden relative">
+                <svg viewBox="0 0 397.7 311.7" className="w-6 h-6">
+                  <linearGradient id="solGrad1" x1="362.9" y1="38.4" x2="35.3" y2="38.4" gradientUnits="userSpaceOnUse">
+                    <stop offset="0" stopColor="#00ffa3"/>
+                    <stop offset="1" stopColor="#dc1fff"/>
+                  </linearGradient>
+                  <path fill="url(#solGrad1)" d="M64.6 237.9c2.4-2.4 5.7-3.8 9.1-3.8h314.6c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.1 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7z"/>
+                  <linearGradient id="solGrad2" x1="362.9" y1="155.8" x2="35.3" y2="155.8" gradientUnits="userSpaceOnUse">
+                    <stop offset="0" stopColor="#00ffa3"/>
+                    <stop offset="1" stopColor="#dc1fff"/>
+                  </linearGradient>
+                  <path fill="url(#solGrad2)" d="M64.6 3.8C67 1.4 70.3 0 73.7 0h314.6c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.1 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8z"/>
+                  <linearGradient id="solGrad3" x1="362.9" y1="273.2" x2="35.3" y2="273.2" gradientUnits="userSpaceOnUse">
+                    <stop offset="0" stopColor="#00ffa3"/>
+                    <stop offset="1" stopColor="#dc1fff"/>
+                  </linearGradient>
+                  <path fill="url(#solGrad3)" d="M333.1 120.9c-2.4-2.4-5.7-3.8-9.1-3.8H9.4c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.1 3.8h314.6c5.8 0 8.7-7 4.6-11.1l-62.7-62.7z"/>
+                </svg>
               </div>
+
               <div>
-                <div className="flex items-center space-x-1">
-                  <span className="font-extrabold text-sm text-white">{item.coin.name}</span>
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#a594fd] fill-[#a594fd]/20 shrink-0" />
-                </div>
-                <div className="text-xs text-gray-500 font-semibold">
-                  {formatQty(item.qty)} {item.coin.symbol}
+                <div className="font-extrabold text-base text-white">Solana</div>
+                <div className="text-sm font-semibold text-gray-400">
+                  {solQty.toLocaleString("en-US", { maximumFractionDigits: 5 })} SOL
                 </div>
               </div>
             </div>
 
-            {/* Right: value + P/L */}
             <div className="text-right">
-              <div className="font-extrabold text-sm text-white font-mono">
-                {formatValue(item.currentValue, currency, usdToGbp)}
+              <div className="font-extrabold text-base text-white font-mono">
+                ${solValue.toFixed(2)}
               </div>
-              <div className={`text-xs font-bold font-mono ${
-                item.pnlUsd >= 0 ? "text-emerald-400" : "text-red-400"
-              }`}>
-                {item.pnlUsd >= 0 ? "+" : ""}
-                {formatValue(Math.abs(item.pnlUsd), currency, usdToGbp)}
+              <div className="text-xs font-extrabold text-[#10b981] font-mono">
+                +${solChange.toFixed(2)}
               </div>
             </div>
           </div>
-        ))}
 
-        {/* Default Zero Tokens */}
-        {defaultRows.map((row) => (
-          <div
-            key={row.coinId}
-            className="flex items-center justify-between py-3 border-b border-white/5 opacity-60"
-          >
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-[#1c1c1e] border border-white/10 shrink-0">
-                {row.coin.image ? (
-                  <img
-                    src={row.coin.image}
-                    alt={row.coin.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/img.jpeg"; }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-[9px] font-bold text-gray-500">{row.coin.symbol}</span>
-                  </div>
-                )}
+          {/* BFS Card */}
+          <div className="flex items-center justify-between p-4 bg-[#18181b] hover:bg-[#202024] rounded-2xl border border-white/5 transition-all cursor-pointer">
+            <div className="flex items-center space-x-3.5">
+              {/* BFS Custom Badge Icon */}
+              <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#00d2ff] via-[#3a7bd5] to-[#f857a6] border border-white/10 flex items-center justify-center shrink-0 shadow-md">
+                <span className="font-black text-white text-xs italic tracking-wider">BFS</span>
               </div>
+
               <div>
-                <div className="flex items-center space-x-1">
-                  <span className="font-extrabold text-sm text-white">{row.coin.name}</span>
-                  <CheckCircle2 className="w-3.5 h-3.5 text-[#a594fd] fill-[#a594fd]/20 shrink-0" />
+                <div className="font-extrabold text-base text-white">BFS</div>
+                <div className="text-sm font-semibold text-gray-400">
+                  {bfsQty.toLocaleString("en-US", { maximumFractionDigits: 5 })} BFS
                 </div>
-                <div className="text-xs text-gray-500 font-semibold">0 {row.coin.symbol}</div>
               </div>
             </div>
+
             <div className="text-right">
-              <div className="font-extrabold text-sm text-white font-mono">$0.00</div>
-              <div className="text-xs font-bold font-mono text-gray-600">$0.00</div>
+              <div className="font-extrabold text-base text-white font-mono">
+                ${bfsValue.toFixed(2)}
+              </div>
+              <div className="text-xs font-extrabold text-[#ef4444] font-mono">
+                -&lt;$0.01
+              </div>
             </div>
           </div>
-        ))}
+
+        </div>
+      </div>
+
+      {/* ── PERPS SECTION ── */}
+      <div className="space-y-3 pt-1">
+        {/* Title */}
+        <button
+          type="button"
+          className="flex items-center space-x-1 text-xl font-extrabold text-white hover:text-[#beacff] transition-colors cursor-pointer"
+        >
+          <span>Perps</span>
+          <ChevronRight className="w-5 h-5 text-gray-300 stroke-[2.5]" />
+        </button>
+
+        {/* Perps Horizontal Scroll Carousel */}
+        <div className="flex space-x-3 overflow-x-auto no-scrollbar pb-3">
+          
+          {/* BTC Card */}
+          <div className="w-36 h-36 rounded-2xl bg-[#18181b] hover:bg-[#202024] p-4 border border-white/5 flex flex-col justify-between shrink-0 transition-all cursor-pointer group">
+            {/* Top Logo */}
+            <div className="w-10 h-10 rounded-full bg-[#f7931a] flex items-center justify-center text-white font-black text-lg shadow-md shrink-0">
+              ₿
+            </div>
+
+            {/* Middle Name + Badge */}
+            <div className="flex items-center space-x-1.5 pt-2">
+              <span className="font-extrabold text-base text-white">BTC</span>
+              <span className="bg-[#27272a] text-gray-300 text-[10px] font-extrabold px-1.5 py-0.5 rounded">
+                40x
+              </span>
+            </div>
+
+            {/* Bottom Change */}
+            <div className="text-base font-extrabold text-[#10b981]">
+              +6.28%
+            </div>
+          </div>
+
+          {/* ETH Card */}
+          <div className="w-36 h-36 rounded-2xl bg-[#18181b] hover:bg-[#202024] p-4 border border-white/5 flex flex-col justify-between shrink-0 transition-all cursor-pointer group">
+            {/* Top Logo */}
+            <div className="w-10 h-10 rounded-full bg-[#282a36] border border-white/10 flex items-center justify-center text-teal-300 font-extrabold text-base shadow-md shrink-0">
+              ◆
+            </div>
+
+            {/* Middle Name + Badge */}
+            <div className="flex items-center space-x-1.5 pt-2">
+              <span className="font-extrabold text-base text-white">ETH</span>
+              <span className="bg-[#27272a] text-gray-300 text-[10px] font-extrabold px-1.5 py-0.5 rounded">
+                25x
+              </span>
+            </div>
+
+            {/* Bottom Change */}
+            <div className="text-base font-extrabold text-[#10b981]">
+              +10.93%
+            </div>
+          </div>
+
+          {/* HY Card */}
+          <div className="w-36 h-36 rounded-2xl bg-[#18181b] hover:bg-[#202024] p-4 border border-white/5 flex flex-col justify-between shrink-0 transition-all cursor-pointer group">
+            {/* Top Logo */}
+            <div className="w-10 h-10 rounded-full bg-[#14262b] border border-[#20ded3]/30 flex items-center justify-center text-[#20ded3] font-black text-sm shadow-md shrink-0">
+              HY
+            </div>
+
+            {/* Middle Name */}
+            <div className="flex items-center space-x-1.5 pt-2">
+              <span className="font-extrabold text-base text-white">HY...</span>
+            </div>
+
+            {/* Bottom Change */}
+            <div className="text-base font-extrabold text-[#10b981]">
+              +3...
+            </div>
+          </div>
+
+        </div>
       </div>
 
     </div>
