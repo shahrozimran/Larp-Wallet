@@ -103,24 +103,12 @@ export default function PhantomSidebar({
             <h2 className="text-2xl font-extrabold text-white tracking-tight">{handle}</h2>
 
             {user?.email && (
-              <div className="flex items-center space-x-2 pt-0.5">
-                <span className="px-2 py-0.5 rounded-full bg-[#beacff]/20 text-[#beacff] text-[10px] font-mono font-bold uppercase">
-                  {profile?.plan_type || "Pro"}
-                </span>
-                <span className="text-xs text-gray-400 font-mono truncate max-w-[170px]">
+              <div className="pt-0.5">
+                <span className="text-xs text-gray-400 font-mono truncate max-w-[200px] block">
                   {user.email}
                 </span>
               </div>
             )}
-
-            {/* Connect X Account button */}
-            <button
-              type="button"
-              className="flex items-center space-x-2 text-sm font-semibold text-[#beacff] hover:text-[#cca8ff] transition-colors cursor-pointer pt-1"
-            >
-              <span className="font-black text-base">𝕏</span>
-              <span>Connect your X account</span>
-            </button>
           </div>
 
           {/* Account Selector Pill */}
